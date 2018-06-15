@@ -1,12 +1,21 @@
-﻿<Window xmlns:Business="clr-namespace:Business"  x:Class="MpvPlayer.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MpvPlayer"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded" UseLayoutRounding="True">
-    <Grid>
-        <Business:WpfMPlayerControl x:Name="player" Width="Auto" Height="Auto" MediaPlayerInitialized="player_MediaPlayerInitialized" />
-    </Grid>
+﻿<Window xmlns:MpvPlayer="clr-namespace:MpvPlayer" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+		xmlns:ui="clr-namespace:EmergenceGuardian.MediaPlayerUI;assembly=MediaPlayerUI" x:Class="MpvPlayer.MainWindow" mc:Ignorable="d"
+		Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded" UseLayoutRounding="True">
+	<Grid DataContext="{Binding UI, ElementName=Player}" ui:InputBindingBehavior.PropagateInputBindingsToWindow="True">
+		<Grid.InputBindings>
+			<KeyBinding Key="Space" Command="{Binding PlayPauseCommand}" />
+			<KeyBinding Key="Esc" Command="{Binding StopCommand}" />
+			<KeyBinding Key="Right" Command="{Binding SeekForwardCommand}" />
+			<KeyBinding Key="Right" Modifiers="Ctrl" Command="{Binding SeekForward2Command}" />
+			<KeyBinding Key="Left" Command="{Binding SeekBackCommand}" />
+			<KeyBinding Key="Left" Modifiers="Ctrl" Command="{Binding SeekBack2Command}" />
+			<KeyBinding Key="Up" Command="{Binding VolumeUpCommand}" />
+			<KeyBinding Key="Down" Command="{Binding VolumeDownCommand}" />
+			<KeyBinding Key="Enter" Modifiers="Alt" Command="{Binding ToggleFullScreenCommand}" />
+		</Grid.InputBindings>
+		<ui:MediaPlayerWpf x:Name="Player" />
+	</Grid>
 </Window>

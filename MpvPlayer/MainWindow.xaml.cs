@@ -24,10 +24,13 @@ namespace MpvPlayer {
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-        }
-
-        private void player_MediaPlayerInitialized(object sender, EventArgs e) {
-			player.Play(@"E:\NaturalGrounding\AOA\Like a Cat.mp4");
+			MpvMediaPlayerHost Host = new MpvMediaPlayerHost();
+			Player.Host = Host;
+			Host.MediaPlayerInitialized += player_MediaPlayerInitialized;
 		}
-    }
+
+		public void player_MediaPlayerInitialized(object sender, EventArgs e) {
+			Player.Host.Load(@"E:\NaturalGrounding\AOA\Like a Cat.mp4");
+		}
+	}
 }

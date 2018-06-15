@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="MpvPlayer.MpvMediaPlayer" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:MpvPlayer"
+		xmlns:ui="clr-namespace:EmergenceGuardian.MediaPlayerUI;assembly=MediaPlayerUI" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+	<Grid DataContext="{Binding ElementName=UI, Mode=OneWay}" ui:InputBindingBehavior.PropagateInputBindingsToWindow="True">
+		<Grid.InputBindings>
+			<KeyBinding Key="Space" Command="{Binding PlayPauseCommand}" />
+			<KeyBinding Key="Esc" Command="{Binding StopCommand}" />
+			<KeyBinding Key="Right" Command="{Binding SeekForwardCommand}" />
+			<KeyBinding Key="Right" Modifiers="Ctrl" Command="{Binding SeekForward2Command}" />
+			<KeyBinding Key="Left" Command="{Binding SeekBackCommand}" />
+			<KeyBinding Key="Left" Modifiers="Ctrl" Command="{Binding SeekBack2Command}" />
+			<KeyBinding Key="Up" Command="{Binding VolumeUpCommand}" />
+			<KeyBinding Key="Down" Command="{Binding VolumeDownCommand}" />
+			<KeyBinding Key="Enter" Modifiers="Alt" Command="{Binding ToggleFullScreenCommand}" />
+		</Grid.InputBindings>
+		<Grid x:Name="HostGrid" Margin="0,0,0,46">
+			<local:MpvMediaPlayerHost x:Name="Host" x:FieldModifier="public" />
+		</Grid>
+		<ui:PlayerControls x:Name="UI" x:FieldModifier="public" Height="46" Width="Auto" VerticalAlignment="Bottom" PlayerHost="{Binding ElementName=Host, Mode=OneWay}" />
+	</Grid>
+</UserControl>

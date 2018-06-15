@@ -32,76 +32,94 @@ namespace Business {
 
 		private void UserControl_Loaded(object sender, RoutedEventArgs e) {
 			Player = new Mpv.WPF.MpvPlayer(HostPanel.Handle, "lib\\mpv-1.dll");
-			Player.MediaLoaded += Player_MediaLoaded;
-			Player.MediaUnloaded += Player_MediaUnloaded;
-			Player.PositionChanged += Player_PositionChanged;
+			//Player.MediaLoaded += Player_MediaLoaded;
+			//Player.MediaUnloaded += Player_MediaUnloaded;
+			//Player.PositionChanged += Player_PositionChanged;
 			Player.AutoPlay = true;
-			UI.Volume = 30;
+			//UI.Volume = 30;
+
 
 			Dispatcher.ShutdownStarted += (s2, e2) => Player.Dispose();
 
 			MediaPlayerInitialized?.Invoke(this, new EventArgs());
 		}
 
-		private void Dispatcher_ShutdownStarted(object sender, EventArgs e) {
-			Player.Dispose();
-		}
+		//private void UI_OnVolumeChanged1(object sender, EventArgs e) {
+		//	Player.Volume = UI.Volume;
+		//}
 
-		public bool IsVideoVisible {
-			get {
-				return Host.Visibility == Visibility.Visible;
-			}
-			set {
-				Host.Visibility = value ? Visibility.Visible : Visibility.Hidden;
-			}
-		}
+		//private void Dispatcher_ShutdownStarted(object sender, EventArgs e) {
+		//	Player.Dispose();
+		//}
 
-		public void Play(string source) {
-			this.source = source;
-			UI.Title = Path.GetFileName(source);
-			Player.Stop();
-			Player.KeepOpen = KeepOpen.Always;
-			Player.Load(source, true);
-		}
+		//public bool IsVideoVisible {
+		//	get {
+		//		return Host.Visibility == Visibility.Visible;
+		//	}
+		//	set {
+		//		Host.Visibility = value ? Visibility.Visible : Visibility.Hidden;
+		//	}
+		//}
 
-		private void Player_PositionChanged(object sender, EventArgs e) {
-			UI.Position = Player.Position;
-		}
+		//public void Play(string source) {
+		//	this.source = source;
+		//	UI.Title = Path.GetFileName(source);
+		//	Player.Stop();
+		//	Player.KeepOpen = KeepOpen.Always;
+		//	Player.Load(source, true);
+		//}
 
-		private void Player_MediaUnloaded(object sender, EventArgs e) {
-			UI.MediaUnloaded();
-		}
+		//private void Player_PositionChanged(object sender, EventArgs e) {
+		//	Dispatcher.Invoke(() => {
+		//		UI.Position = Player.Position;
+		//	});
+		//}
 
-		public void Player_MediaLoaded(object sender, EventArgs e) {
-			UI.MediaLoaded(Player.Duration);
-		}
+		//private void Player_MediaUnloaded(object sender, EventArgs e) {
+		//	Dispatcher.Invoke(() => {
+		//		UI.MediaUnloaded();
+		//	});
+		//}
 
-		private void UI_OnPlay(object sender, EventArgs e) {
-			Player.Resume();
-		}
+		//public void Player_MediaLoaded(object sender, EventArgs e) {
+		//	Dispatcher.Invoke(() => {
+		//		UI.MediaLoaded(Player.Duration);
+		//	});
+		//}
 
-		private void UI_OnPause(object sender, EventArgs e) {
-			Player.Pause();
-		}
+		//private void UI_OnPlay(object sender, EventArgs e) {
+		//	Player.Resume();
+		//}
 
-		private void UI_OnStop(object sender, EventArgs e) {
-			Player.Stop();
-		}
+		//private void UI_OnPause(object sender, EventArgs e) {
+		//	Player.Pause();
+		//}
 
-		private void UI_OnSeek(object sender, EventArgs e) {
-			Player.Position = UI.PositionBar;
-		}
+		//private void UI_OnStop(object sender, EventArgs e) {
+		//	Player.Stop();
+		//}
 
-		private void UI_OnToggleLoop(object sender, EventArgs e) {
-			Player.Loop = UI.Loop;
-		}
+		//private void UI_OnSeek(object sender, EventArgs e) {
+		//	Player.Position = UI.PositionBar;
+		//}
 
-		private void UI_OnVolumeChanged(object sender, EventArgs e) {
-			Player.Volume = UI.Volume;
-		}
+		//private void UI_OnToggleLoop(object sender, EventArgs e) {
+		//	Player.Loop = UI.Loop;
+		//}
 
-		private void UI_OnSpeedChanged(object sender, EventArgs e) {
-			Player.Speed = UI.Speed;
-		}
+		//private void UI_OnVolumeChanged(object sender, EventArgs e) {
+		//	Player.Volume = UI.Volume;
+		//}
+
+		//private void UI_OnSpeedChanged(object sender, EventArgs e) {
+		//	Player.Speed = UI.Speed;
+		//}
+
+		//public int Volume {
+		//	get => Player?.Volume ?? 0;
+		//	set {
+		//		Player.Volume = value;
+		//	}
+		//}
 	}
 }
