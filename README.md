@@ -15,7 +15,7 @@ An implementation of the UI over [Mpv.NET](https://github.com/hudec117/Mpv.NET)
 
 ## Usage with MpvPlayer
 
-1. Add MpvPlayer.NET NuGet to your project.
+1. Add [MpvPlayer.NET NuGet](https://www.nuget.org/packages/MpvPlayer.NET/) to your project.
 
 2. Drop this code into your page.
 ```csharp
@@ -46,7 +46,7 @@ Player.MediaPlayerInitialized += (o, e) => {
 
 ## Usage with other media players
 
-1. Add MediaPlayerUI NuGet to your project.
+1. Add [MediaPlayerUI NuGet](https://www.nuget.org/packages/MediaPlayerUI.NET/) to your project.
 
 2. Download MpvPlayer.NET from GitHub.
 

@@ -17,6 +17,9 @@ build/
 [Bb]in/
 [Oo]bj/
 
+*.dll
+*.nupkg
+
 
 # Windows image file caches
 Thumbs.db
