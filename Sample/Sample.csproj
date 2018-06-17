@@ -138,9 +138,9 @@
       <Project>{7bf6711c-d3ea-48cf-bd5d-4b201aa788b5}</Project>
       <Name>MediaPlayerUI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MpvPlayer.NET\MpvPlayer.NET.csproj">
+    <ProjectReference Include="..\MpvPlayerUI\MpvPlayerUI.csproj">
       <Project>{02d0596c-4a1f-4227-a44d-463b4f655598}</Project>
-      <Name>MpvPlayer.NET</Name>
+      <Name>MpvPlayerUI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

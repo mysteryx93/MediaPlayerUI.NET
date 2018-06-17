@@ -16,7 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using EmergenceGuardian.MediaPlayerUI;
 
-namespace EmergenceGuardian.MpvPlayer {
+namespace EmergenceGuardian.MpvPlayerUI {
 	[TemplatePart(Name = MpvMediaPlayerHost.PART_Host, Type = typeof(WindowsFormsHost))]
 	public class MpvMediaPlayerHost : PlayerBase {
 		public const string PART_Host= "PART_Host";

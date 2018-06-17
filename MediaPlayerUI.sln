@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayerUI", "MediaPlaye
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{64FB9908-6C99-4F54-B54E-2D1A6026410F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MpvPlayer.NET", "MpvPlayer.NET\MpvPlayer.NET.csproj", "{02D0596C-4A1F-4227-A44D-463B4F655598}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MpvPlayerUI", "MpvPlayerUI\MpvPlayerUI.csproj", "{02D0596C-4A1F-4227-A44D-463B4F655598}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

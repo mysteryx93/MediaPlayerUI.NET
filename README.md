@@ -15,7 +15,7 @@ An implementation of the UI over [Mpv.NET](https://github.com/hudec117/Mpv.NET)
 
 ## Usage with MpvPlayer
 
-1. Add [MpvPlayer.NET NuGet](https://www.nuget.org/packages/MpvPlayer.NET/) to your project.
+1. Add [MpvPlayer.NET NuGet](https://www.nuget.org/packages/MpvPlayerUI.NET/) to your project.
 
 2. Drop this code into your page.
 ```csharp

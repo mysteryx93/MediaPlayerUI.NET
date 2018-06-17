@@ -2,7 +2,7 @@
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:Sample"
-		xmlns:MpvPlayer="clr-namespace:EmergenceGuardian.MpvPlayer;assembly=MpvPlayer.NET" x:Class="Sample.MainWindow"
+		xmlns:mpv="clr-namespace:EmergenceGuardian.MpvPlayerUI;assembly=MpvPlayerUI" x:Class="Sample.MainWindow"
 		mc:Ignorable="d" Title="MainWindow" Height="450" Width="800">
 <Window.InputBindings>
 <KeyBinding Key="Space" Command="{Binding UI.PlayPauseCommand, ElementName=Player}" />
@@ -15,6 +15,6 @@
 <KeyBinding Key="Enter" Modifiers="Alt" Command="{Binding UI.ToggleFullScreenCommand, ElementName=Player}" />
 </Window.InputBindings>
 	<Grid>
-		<MpvPlayer:MpvMediaPlayer x:Name="Player" />
+		<mpv:MpvMediaPlayer x:Name="Player" />
 	</Grid>
 </Window>

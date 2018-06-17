@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using EmergenceGuardian.MediaPlayerUI;
 
-namespace EmergenceGuardian.MpvPlayer {
+namespace EmergenceGuardian.MpvPlayerUI {
 	public class MpvMediaPlayer : MediaPlayerWpf {
 		static MpvMediaPlayer() {
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(MpvMediaPlayer), new FrameworkPropertyMetadata(typeof(MpvMediaPlayer)));
