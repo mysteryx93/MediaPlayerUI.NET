@@ -7,12 +7,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MediaPlayerWpfUi")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("MediaPlayerUI")]
+[assembly: AssemblyDescription("A .NET/WPF generic media player UI to use with any media player")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MediaPlayerWpfUi")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCompany("Emergence Guardian")]
+[assembly: AssemblyProduct("MediaPlayerUI")]
+[assembly: AssemblyCopyright("Copyright © Emergence Guardian 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

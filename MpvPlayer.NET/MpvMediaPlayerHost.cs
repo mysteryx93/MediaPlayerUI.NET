@@ -16,7 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using EmergenceGuardian.MediaPlayerUI;
 
-namespace MpvPlayer {
+namespace EmergenceGuardian.MpvPlayer {
 	[TemplatePart(Name = MpvMediaPlayerHost.PART_Host, Type = typeof(WindowsFormsHost))]
 	public class MpvMediaPlayerHost : PlayerBase {
 		public const string PART_Host= "PART_Host";
@@ -26,9 +26,11 @@ namespace MpvPlayer {
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(MpvMediaPlayerHost), new FrameworkPropertyMetadata(typeof(MpvMediaPlayerHost)));
 		}
 
+		public string DllPath { get; set; }
 		public Mpv.NET.Player.MpvPlayer Player;
 		public event EventHandler MediaPlayerInitialized;
 		private string source;
+
 
 		public override void OnApplyTemplate() {
 			base.OnApplyTemplate();
@@ -43,7 +45,7 @@ namespace MpvPlayer {
 		}
 
 		private void PlayerBase_Loaded(object sender, RoutedEventArgs e) {
-			Player = new Mpv.NET.Player.MpvPlayer(Host.Handle, "lib\\mpv-1.dll");
+			Player = new Mpv.NET.Player.MpvPlayer(Host.Handle, DllPath);
 			Player.MediaLoaded += (s, a) => base.MediaLoaded();
 			Player.MediaUnloaded += (s, a) => base.MediaUnloaded();
 			Player.PositionChanged += (s, a) => base.PositionChanged();

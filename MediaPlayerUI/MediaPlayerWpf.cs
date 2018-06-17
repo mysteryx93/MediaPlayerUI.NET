@@ -25,6 +25,8 @@ namespace EmergenceGuardian.MediaPlayerUI {
 		static MediaPlayerWpf() {
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(MediaPlayerWpf), new FrameworkPropertyMetadata(typeof(MediaPlayerWpf)));
 			BackgroundProperty.OverrideMetadata(typeof(MediaPlayerWpf), new FrameworkPropertyMetadata(Brushes.Black));
+			HorizontalAlignmentProperty.OverrideMetadata(typeof(MediaPlayerWpf), new FrameworkPropertyMetadata(HorizontalAlignment.Stretch));
+			VerticalAlignmentProperty.OverrideMetadata(typeof(MediaPlayerWpf), new FrameworkPropertyMetadata(VerticalAlignment.Stretch));
 		}
 
 		public MediaPlayerWpf() {
