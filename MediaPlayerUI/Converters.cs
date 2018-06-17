@@ -20,40 +20,14 @@ namespace EmergenceGuardian.MediaPlayerUI {
 		}
 	}
 
-	[ValueConversion(typeof(bool), typeof(Visibility))]
-	public sealed class BoolToVisibilityConverter : IValueConverter {
-		public Visibility TrueValue { get; set; }
-		public Visibility FalseValue { get; set; }
+	//[ValueConversion(typeof(double), typeof(double))]
+	//public class InvertDoubleConverter : IValueConverter {
+	//	public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+	//		return -(double)value;
+	//	}
 
-		public BoolToVisibilityConverter() {
-			// set defaults
-			TrueValue = Visibility.Visible;
-			FalseValue = Visibility.Hidden;
-		}
-
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-			if (!(value is bool))
-				return null;
-			return (bool)value ? TrueValue : FalseValue;
-		}
-
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-			if (Equals(value, TrueValue))
-				return true;
-			if (Equals(value, FalseValue))
-				return false;
-			return null;
-		}
-	}
-
-	[ValueConversion(typeof(double), typeof(double))]
-	public class InvertDoubleConverter : IValueConverter {
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-			return -(double)value;
-		}
-
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-			return -(double)value;
-		}
-	}
+	//	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+	//		return -(double)value;
+	//	}
+	//}
 }

@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace EmergenceGuardian.MediaPlayerUI {
-	public class PlayerControlsBase : UserControl, INotifyPropertyChanged {
+	public class PlayerControlsBase : Control, INotifyPropertyChanged {
 
 		#region Declarations / Constructor
 
@@ -122,7 +122,7 @@ namespace EmergenceGuardian.MediaPlayerUI {
 
 		// Duration
 		public static DependencyProperty DurationProperty = DependencyProperty.Register("Duration", typeof(TimeSpan), typeof(PlayerControlsBase),
-			new PropertyMetadata(TimeSpan.Zero, OnDurationChanged), IsDurationValid);
+			new PropertyMetadata(TimeSpan.FromSeconds(1), OnDurationChanged), IsDurationValid);
 		public TimeSpan Duration { get => (TimeSpan)GetValue(DurationProperty); set => SetValue(DurationProperty, value); }
 		private static bool IsDurationValid(object value) => ((TimeSpan)value >= TimeSpan.Zero);
 		private static void OnDurationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => (d as PlayerControlsBase).InvokePropertyChanged("PositionText");
@@ -153,57 +153,15 @@ namespace EmergenceGuardian.MediaPlayerUI {
 			P.PlayerHost.Paused = !P.IsPlaying;
 		}
 
-		#endregion
-
-
-		#region Read-Only Properties
 
 		public string PositionText {
 			get {
-				if (Duration > TimeSpan.Zero)
+				if (PlayerHost != null && IsMediaLoaded && PositionDisplay != TimeDisplayStyles.None)
 					return string.Format("{0} / {1}",
 						FormatTime(PlayerHost.Position),
 						FormatTime(Duration));
 				else
 					return "";
-			}
-		}
-
-		public ImageSource PlayPauseButtonIcon => IsPlaying ? PauseButtonIcon : PlayButtonIcon;
-
-		private ImageSource playButtonIcon;
-		public ImageSource PlayButtonIcon {
-			get {
-				if (playButtonIcon == null)
-					playButtonIcon = new BitmapImage(new Uri("pack://application:,,,/MediaPlayerUI;component/Icons/play.png"));
-				return playButtonIcon;
-			}
-		}
-
-		private ImageSource pauseButtonIcon;
-		public ImageSource PauseButtonIcon {
-			get {
-				if (pauseButtonIcon == null)
-					pauseButtonIcon = new BitmapImage(new Uri("pack://application:,,,/MediaPlayerUI;component/Icons/pause.png"));
-				return pauseButtonIcon;
-			}
-		}
-
-		private ImageSource stopButtonIcon;
-		public ImageSource StopButtonIcon {
-			get {
-				if (stopButtonIcon == null)
-					stopButtonIcon = new BitmapImage(new Uri("pack://application:,,,/MediaPlayerUI;component/Icons/stop.png"));
-				return stopButtonIcon;
-			}
-		}
-
-		private ImageSource loopButtonIcon;
-		public ImageSource LoopButtonIcon {
-			get {
-				if (loopButtonIcon == null)
-					loopButtonIcon = new BitmapImage(new Uri("pack://application:,,,/MediaPlayerUI;component/Icons/loop.png"));
-				return loopButtonIcon;
 			}
 		}
 

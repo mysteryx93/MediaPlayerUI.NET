@@ -13,4 +13,14 @@ namespace EmergenceGuardian.MediaPlayerUI {
 		Standard,
 		Seconds
 	}
+
+	/// <summary>
+	/// Specifies which mouse click triggers an action.
+	/// </summary>
+	public enum MouseTrigger {
+		None,
+		LeftClick,
+		MiddleClick,
+		RightClick
+	}
 }

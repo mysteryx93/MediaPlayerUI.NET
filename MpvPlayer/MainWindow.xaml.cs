@@ -21,16 +21,19 @@ namespace MpvPlayer {
     public partial class MainWindow : Window {
         public MainWindow() {
             InitializeComponent();
-        }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e) {
-			MpvMediaPlayerHost Host = new MpvMediaPlayerHost();
-			Player.Host = Host;
-			Host.MediaPlayerInitialized += player_MediaPlayerInitialized;
+			Player.MediaPlayerInitialized += player_MediaPlayerInitialized;
+		}
+
+		private void Window_Loaded(object sender, RoutedEventArgs e) {
+			InputBindings.Add(new KeyBinding(Player.UI.PlayPauseCommand, Key.Space, ModifierKeys.None));
+			//MpvMediaPlayerHost Host = new MpvMediaPlayerHost();
+			//Host.MediaPlayerInitialized += player_MediaPlayerInitialized;
+			//Player.Host = Host;
 		}
 
 		public void player_MediaPlayerInitialized(object sender, EventArgs e) {
-			Player.Host.Load(@"E:\NaturalGrounding\AOA\Like a Cat.mp4");
+			Player.Host.Load(@"E:\NaturalGrounding\AOA\Like a Cat.mp4", "");
 		}
 	}
 }

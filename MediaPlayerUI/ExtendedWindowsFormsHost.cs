@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
@@ -11,31 +12,27 @@ namespace EmergenceGuardian.MediaPlayerUI {
 
 		private void OnChildChanged(object sender, ChildChangedEventArgs childChangedEventArgs) {
 			var previousChild = childChangedEventArgs.PreviousChild as Control;
-			if (previousChild != null) {
+			if (previousChild != null)
 				previousChild.MouseDown -= OnMouseDown;
-			}
-			if (Child != null) {
+			if (Child != null)
 				Child.MouseDown += OnMouseDown;
-				Child.MouseMove += OnMouseMove; ;
-			}
 		}
 
-		private void OnMouseMove(object sender, System.Windows.Forms.MouseEventArgs e) {
-			RaiseEvent(new System.Windows.Input.MouseEventArgs(Mouse.PrimaryDevice, 0) {
-				RoutedEvent = Mouse.MouseMoveEvent,
-				Source = this,
-			});
-		}
-
-		private void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs mouseEventArgs) {
-			MouseButton? wpfButton = ConvertToWpf(mouseEventArgs.Button);
+		private void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
+			MouseButton? wpfButton = ConvertToWpf(e.Button);
 			if (!wpfButton.HasValue)
 				return;
 
 			RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, wpfButton.Value) {
 				RoutedEvent = Mouse.MouseDownEvent,
-				Source = this,
+				Source = this
+				//ClickCount = 2
 			});
+
+			//RaiseEvent(new RoutedEventArgs() {
+			//	RoutedEvent = System.Windows.Controls.Control.MouseDoubleClickEvent,
+			//	Source = this
+			//});
 		}
 
 		private MouseButton? ConvertToWpf(MouseButtons winformButton) {

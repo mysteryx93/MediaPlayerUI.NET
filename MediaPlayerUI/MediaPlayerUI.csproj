@@ -39,17 +39,14 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AirspacePopup.cs" />
+    <Compile Include="MediaPlayerWpf.cs" />
+    <Compile Include="PlayerControls.cs" />
     <Compile Include="ExtendedWindowsFormsHost.cs" />
     <Compile Include="CommandHelper.cs" />
     <Compile Include="FullScreenUI.xaml.cs">
@@ -59,29 +56,16 @@
     <Compile Include="Converters.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="PlayerBase.cs" />
-    <Compile Include="PlayerControls.xaml.cs">
-      <DependentUpon>PlayerControls.xaml</DependentUpon>
-    </Compile>
     <Compile Include="PlayerControlsBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TimeDisplayStyle.cs" />
-    <Compile Include="MediaPlayerWpf.xaml.cs">
-      <DependentUpon>MediaPlayerWpf.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Enumerations.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="MediaPlayerWpf.xaml">
+    <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Resource Include="Styles.xaml">
-      <SubType>Designer</SubType>
-    </Resource>
     <Page Include="FullScreenUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PlayerControls.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

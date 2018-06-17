@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 
 namespace EmergenceGuardian.MediaPlayerUI {
-	public class PlayerBase : UserControl, INotifyPropertyChanged {
+	public class PlayerBase : Control, INotifyPropertyChanged {
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void InvokePropertyChanged(string propertyName) {
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -76,8 +76,12 @@ namespace EmergenceGuardian.MediaPlayerUI {
 		/// </summary>
 		public Panel InnerControlParentCache {
 			get {
-				if (innerControlParentCache == null)
-					innerControlParentCache = InnerControl.Parent as Panel;
+				if (innerControlParentCache == null) {
+					if (InnerControl.Parent is Panel)
+						innerControlParentCache = InnerControl.Parent as Panel;
+					else
+						throw new InvalidCastException(string.Format("PlayerBase must be within a Panel or Grid control. Container is of type '{0}'.", InnerControl?.Parent?.GetType()));
+				}
 				if (innerControlParentCache == null)
 					throw new ArgumentNullException("ParentCache returned null.");
 				return innerControlParentCache;

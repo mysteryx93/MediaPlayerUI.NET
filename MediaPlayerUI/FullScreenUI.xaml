@@ -6,7 +6,6 @@
     WindowStyle="None" ResizeMode="NoResize"  
     WindowStartupLocation="CenterScreen" WindowState="Maximized" ShowInTaskbar="False" Background="Black" MouseDown="Window_MouseDown" Deactivated="Window_Deactivated" x:Name="UI" Closing="UI_Closing">
 	<Window.Resources>
-		<local:InvertDoubleConverter x:Key="InvertDoubleConverter"/>
 		<Storyboard x:Key="OnMouseEnterUI">
 			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="AirspaceGrid">
 				<EasingDoubleKeyFrame KeyTime="0" Value="0"/>
@@ -33,6 +32,7 @@
 		</EventTrigger>
 	</Window.Triggers>
 	<Grid x:Name="MainGrid">
+		<Button IsCancel="True" Width="0" Height="0" /> <!-- Close with Esc -->
 		<local:AirspacePopup x:Name="Airspace" PlacementTarget="{Binding ElementName=MainGrid}"
 					FollowPlacementTarget="True"
 					AllowOutsideScreenPlacement="false"

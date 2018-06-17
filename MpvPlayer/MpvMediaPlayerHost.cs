@@ -1,22 +1,49 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Forms.Integration;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 using EmergenceGuardian.MediaPlayerUI;
 
 namespace MpvPlayer {
-	/// <summary>
-	/// Interaction logic for MpvPlayerHost.xaml
-	/// </summary>
-	public partial class MpvMediaPlayerHost : PlayerBase {
-		public Mpv.WPF.MpvPlayer Player;
+	[TemplatePart(Name = MpvMediaPlayerHost.PART_Host, Type = typeof(WindowsFormsHost))]
+	public class MpvMediaPlayerHost : PlayerBase {
+		public const string PART_Host= "PART_Host";
+		public WindowsFormsHost Host => GetTemplateChild(PART_Host) as WindowsFormsHost;
+
+		static MpvMediaPlayerHost() {
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(MpvMediaPlayerHost), new FrameworkPropertyMetadata(typeof(MpvMediaPlayerHost)));
+		}
+
+		public Mpv.NET.Player.MpvPlayer Player;
 		public event EventHandler MediaPlayerInitialized;
 		private string source;
 
+		public override void OnApplyTemplate() {
+			base.OnApplyTemplate();
+
+			if (DesignerProperties.GetIsInDesignMode(this))
+				return;
+
+			Loaded += PlayerBase_Loaded;
+		}
+
 		public MpvMediaPlayerHost() {
-			InitializeComponent();
 		}
 
 		private void PlayerBase_Loaded(object sender, RoutedEventArgs e) {
-			Player = new Mpv.WPF.MpvPlayer(HostPanel.Handle, "lib\\mpv-1.dll");
+			Player = new Mpv.NET.Player.MpvPlayer(Host.Handle, "lib\\mpv-1.dll");
 			Player.MediaLoaded += (s, a) => base.MediaLoaded();
 			Player.MediaUnloaded += (s, a) => base.MediaUnloaded();
 			Player.PositionChanged += (s, a) => base.PositionChanged();
@@ -91,8 +118,13 @@ namespace MpvPlayer {
 		}
 
 		public override void Load(string source) {
+			Load(source, null);
+		}
+
+		public void Load(string source, string title) {
 			this.source = source;
-			Title = System.IO.Path.GetFileName(source);
+			if (title == null)
+				Title = System.IO.Path.GetFileName(source);
 			Player.Stop();
 			Player.Load(source, true);
 		}
