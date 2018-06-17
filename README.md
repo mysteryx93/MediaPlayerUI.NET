@@ -2,7 +2,7 @@
 
 A .NET/WPF generic media player UI to use with any media player
 
-# MpvPlayer.NET
+# MpvPlayerUI.NET
 
 An implementation of the UI over [Mpv.NET](https://github.com/hudec117/Mpv.NET)
 
@@ -15,7 +15,7 @@ An implementation of the UI over [Mpv.NET](https://github.com/hudec117/Mpv.NET)
 
 ## Usage with MpvPlayer
 
-1. Add [MpvPlayer.NET NuGet](https://www.nuget.org/packages/MpvPlayerUI.NET/) to your project.
+1. Add [MpvPlayerUI.NET NuGet](https://www.nuget.org/packages/MpvPlayerUI.NET/) to your project.
 
 2. Drop this code into your page.
 ```csharp
@@ -48,7 +48,7 @@ Player.MediaPlayerInitialized += (o, e) => {
 
 1. Add [MediaPlayerUI NuGet](https://www.nuget.org/packages/MediaPlayerUI.NET/) to your project.
 
-2. Download MpvPlayer.NET from GitHub.
+2. Download MpvPlayerUI.NET from GitHub.
 
 3. Edit MpvMediaPlayerHost, MpvMediaPlayer, and Generic.xaml to suit your needs.
 
