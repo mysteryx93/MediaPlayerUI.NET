@@ -27,7 +27,7 @@ An implementation of the UI over [Mpv.NET](https://github.com/hudec117/Mpv.NET)
 Player.MediaPlayerInitialized += (o, e) => {
     Player.Host.Load(@"MyVideo.mp4");
 };
-``
+```
 
 4. To add keyboard shortcuts, add this code to your window
 
@@ -42,8 +42,7 @@ Player.MediaPlayerInitialized += (o, e) => {
     <KeyBinding Key="Down" Command="{Binding UI.VolumeDownCommand, ElementName=Player}" />
     <KeyBinding Key="Enter" Modifiers="Alt" Command="{Binding UI.ToggleFullScreenCommand, ElementName=Player}" />
 </Window.InputBindings>
-``
-`
+```
 
 ## Usage with other media players
 
