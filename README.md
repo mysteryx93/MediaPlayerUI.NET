@@ -1,14 +1,10 @@
-#MediaPlayerUI
+# MediaPlayerUI
 
 A .NET/WPF generic media player UI to use with any media player
 
-#MpvPlayer.NET
+# MpvPlayer.NET
 
 An implementation of the UI over [Mpv.NET](https://github.com/hudec117/Mpv.NET)
-
-## Download
-
-This package is available via [NuGet](#).
 
 ## Usage with MpvPlayer
 
@@ -22,7 +18,7 @@ This package is available via [NuGet](#).
 3. If you want to load a file when the window loads, add this to the constructor
 ```csharp
 Player.MediaPlayerInitialized += (o, e) => {
-	Player.Host.Load(@"E:\NaturalGrounding\AOA\Like a Cat.mp4");
+    Player.Host.Load(@"MyVideo.mp4");
 };
 ```
 
