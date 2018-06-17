@@ -46,14 +46,14 @@ namespace EmergenceGuardian.MediaPlayerUI {
 		private ICommand seekForwardCommand;
 		public ICommand SeekForwardCommand => CommandHelper.InitCommand(ref seekForwardCommand, () => Seek(1), CanSeek);
 
-		private ICommand seekForward2Command;
-		public ICommand SeekForward2Command => CommandHelper.InitCommand(ref seekForward2Command, () => Seek(10), CanSeek);
+		private ICommand seekForwardLargeCommand;
+		public ICommand SeekForwardLargeCommand => CommandHelper.InitCommand(ref seekForwardLargeCommand, () => Seek(10), CanSeek);
 
 		private ICommand seekBackCommand;
 		public ICommand SeekBackCommand => CommandHelper.InitCommand(ref seekBackCommand, () => Seek(-1), CanSeek);
 
-		private ICommand seekBack2Command;
-		public ICommand SeekBack2Command => CommandHelper.InitCommand(ref seekBack2Command, () => Seek(-10), CanSeek);
+		private ICommand seekBackLargeCommand;
+		public ICommand SeekBackLargeCommand => CommandHelper.InitCommand(ref seekBackLargeCommand, () => Seek(-10), CanSeek);
 
 		private ICommand volumeUpCommand;
 		public ICommand VolumeUpCommand => CommandHelper.InitCommand(ref volumeUpCommand, () => ChangeVolume(5), CanChangeVolume);
