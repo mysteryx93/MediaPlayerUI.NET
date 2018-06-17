@@ -1,4 +1,4 @@
-# MediaPlayerUI
+# MediaPlayerUI.NET
 
 A .NET/WPF generic media player UI to use with any media player
 
