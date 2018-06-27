@@ -117,8 +117,5 @@
   <ItemGroup>
     <Resource Include="Icons\stop.png" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="MediaPlayerUI.nuspec" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

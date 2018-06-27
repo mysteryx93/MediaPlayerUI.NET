@@ -13,37 +13,32 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace EmergenceGuardian.MediaPlayerUI {
-	/// <summary>
-	/// Interaction logic for FullScreenUI.xaml
-	/// </summary>
-	public partial class FullScreenUI : Window {
-		public bool IsClosing { get; private set; }
+    /// <summary>
+    /// Interaction logic for FullScreenUI.xaml
+    /// </summary>
+    public partial class FullScreenUI : Window {
+        public bool IsClosing { get; private set; }
 
-		public FullScreenUI() {
-			InitializeComponent();
-		}
+        public FullScreenUI() {
+            InitializeComponent();
+        }
 
-		public Grid ContentGrid => this.MainGrid;
+        public Grid ContentGrid => this.MainGrid;
 
-		public void CloseOnce() {
-			if (!IsClosing) {
-				IsClosing = true;
-				this.Close();
-			}
-		}
+        public void CloseOnce() {
+            if (!IsClosing) {
+                IsClosing = true;
+                this.Close();
+            }
+        }
 
-		private void UI_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			IsClosing = true;
-		}
+        private void UI_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            IsClosing = true;
+        }
 
-		private void Window_MouseDown(object sender, MouseButtonEventArgs e) {
-			if (e.ChangedButton == MouseButton.Middle)
-				CloseOnce();
-		}
-
-		private void Window_Deactivated(object sender, EventArgs e) {
-			if (IsLoaded)
-				CloseOnce();
-		}
-	}
+        private void Window_Deactivated(object sender, EventArgs e) {
+            if (IsLoaded)
+                CloseOnce();
+        }
+    }
 }

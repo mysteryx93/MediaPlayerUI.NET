@@ -7,11 +7,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace EmergenceGuardian.MediaPlayerUI {
-	public static class CommandHelper {
-		public static ICommand InitCommand(ref ICommand cmd, Action execute, Func<bool> canExecute) {
-			if (cmd == null)
-				cmd = new DelegateCommand(execute, canExecute);
-			return cmd;
-		}
-	}
+    public static class CommandHelper {
+        public static ICommand InitCommand(ref ICommand cmd, Action execute, Func<bool> canExecute) {
+            if (cmd == null)
+                cmd = new DelegateCommand(execute, canExecute);
+            return cmd;
+        }
+    }
 }

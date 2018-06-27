@@ -4,16 +4,16 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:Sample"
 		xmlns:mpv="clr-namespace:EmergenceGuardian.MpvPlayerUI;assembly=MpvPlayerUI" x:Class="Sample.MainWindow"
 		mc:Ignorable="d" Title="MainWindow" Height="450" Width="800">
-<Window.InputBindings>
-<KeyBinding Key="Space" Command="{Binding UI.PlayPauseCommand, ElementName=Player}" />
-<KeyBinding Key="Right" Command="{Binding UI.SeekForwardCommand, ElementName=Player}" />
-<KeyBinding Key="Right" Modifiers="Ctrl" Command="{Binding UI.SeekForwardLargeCommand, ElementName=Player}" />
-<KeyBinding Key="Left" Command="{Binding UI.SeekBackCommand, ElementName=Player}" />
-<KeyBinding Key="Left" Modifiers="Ctrl" Command="{Binding UI.SeekBackLargeCommand, ElementName=Player}" />
-<KeyBinding Key="Up" Command="{Binding UI.VolumeUpCommand, ElementName=Player}" />
-<KeyBinding Key="Down" Command="{Binding UI.VolumeDownCommand, ElementName=Player}" />
-<KeyBinding Key="Enter" Modifiers="Alt" Command="{Binding UI.ToggleFullScreenCommand, ElementName=Player}" />
-</Window.InputBindings>
+	<Window.InputBindings>
+		<KeyBinding Key="Space" Command="{Binding UI.PlayPauseCommand, ElementName=Player}" />
+		<KeyBinding Key="Right" Command="{Binding UI.SeekForwardCommand, ElementName=Player}" />
+		<KeyBinding Key="Right" Modifiers="Ctrl" Command="{Binding UI.SeekForwardLargeCommand, ElementName=Player}" />
+		<KeyBinding Key="Left" Command="{Binding UI.SeekBackCommand, ElementName=Player}" />
+		<KeyBinding Key="Left" Modifiers="Ctrl" Command="{Binding UI.SeekBackLargeCommand, ElementName=Player}" />
+		<KeyBinding Key="Up" Command="{Binding UI.VolumeUpCommand, ElementName=Player}" />
+		<KeyBinding Key="Down" Command="{Binding UI.VolumeDownCommand, ElementName=Player}" />
+		<KeyBinding Key="Enter" Modifiers="Alt" Command="{Binding UI.ToggleFullScreenCommand, ElementName=Player}" />
+	</Window.InputBindings>
 	<Grid>
 		<mpv:MpvMediaPlayer x:Name="Player" />
 	</Grid>

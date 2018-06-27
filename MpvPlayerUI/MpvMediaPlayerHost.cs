@@ -38,23 +38,40 @@ namespace EmergenceGuardian.MpvPlayerUI {
 			if (DesignerProperties.GetIsInDesignMode(this))
 				return;
 
-			Loaded += PlayerBase_Loaded;
+			Loaded += UserControl_Loaded;
+			Unloaded += UserControl_Unloaded;
+			Dispatcher.ShutdownStarted += (s2, e2) => UserControl_Unloaded(s2, null);
 		}
 
 		public MpvMediaPlayerHost() {
 		}
 
-		private void PlayerBase_Loaded(object sender, RoutedEventArgs e) {
+		private void UserControl_Loaded(object sender, RoutedEventArgs e) {
 			Player = new Mpv.NET.Player.MpvPlayer(Host.Handle, DllPath);
-			Player.MediaLoaded += (s, a) => base.MediaLoaded();
-			Player.MediaUnloaded += (s, a) => base.MediaUnloaded();
-			Player.PositionChanged += (s, a) => base.PositionChanged();
+            Player.MediaLoaded += Player_MediaLoaded;
+            Player.MediaUnloaded += Player_MediaUnloaded;
+            Player.PositionChanged += Player_PositionChanged;
 			Player.AutoPlay = true;
 			InvokePropertyChanged("Volume");
 
-			Dispatcher.ShutdownStarted += (s2, e2) => Player.Dispose();
-
 			MediaPlayerInitialized?.Invoke(this, new EventArgs());
+		}
+
+        private void Player_MediaLoaded(object sender, EventArgs e) {
+            Dispatcher.Invoke(() => base.MediaLoaded());
+        }
+
+        private void Player_MediaUnloaded(object sender, EventArgs e) {
+            Dispatcher.Invoke(() => base.MediaUnloaded());
+        }
+
+        private void Player_PositionChanged(object sender, Mpv.NET.Player.PositionChangedEventArgs e) {
+            Dispatcher.BeginInvoke(new Action(() => base.PositionChanged()));
+        }
+
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e) {
+			Player?.Dispose();
+			Player = null;
 		}
 
 		public override FrameworkElement InnerControl => Host;
@@ -64,7 +81,7 @@ namespace EmergenceGuardian.MpvPlayerUI {
 			set {
 				if (Player.IsMediaLoaded) {
 					Player.Position = value;
-					InvokePropertyChanged("Position");
+                    base.PositionChanged();
 				}
 			}
 		}
@@ -73,13 +90,14 @@ namespace EmergenceGuardian.MpvPlayerUI {
 			get => Player?.Duration ?? TimeSpan.FromSeconds(1);
 		}
 
-		public override bool Paused {
+		public override bool IsPlaying {
 			get => Player?.IsPlaying ?? false;
 			set {
 				if (value)
-					Player?.Pause();
-				else
 					Player?.Resume();
+				else
+					Player?.Pause();
+				InvokePropertyChanged("IsPlaying");
 			}
 		}
 
@@ -132,6 +150,7 @@ namespace EmergenceGuardian.MpvPlayerUI {
 		}
 
 		public override void Stop() {
+			base.Stop();
 			Player.Stop();
 		}
 	}
