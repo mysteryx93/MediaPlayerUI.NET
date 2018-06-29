@@ -16,13 +16,13 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace EmergenceGuardian.MediaPlayerUI {
-    [TemplatePart(Name = PlayerControls.PART_SeekBar, Type = typeof(Slider))]
-    public class PlayerControls : PlayerControlsBase {
+    [TemplatePart(Name = PlayerUI.PART_SeekBar, Type = typeof(Slider))]
+    public class PlayerUI : PlayerUIBase {
         public const string PART_SeekBar = "PART_SeekBar";
         public Slider SeekBar => GetTemplateChild(PART_SeekBar) as Slider;
 
-        static PlayerControls() {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(PlayerControls), new FrameworkPropertyMetadata(typeof(PlayerControls)));
+        static PlayerUI() {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(PlayerUI), new FrameworkPropertyMetadata(typeof(PlayerUI)));
         }
 
         public override void OnApplyTemplate() {
@@ -135,46 +135,46 @@ namespace EmergenceGuardian.MediaPlayerUI {
         #region Properties
 
         // TitleProperty
-        public static DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(bool), typeof(PlayerControls));
+        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(bool), typeof(PlayerUI));
         public string Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
 
         // MouseFullscreen
-        public static DependencyProperty MouseFullscreenProperty = DependencyProperty.Register("MouseFullscreen", typeof(MouseTrigger), typeof(PlayerControls),
+        public static readonly DependencyProperty MouseFullscreenProperty = DependencyProperty.Register("MouseFullscreen", typeof(MouseTrigger), typeof(PlayerUI),
             new PropertyMetadata(MouseTrigger.MiddleClick));
         public MouseTrigger MouseFullscreen { get => (MouseTrigger)GetValue(MouseFullscreenProperty); set => SetValue(MouseFullscreenProperty, value); }
 
         // MousePause
-        public static DependencyProperty MousePauseProperty = DependencyProperty.Register("MousePause", typeof(MouseTrigger), typeof(PlayerControls),
+        public static readonly DependencyProperty MousePauseProperty = DependencyProperty.Register("MousePause", typeof(MouseTrigger), typeof(PlayerUI),
             new PropertyMetadata(MouseTrigger.LeftClick));
         public MouseTrigger MousePause { get => (MouseTrigger)GetValue(MousePauseProperty); set => SetValue(MousePauseProperty, value); }
 
         // IsPlayPauseVisible
-        public static DependencyProperty IsPlayPauseVisibleProperty = DependencyProperty.Register("IsPlayPauseVisible", typeof(bool), typeof(PlayerControls),
+        public static readonly DependencyProperty IsPlayPauseVisibleProperty = DependencyProperty.Register("IsPlayPauseVisible", typeof(bool), typeof(PlayerUI),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
         public bool IsPlayPauseVisible { get => (bool)GetValue(IsPlayPauseVisibleProperty); set => SetValue(IsPlayPauseVisibleProperty, value); }
 
         // IsStopVisible
-        public static DependencyProperty IsStopVisibleProperty = DependencyProperty.Register("IsStopVisible", typeof(bool), typeof(PlayerControls),
+        public static readonly DependencyProperty IsStopVisibleProperty = DependencyProperty.Register("IsStopVisible", typeof(bool), typeof(PlayerUI),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
         public bool IsStopVisible { get => (bool)GetValue(IsStopVisibleProperty); set => SetValue(IsStopVisibleProperty, value); }
 
         // IsLoopVisible
-        public static DependencyProperty IsLoopVisibleProperty = DependencyProperty.Register("IsLoopVisible", typeof(bool), typeof(PlayerControls),
+        public static readonly DependencyProperty IsLoopVisibleProperty = DependencyProperty.Register("IsLoopVisible", typeof(bool), typeof(PlayerUI),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
         public bool IsLoopVisible { get => (bool)GetValue(IsLoopVisibleProperty); set => SetValue(IsLoopVisibleProperty, value); }
 
         // IsVolumeVisible
-        public static DependencyProperty IsVolumeVisibleProperty = DependencyProperty.Register("IsVolumeVisible", typeof(bool), typeof(PlayerControls),
+        public static readonly DependencyProperty IsVolumeVisibleProperty = DependencyProperty.Register("IsVolumeVisible", typeof(bool), typeof(PlayerUI),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
         public bool IsVolumeVisible { get => (bool)GetValue(IsVolumeVisibleProperty); set => SetValue(IsVolumeVisibleProperty, value); }
 
         // IsSpeedVisible
-        public static DependencyProperty IsSpeedVisibleProperty = DependencyProperty.Register("IsSpeedVisible", typeof(bool), typeof(PlayerControls),
+        public static readonly DependencyProperty IsSpeedVisibleProperty = DependencyProperty.Register("IsSpeedVisible", typeof(bool), typeof(PlayerUI),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
         public bool IsSpeedVisible { get => (bool)GetValue(IsSpeedVisibleProperty); set => SetValue(IsSpeedVisibleProperty, value); }
 
         // IsSeekBarVisible
-        public static DependencyProperty IsSeekBarVisibleProperty = DependencyProperty.Register("IsSeekBarVisible", typeof(bool), typeof(PlayerControls),
+        public static readonly DependencyProperty IsSeekBarVisibleProperty = DependencyProperty.Register("IsSeekBarVisible", typeof(bool), typeof(PlayerUI),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
         public bool IsSeekBarVisible { get => (bool)GetValue(IsSeekBarVisibleProperty); set => SetValue(IsSeekBarVisibleProperty, value); }
 

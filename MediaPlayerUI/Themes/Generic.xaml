@@ -142,10 +142,10 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type local:PlayerControls}">
+    <Style TargetType="{x:Type local:PlayerUI}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:PlayerControls}">
+                <ControlTemplate TargetType="{x:Type local:PlayerUI}">
                     <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
 
@@ -251,18 +251,18 @@
                         <Grid>
                             <ContentPresenter x:Name="PART_HostGrid" Margin="0,0,0,46"
                                     Content="{TemplateBinding Content}" />
-                            <local:PlayerControls x:Name="PART_MediaUI" Height="46" Width="Auto"
+                            <local:PlayerUI x:Name="PART_MediaUI" Height="46" Width="Auto"
                                     VerticalAlignment="Bottom"
-                                    MouseFullscreen="{Binding MouseFullscreen, RelativeSource={RelativeSource TemplatedParent}}"
-                                    MousePause="{Binding MousePause, RelativeSource={RelativeSource TemplatedParent}}"
-                                    IsPlayPauseVisible="{Binding IsPlayPauseVisible, RelativeSource={RelativeSource TemplatedParent}}"
-                                    IsStopVisible="{Binding IsStopVisible, RelativeSource={RelativeSource TemplatedParent}}"
-                                    IsLoopVisible="{Binding IsLoopVisible, RelativeSource={RelativeSource TemplatedParent}}"
-                                    IsVolumeVisible="{Binding IsVolumeVisible, RelativeSource={RelativeSource TemplatedParent}}"
-                                    IsSpeedVisible="{Binding IsSpeedVisible, RelativeSource={RelativeSource TemplatedParent}}"
-                                    IsSeekBarVisible="{Binding IsSeekBarVisible, RelativeSource={RelativeSource TemplatedParent}}"
-                                    PositionDisplay="{Binding PositionDisplay, RelativeSource={RelativeSource TemplatedParent}}"
-                                    PositionBar="{Binding PositionBar, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    MouseFullscreen="{Binding MouseFullscreen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    MousePause="{Binding MousePause, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    IsPlayPauseVisible="{Binding IsPlayPauseVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    IsStopVisible="{Binding IsStopVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    IsLoopVisible="{Binding IsLoopVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    IsVolumeVisible="{Binding IsVolumeVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    IsSpeedVisible="{Binding IsSpeedVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    IsSeekBarVisible="{Binding IsSeekBarVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    PositionDisplay="{Binding PositionDisplay, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    PositionBar="{Binding PositionBar, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
                         </Grid>
                     </Border>
                 </ControlTemplate>

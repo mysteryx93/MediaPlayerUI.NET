@@ -85,7 +85,7 @@
   <ItemGroup>
     <Compile Include="AirspacePopup.cs" />
     <Compile Include="MediaPlayerWpf.cs" />
-    <Compile Include="PlayerControls.cs" />
+    <Compile Include="PlayerUI.cs" />
     <Compile Include="ExtendedWindowsFormsHost.cs" />
     <Compile Include="CommandHelper.cs" />
     <Compile Include="FullScreenUI.xaml.cs">
@@ -95,9 +95,10 @@
     <Compile Include="Converters.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="PlayerBase.cs" />
-    <Compile Include="PlayerControlsBase.cs" />
+    <Compile Include="PlayerUIBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enumerations.cs" />
+    <Compile Include="PropertyChangeNotifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\Generic.xaml">
