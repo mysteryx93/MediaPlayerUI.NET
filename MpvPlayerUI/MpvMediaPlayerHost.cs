@@ -52,13 +52,16 @@ namespace EmergenceGuardian.MpvPlayerUI {
             Player.MediaUnloaded += Player_MediaUnloaded;
             Player.PositionChanged += Player_PositionChanged;
 			Player.AutoPlay = true;
-			InvokePropertyChanged("Volume");
+            base.Volume = Player.Volume;
 
 			MediaPlayerInitialized?.Invoke(this, new EventArgs());
 		}
 
         private void Player_MediaLoaded(object sender, EventArgs e) {
-            Dispatcher.Invoke(() => base.MediaLoaded());
+            Dispatcher.Invoke(() => {
+                base.Duration = Player.Duration;
+                base.MediaLoaded();
+            });
         }
 
         private void Player_MediaUnloaded(object sender, EventArgs e) {
@@ -66,7 +69,7 @@ namespace EmergenceGuardian.MpvPlayerUI {
         }
 
         private void Player_PositionChanged(object sender, Mpv.NET.Player.PositionChangedEventArgs e) {
-            Dispatcher.BeginInvoke(new Action(() => base.PositionChanged()));
+            Dispatcher.BeginInvoke(new Action(() => base.SetPositionNoSeek(TimeSpan.FromSeconds(e.Position))));
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e) {
@@ -76,68 +79,36 @@ namespace EmergenceGuardian.MpvPlayerUI {
 
 		public override FrameworkElement InnerControl => Host;
 
-		public override TimeSpan Position {
-			get => Player?.Position ?? TimeSpan.Zero;
-			set {
-				if (Player.IsMediaLoaded) {
-					Player.Position = value;
-                    base.PositionChanged();
-				}
-			}
-		}
+        protected override void PositionChanged(TimeSpan value, bool isSeeking) {
+            base.PositionChanged(value, isSeeking);
+            if (Player.IsMediaLoaded && isSeeking)
+                Player.Position = value;
+        }
 
-		public override TimeSpan Duration {
-			get => Player?.Duration ?? TimeSpan.FromSeconds(1);
-		}
+        protected override void IsPlayingChanged(bool value) {
+            base.IsPlayingChanged(value);
+            if (value)
+                Player?.Resume();
+            else
+                Player?.Pause();
+        }
 
-		public override bool IsPlaying {
-			get => Player?.IsPlaying ?? false;
-			set {
-				if (value)
-					Player?.Resume();
-				else
-					Player?.Pause();
-				InvokePropertyChanged("IsPlaying");
-			}
-		}
+        protected override void VolumeChanged(int value) {
+            base.VolumeChanged(value);
+            Player.Volume = value;
+        }
 
-		public override int Volume {
-			get => Player?.Volume ?? 0;
-			set {
-				Player.Volume = value;
-				InvokePropertyChanged("Volume");
-			}
-		}
+        protected override void SpeedChanged(float value) {
+            base.SpeedChanged(value);
+            Player.Speed = value;
+        }
 
-		public override int SpeedInt {
-			get => speedInt;
-			set {
-				speedFloat = 1;
-				speedInt = value;
-				Player.Speed = GetSpeed();
-				InvokePropertyChanged("SpeedInt");
-			}
-		}
+        protected override void LoopChanged(bool value) {
+            base.LoopChanged(value);
+            Player.Loop = value;
+        }
 
-		public override float SpeedFloat {
-			get => (float?)Player?.Speed ?? 1f;
-			set {
-				speedInt = 0;
-				speedFloat = value;
-				Player.Speed = value;
-				InvokePropertyChanged("SpeedFloat");
-			}
-		}
-
-		public override bool Loop {
-			get => Player?.Loop ?? false;
-			set {
-				Player.Loop = value;
-				InvokePropertyChanged("Loop");
-			}
-		}
-
-		public override void Load(string source) {
+		public void Load(string source) {
 			Load(source, null);
 		}
 

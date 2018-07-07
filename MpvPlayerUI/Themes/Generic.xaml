@@ -3,8 +3,6 @@
 		xmlns:ui="clr-namespace:EmergenceGuardian.MediaPlayerUI;assembly=MediaPlayerUI"
 		xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms">
 
-	<Style TargetType="{x:Type local:MpvMediaPlayer}" BasedOn="{StaticResource {x:Type ui:MediaPlayerWpf}}" />
-
 	<Style TargetType="{x:Type local:MpvMediaPlayerHost}">
 		<Setter Property="Template">
 			<Setter.Value>

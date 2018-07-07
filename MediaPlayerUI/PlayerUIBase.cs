@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
+﻿using EmergenceGuardian.MediaPlayerUI.Mvvm;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace EmergenceGuardian.MediaPlayerUI {
     public class PlayerUIBase : Control {
@@ -34,23 +27,11 @@ namespace EmergenceGuardian.MediaPlayerUI {
         private ICommand stopCommand;
         public ICommand StopCommand => CommandHelper.InitCommand(ref stopCommand, Stop, CanStop);
 
-        private ICommand seekForwardCommand;
-        public ICommand SeekForwardCommand => CommandHelper.InitCommand(ref seekForwardCommand, () => Seek(TimeSpan.FromSeconds(1)), CanSeek);
+        private ICommand seekCommand;
+        public ICommand SeekCommand => CommandHelper.InitCommand<int>(ref seekCommand, Seek, CanSeek);
 
-        private ICommand seekForwardLargeCommand;
-        public ICommand SeekForwardLargeCommand => CommandHelper.InitCommand(ref seekForwardLargeCommand, () => Seek(TimeSpan.FromSeconds(10)), CanSeek);
-
-        private ICommand seekBackCommand;
-        public ICommand SeekBackCommand => CommandHelper.InitCommand(ref seekBackCommand, () => Seek(TimeSpan.FromSeconds(-1)), CanSeek);
-
-        private ICommand seekBackLargeCommand;
-        public ICommand SeekBackLargeCommand => CommandHelper.InitCommand(ref seekBackLargeCommand, () => Seek(TimeSpan.FromSeconds(-10)), CanSeek);
-
-        private ICommand volumeUpCommand;
-        public ICommand VolumeUpCommand => CommandHelper.InitCommand(ref volumeUpCommand, () => ChangeVolume(5), CanChangeVolume);
-
-        private ICommand volumeDownCommand;
-        public ICommand VolumeDownCommand => CommandHelper.InitCommand(ref volumeDownCommand, () => ChangeVolume(-5), CanChangeVolume);
+        private ICommand changeVolumeCommand;
+        public ICommand ChangeVolumeCommand => CommandHelper.InitCommand<int>(ref changeVolumeCommand, ChangeVolume, CanChangeVolume);
 
         private bool CanPlayPause() => PlayerHost?.IsMediaLoaded ?? false;
         private void PlayPause() {
@@ -62,9 +43,9 @@ namespace EmergenceGuardian.MediaPlayerUI {
             PlayerHost.Stop();
         }
 
-        private bool CanSeek() => PlayerHost?.IsMediaLoaded ?? false;
-        private void Seek(TimeSpan pos) {
-            TimeSpan NewPos = PlayerHost.Position.Add(pos);
+        private bool CanSeek(int seconds) => PlayerHost?.IsMediaLoaded ?? false;
+        private void Seek(int seconds) {
+            TimeSpan NewPos = PlayerHost.Position.Add(TimeSpan.FromSeconds(seconds));
             if (NewPos < TimeSpan.Zero)
                 NewPos = TimeSpan.Zero;
             else if (NewPos > PlayerHost.Duration)
@@ -75,7 +56,7 @@ namespace EmergenceGuardian.MediaPlayerUI {
             }
         }
 
-        private bool CanChangeVolume() => true;
+        private bool CanChangeVolume(int value) => true;
         private void ChangeVolume(int value) {
             PlayerHost.Volume = PlayerHost.Volume + value;
         }
@@ -164,6 +145,7 @@ namespace EmergenceGuardian.MediaPlayerUI {
         }
 
         private void Player_MediaUnloaded(object sender, EventArgs e) {
+            UpdatePositionText();
             CommandManager.InvalidateRequerySuggested();
             PositionBar = TimeSpan.Zero;
         }

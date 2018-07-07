@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
@@ -11,10 +10,21 @@ namespace EmergenceGuardian.MediaPlayerUI {
         }
 
         private void OnChildChanged(object sender, ChildChangedEventArgs childChangedEventArgs) {
-            if (childChangedEventArgs.PreviousChild is Control previousChild)
+            if (childChangedEventArgs.PreviousChild is Control previousChild) {
                 previousChild.MouseDown -= OnMouseDown;
-            if (Child != null)
+                previousChild.MouseWheel -= OnMouseWheel;
+            }
+            if (Child != null) {
                 Child.MouseDown += OnMouseDown;
+                Child.MouseWheel += OnMouseWheel;
+            }
+        }
+
+        private void OnMouseWheel(object sender, System.Windows.Forms.MouseEventArgs e) {
+            RaiseEvent(new MouseWheelEventArgs(Mouse.PrimaryDevice, (int)DateTime.Now.Ticks, e.Delta) {
+                RoutedEvent = Mouse.MouseWheelEvent,
+                Source = this
+            });
         }
 
         private void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
@@ -22,17 +32,18 @@ namespace EmergenceGuardian.MediaPlayerUI {
             if (!wpfButton.HasValue)
                 return;
 
-            if (e.Clicks == 2) {
-                RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, (int)DateTime.Now.Ticks, wpfButton.Value) {
-                    RoutedEvent = System.Windows.Controls.Control.MouseDoubleClickEvent,
-                    Source = this
-                });
-            } else {
-                RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, (int)DateTime.Now.Ticks, wpfButton.Value) {
-                    RoutedEvent = Mouse.MouseDownEvent,
-                    Source = this
-                });
-            }
+            // Double-clicks aren't propogating.
+            //if (e.Clicks == 2) {
+            //    RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, (int)DateTime.Now.Ticks, wpfButton.Value) {
+            //        RoutedEvent = System.Windows.Controls.Control.MouseDoubleClickEvent,
+            //        Source = this
+            //    });
+            //} else {
+            RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, (int)DateTime.Now.Ticks, wpfButton.Value) {
+                RoutedEvent = Mouse.MouseDownEvent,
+                Source = this
+            });
+            //}
         }
 
         private MouseButton? ConvertToWpf(MouseButtons winformButton) {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace EmergenceGuardian.MediaPlayerUI {

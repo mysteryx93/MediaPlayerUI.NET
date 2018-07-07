@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace EmergenceGuardian.MediaPlayerUI {
     public class PlayerBase : Control {
+
+        static PlayerBase() {
+            FocusableProperty.OverrideMetadata(typeof(PlayerBase), new FrameworkPropertyMetadata(false));
+        }
 
         #region Declarations / Constructor
 
@@ -19,7 +17,7 @@ namespace EmergenceGuardian.MediaPlayerUI {
 
         // Restart won't be triggered after Stop while this timer is running.
         private bool isStopping = false;
-        private Timer stopTimer;
+        private DispatcherTimer stopTimer;
 
         public event EventHandler OnMediaLoaded;
         public event EventHandler OnMediaUnloaded;
@@ -29,15 +27,7 @@ namespace EmergenceGuardian.MediaPlayerUI {
 
         public override void OnApplyTemplate() {
             base.OnApplyTemplate();
-            Loaded += delegate {
-                stopTimer = new Timer(1000);
-                stopTimer.AutoReset = false;
-                stopTimer.Elapsed += (o, e) => isStopping = false;
-            };
-            Unloaded += delegate {
-                stopTimer.Dispose();
-                stopTimer = null;
-            };
+            stopTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, delegate { stopTimer.Stop(); isStopping = false; }, Dispatcher);
         }
 
         #endregion
@@ -239,6 +229,7 @@ namespace EmergenceGuardian.MediaPlayerUI {
         /// </summary>
         public virtual void Stop() {
             isStopping = true;
+            // Use timer for Loop feature if player doesn't support it natively, but not after pressing Stop.
             stopTimer?.Stop();
             stopTimer?.Start();
         }
@@ -267,11 +258,14 @@ namespace EmergenceGuardian.MediaPlayerUI {
         /// Must be called by the derived class when media is unloaded.
         /// </summary>
         protected void MediaUnloaded() {
-            IsMediaLoaded = false;
-            Duration = TimeSpan.FromSeconds(1);
             if (Loop && !isStopping)
                 Restart();
-            OnMediaUnloaded?.Invoke(this, new EventArgs());
+            else {
+                IsMediaLoaded = false;
+                Title = null;
+                Duration = TimeSpan.FromSeconds(1);
+                OnMediaUnloaded?.Invoke(this, new EventArgs());
+            }
         }
 
         /// <summary>

@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using EmergenceGuardian.MediaPlayerUI.Mvvm;
+using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace EmergenceGuardian.MediaPlayerUI {
     [TemplatePart(Name = PlayerUI.PART_SeekBar, Type = typeof(Slider))]
@@ -23,6 +14,7 @@ namespace EmergenceGuardian.MediaPlayerUI {
 
         static PlayerUI() {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PlayerUI), new FrameworkPropertyMetadata(typeof(PlayerUI)));
+            FocusableProperty.OverrideMetadata(typeof(PlayerUI), new FrameworkPropertyMetadata(false));
         }
 
         public override void OnApplyTemplate() {
@@ -57,17 +49,27 @@ namespace EmergenceGuardian.MediaPlayerUI {
         protected override void OnPlayerHostChanged(DependencyPropertyChangedEventArgs e) {
             if (e.OldValue != null) {
                 ((Control)e.OldValue).MouseDown -= Host_MouseDown;
+                ((Control)e.OldValue).MouseWheel -= Host_MouseWheel;
                 ((Control)e.OldValue).MouseDoubleClick -= Host_MouseDoubleClick;
             }
             if (e.NewValue != null) {
                 ((Control)e.NewValue).MouseDown += Host_MouseDown;
+                ((Control)e.NewValue).MouseWheel += Host_MouseWheel;
                 ((Control)e.NewValue).MouseDoubleClick += Host_MouseDoubleClick;
+            }
+        }
+
+        private void Host_MouseWheel(object sender, MouseWheelEventArgs e) {
+            if (ChangeVolumeOnMouseWheel) {
+                if (e.Delta > 0)
+                    PlayerHost.Volume += 5;
+                else if (e.Delta < 0)
+                    PlayerHost.Volume -= 5;
             }
         }
 
         private void Host_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
             // ** Double clicks aren't working properly yet.
-            // e.ClickCount == 1 even on double click
             HandleMouseAction(sender, e, 2);
         }
 
@@ -147,6 +149,11 @@ namespace EmergenceGuardian.MediaPlayerUI {
         public static readonly DependencyProperty MousePauseProperty = DependencyProperty.Register("MousePause", typeof(MouseTrigger), typeof(PlayerUI),
             new PropertyMetadata(MouseTrigger.LeftClick));
         public MouseTrigger MousePause { get => (MouseTrigger)GetValue(MousePauseProperty); set => SetValue(MousePauseProperty, value); }
+
+        // ChangeVolumeOnMouseWheel
+        public static readonly DependencyProperty ChangeVolumeOnMouseWheelProperty = DependencyProperty.Register("ChangeVolumeOnMouseWheel", typeof(bool), typeof(PlayerUI),
+            new PropertyMetadata(true));
+        public bool ChangeVolumeOnMouseWheel { get => (bool)GetValue(ChangeVolumeOnMouseWheelProperty); set => SetValue(ChangeVolumeOnMouseWheelProperty, value); }
 
         // IsPlayPauseVisible
         public static readonly DependencyProperty IsPlayPauseVisibleProperty = DependencyProperty.Register("IsPlayPauseVisible", typeof(bool), typeof(PlayerUI),
