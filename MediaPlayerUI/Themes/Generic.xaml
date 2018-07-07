@@ -263,6 +263,7 @@
                                     VerticalAlignment="Bottom"
                                     MouseFullscreen="{Binding MouseFullscreen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                     MousePause="{Binding MousePause, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    ChangeVolumeOnMouseWheel="{Binding ChangeVolumeOnMouseWheel, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                     IsPlayPauseVisible="{Binding IsPlayPauseVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                     IsStopVisible="{Binding IsStopVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                     IsLoopVisible="{Binding IsLoopVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"

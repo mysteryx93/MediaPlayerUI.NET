@@ -63,6 +63,11 @@ namespace EmergenceGuardian.MediaPlayerUI {
             new PropertyMetadata(MouseTrigger.LeftClick));
         public MouseTrigger MousePause { get => (MouseTrigger)GetValue(MousePauseProperty); set => SetValue(MousePauseProperty, value); }
 
+        // ChangeVolumeOnMouseWheel
+        public static readonly DependencyProperty ChangeVolumeOnMouseWheelProperty = DependencyProperty.Register("ChangeVolumeOnMouseWheel", typeof(bool), typeof(MediaPlayerWpf),
+            new PropertyMetadata(true));
+        public bool ChangeVolumeOnMouseWheel { get => (bool)GetValue(ChangeVolumeOnMouseWheelProperty); set => SetValue(ChangeVolumeOnMouseWheelProperty, value); }
+
         // IsPlayPauseVisible
         public static readonly DependencyProperty IsPlayPauseVisibleProperty = DependencyProperty.Register("IsPlayPauseVisible", typeof(bool), typeof(MediaPlayerWpf),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
