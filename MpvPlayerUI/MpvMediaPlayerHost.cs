@@ -68,8 +68,8 @@ namespace EmergenceGuardian.MpvPlayerUI {
             Dispatcher.Invoke(() => base.MediaUnloaded());
         }
 
-        private void Player_PositionChanged(object sender, Mpv.NET.Player.PositionChangedEventArgs e) {
-            Dispatcher.BeginInvoke(new Action(() => base.SetPositionNoSeek(TimeSpan.FromSeconds(e.Position))));
+        private void Player_PositionChanged(object sender, Mpv.NET.Player.MpvPlayerPositionChangedEventArgs e) {
+            Dispatcher.BeginInvoke(new Action(() => base.SetPositionNoSeek(e.NewPosition)));
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e) {

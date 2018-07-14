@@ -75,7 +75,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mpv.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mpv.NET.0.4.0\lib\netstandard2.0\Mpv.NET.dll</HintPath>
+      <HintPath>..\..\NaturalGroundingPlayer\packages\Mpv.NET.0.7.0\lib\netstandard2.0\Mpv.NET.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="System" />
@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="MpvMediaPlayer.cs" />
+    <None Include="packages.config" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -113,9 +114,6 @@
       <Project>{7bf6711c-d3ea-48cf-bd5d-4b201aa788b5}</Project>
       <Name>MediaPlayerUI</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
