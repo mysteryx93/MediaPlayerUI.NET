@@ -21,17 +21,17 @@ namespace Sample {
 		public MainWindow() {
 			InitializeComponent();
 
-			// 1. Make sure mpv-1.dll is in the project's folder.
+            // 1. Make sure mpv-1.dll is in the project's folder.
 
-			// 2. Point to a valid media file.
+            // 2. Point to a valid media file.
 
-			// 3. Run.
+            // 3. Run.
 
-			// If you need further customization of the player, MpvPlayer.NET is a very simple project that you can edit as you wish.
+            // If you need further customization of the player, MpvPlayer.NET is a very simple project that you can edit as you wish.
 
-			PlayerHost.MediaPlayerInitialized += (o, e) => {
-				PlayerHost.Load(@"E:\NaturalGrounding\AOA\Like a Cat.mp4");
-			};
-		}
+            Player.MediaPlayerInitialized += (o, e) => {
+                Player.Host.Load(@"E:\NaturalGrounding\AOA\Like a Cat.mp4");
+            };
+        }
 	}
 }

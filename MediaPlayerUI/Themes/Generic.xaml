@@ -165,15 +165,16 @@
                             </Grid.Background>
                             <Grid x:Name="GridUI" Margin="0,0,4,0">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="21" />
+                                    <RowDefinition Height="19" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <Grid Grid.Column="2" Grid.RowSpan="2">
+                                <Grid Grid.Column="3" Grid.RowSpan="2">
                                     <Slider Orientation="Vertical" Minimum="-4" Maximum="4" SmallChange="1"
                                             LargeChange="1"
                                             Value="{Binding PlayerHost.SpeedInt, RelativeSource={RelativeSource TemplatedParent}}"
@@ -184,17 +185,37 @@
                                         </Slider.LayoutTransform>
                                     </Slider>
                                 </Grid>
-                                <Grid Grid.Row="0" Grid.ColumnSpan="2">
-                                    <TextBlock HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="Wrap"
-                                            Text="{Binding PlayerHost.Title, RelativeSource={RelativeSource TemplatedParent}}"
-                                            VerticalAlignment="Top" />
-                                    <Label HorizontalAlignment="Right" Margin="0,2,10,0" VerticalAlignment="Top"
-                                            Height="15" Padding="0" HorizontalContentAlignment="Right"
-                                            Content="{Binding PositionText, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
+                                <Grid Grid.RowSpan="2">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button x:Name="PlayButton" Height="36" VerticalAlignment="Top" Width="36"
+                                                Command="{Binding PlayPauseCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                                Focusable="False"
+                                                Visibility="{Binding IsPlayPauseVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                Content="{StaticResource PlayIcon}">
+                                        </Button>
+                                        <Button x:Name="StopButton" Height="36" VerticalAlignment="Top" Width="36"
+                                                Command="{Binding StopCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                                Focusable="False"
+                                                Visibility="{Binding IsStopVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                Content="{StaticResource StopIcon}">
+                                        </Button>
+                                    </StackPanel>
                                 </Grid>
-                                <Grid Grid.Row="1" Grid.Column="0">
-                                    <Slider x:Name="PART_SeekBar" DockPanel.Dock="Left" Width="Auto"
-                                            HorizontalAlignment="Stretch" Margin="6" VerticalAlignment="Top"
+                                <Grid Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
+                                    <DockPanel>
+                                        <Label DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0,3,10,0" VerticalAlignment="Top" 
+                                            Height="15" Padding="0" HorizontalContentAlignment="Right" 
+                                            Content="{Binding PositionText, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
+                                        <TextBlock HorizontalAlignment="Left" Margin="4,5,0,0" TextWrapping="Wrap"
+                                            Text="{Binding PlayerHost.Title, RelativeSource={RelativeSource TemplatedParent}}"
+                                            VerticalAlignment="Top" ToolTip="{Binding PlayerHost.Title, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    </DockPanel>
+                                </Grid>
+                                <Grid Grid.Row="1" Grid.Column="1">
+                                    <Slider x:Name="PART_SeekBar" Width="Auto"
+                                            HorizontalAlignment="Stretch" Margin="2,6,4,6" VerticalAlignment="Top"
                                             Maximum="{Binding PlayerHost.Duration, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TimeSpanToDoubleConverter}, Mode=OneWay}"
                                             LargeChange="10" SmallChange="1"
                                             Value="{Binding PositionBar, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TimeSpanToDoubleConverter}}"
@@ -203,10 +224,9 @@
                                             Visibility="{Binding IsSeekBarVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}"
                                             IsEnabled="{Binding PlayerHost.IsMediaLoaded, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
                                 </Grid>
-                                <Grid Grid.Row="1" Grid.Column="1">
-                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
-                                            HorizontalAlignment="Right" Margin="0,0,2,0">
-                                        <Slider x:Name="VolumeBar" Margin="4, 0, 4, 0" VerticalAlignment="Top"
+                                <Grid Grid.Row="1" Grid.Column="2">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,2,0">
+                                        <Slider x:Name="VolumeBar" Margin="4,0,4,0" VerticalAlignment="Top"
                                                 Maximum="100" LargeChange="20" SmallChange="5"
                                                 Value="{Binding PlayerHost.Volume, RelativeSource={RelativeSource TemplatedParent}}"
                                                 IsMoveToPointEnabled="True" Focusable="False"
@@ -219,20 +239,6 @@
                                                 Visibility="{Binding IsLoopVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                 Content="{StaticResource LoopIcon}">
                                         </ToggleButton>
-                                        <Button x:Name="PlayButton" Height="24" VerticalAlignment="Top" Width="24"
-                                                Command="{Binding PlayPauseCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
-                                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                                                Focusable="False"
-                                                Visibility="{Binding IsPlayPauseVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                                Content="{StaticResource PlayIcon}">
-                                        </Button>
-                                        <Button x:Name="StopButton" Height="24" VerticalAlignment="Top" Width="24"
-                                                Command="{Binding StopCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
-                                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                                                Focusable="False"
-                                                Visibility="{Binding IsStopVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                                Content="{StaticResource StopIcon}">
-                                        </Button>
                                     </StackPanel>
                                 </Grid>
                             </Grid>
@@ -257,21 +263,12 @@
                     <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>
-                            <ContentPresenter x:Name="PART_HostGrid" Margin="0,0,0,46"
-                                    Content="{TemplateBinding Content}" />
-                            <local:PlayerUI x:Name="PART_MediaUI" Height="46" Width="Auto"
-                                    VerticalAlignment="Bottom"
-                                    MouseFullscreen="{Binding MouseFullscreen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                    MousePause="{Binding MousePause, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                    ChangeVolumeOnMouseWheel="{Binding ChangeVolumeOnMouseWheel, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                    IsPlayPauseVisible="{Binding IsPlayPauseVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                    IsStopVisible="{Binding IsStopVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                    IsLoopVisible="{Binding IsLoopVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                    IsVolumeVisible="{Binding IsVolumeVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                    IsSpeedVisible="{Binding IsSpeedVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                    IsSeekBarVisible="{Binding IsSeekBarVisible, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                    PositionDisplay="{Binding PositionDisplay, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                    PositionBar="{Binding PositionBar, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <ContentPresenter x:Name="PART_HostGrid" Content="{TemplateBinding Content}" Grid.Row="0" />
+                            <local:PlayerUI x:Name="PART_MediaUI" Grid.Row="1" VerticalAlignment="Bottom" />
                         </Grid>
                     </Border>
                 </ControlTemplate>

@@ -147,7 +147,7 @@ namespace EmergenceGuardian.MediaPlayerUI {
 
         // AutoPlay
         public static readonly DependencyProperty AutoPlayProperty = DependencyProperty.Register("AutoPlay", typeof(bool), typeof(PlayerBase),
-            new PropertyMetadata(false, AutoPlayChanged, CoerceAutoPlay));
+            new PropertyMetadata(true, AutoPlayChanged, CoerceAutoPlay));
         public bool AutoPlay { get => (bool)GetValue(AutoPlayProperty); set => SetValue(AutoPlayProperty, value); }
         private static void AutoPlayChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             PlayerBase P = d as PlayerBase;

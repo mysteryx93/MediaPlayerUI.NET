@@ -15,8 +15,6 @@
 		<KeyBinding Key="Enter" Modifiers="Alt" Command="{Binding UI.ToggleFullScreenCommand, ElementName=Player}" />
 	</Window.InputBindings>
 	<Grid>
-        <ui:MediaPlayerWpf x:Name="Player">
-            <mpv:MpvMediaPlayerHost x:Name="PlayerHost" />
-        </ui:MediaPlayerWpf>
+        <mpv:MpvMediaPlayer x:Name="Player" ui:UIProperties.IsVolumeVisible="False" />
     </Grid>
 </Window>
