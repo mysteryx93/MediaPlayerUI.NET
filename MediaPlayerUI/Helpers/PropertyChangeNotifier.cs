@@ -3,11 +3,15 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
 
-namespace EmergenceGuardian.MediaPlayerUI.Mvvm {
+// PropertyDescriptor AddValueChanged Alternative
+// https://agsmith.wordpress.com/2008/04/07/propertydescriptor-addvaluechanged-alternative/
+// License: public domain
 
-    public sealed class PropertyChangeNotifier :
-    DependencyObject,
-    IDisposable {
+namespace EmergenceGuardian.MediaPlayerUI {
+    /// <summary>
+    /// Tracks changes to a dependency property while avoiding memory leaks.
+    /// </summary>
+    public sealed class PropertyChangeNotifier : DependencyObject, IDisposable {
 
         #region Member Variables
         private WeakReference _propertySource;
@@ -53,7 +57,7 @@ namespace EmergenceGuardian.MediaPlayerUI.Mvvm {
 
         #region Value
         /// <summary>
-        /// Identifies the <see cref=”Value”/> dependency property
+        /// Identifies the <see cref="Value"/> dependency property
         /// </summary>
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value",
         typeof(object), typeof(PropertyChangeNotifier), new FrameworkPropertyMetadata(null, new PropertyChangedCallback(OnPropertyChanged)));
@@ -61,13 +65,13 @@ namespace EmergenceGuardian.MediaPlayerUI.Mvvm {
         private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             PropertyChangeNotifier notifier = (PropertyChangeNotifier)d;
             if (null != notifier.ValueChanged)
-                notifier.ValueChanged(notifier, EventArgs.Empty);
+                notifier.ValueChanged(notifier.PropertySource, EventArgs.Empty);
         }
 
         /// <summary>
         /// Returns/sets the value of the property
         /// </summary>
-        /// <seealso cref=”ValueProperty”/>
+        /// <seealso cref="ValueProperty"/>
         [Description("Returns / sets the value of the property")]
         [Category("Behavior")]
         [Bindable(true)]
