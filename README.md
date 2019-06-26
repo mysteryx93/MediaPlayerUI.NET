@@ -25,7 +25,7 @@ An implementation of the UI over [Mpv.NET](https://github.com/hudec117/Mpv.NET)
 3. If you want to load a file when the window loads, add this to the constructor
 ```csharp
 Player.MediaPlayerInitialized += (o, e) => {
-    Player.Host.Load(@"MyVideo.mp4");
+    Player.Host.Source = "MyVideo.mp4";
 };
 ```
 
