@@ -1,30 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using EmergenceGuardian.MediaPlayerUI;
+using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms.Integration;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using EmergenceGuardian.MediaPlayerUI;
 
 namespace EmergenceGuardian.MpvPlayerUI
 {
     [TemplatePart(Name = MpvMediaPlayerHost.PART_Host, Type = typeof(WindowsFormsHost))]
     public class MpvMediaPlayerHost : PlayerBase
     {
-
-        #region Declarations / Constructor
-
         static MpvMediaPlayerHost()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MpvMediaPlayerHost), new FrameworkPropertyMetadata(typeof(MpvMediaPlayerHost)));
@@ -35,15 +19,10 @@ namespace EmergenceGuardian.MpvPlayerUI
 
         public Mpv.NET.Player.MpvPlayer Player;
         public event EventHandler MediaPlayerInitialized;
+        private bool _initLoaded = false;
 
         public MpvMediaPlayerHost()
-        {
-        }
-
-        #endregion
-
-
-        #region Properties
+        { }
 
         // DllPath
         public static readonly DependencyProperty DllPathProperty = DependencyProperty.Register("DllPath", typeof(string), typeof(MpvMediaPlayerHost));
@@ -67,14 +46,14 @@ namespace EmergenceGuardian.MpvPlayerUI
             }
         }
 
-        #endregion
-
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
             if (DesignerProperties.GetIsInDesignMode(this))
+            {
                 return;
+            }
 
             Loaded += UserControl_Loaded;
             Unloaded += UserControl_Unloaded;
@@ -94,8 +73,10 @@ namespace EmergenceGuardian.MpvPlayerUI
 
             MediaPlayerInitialized?.Invoke(this, new EventArgs());
 
-            if (Source != null)
+            if (Source != null && !_initLoaded)
+            {
                 LoadMedia();
+            }
         }
 
         private void Player_MediaLoaded(object sender, EventArgs e)
@@ -135,7 +116,9 @@ namespace EmergenceGuardian.MpvPlayerUI
                 lock (Player)
                 {
                     if (Player != null && Player.IsMediaLoaded && isSeeking)
+                    {
                         Player.Position = value;
+                    }
                 }
             }
         }
@@ -144,44 +127,59 @@ namespace EmergenceGuardian.MpvPlayerUI
         {
             base.AutoPlayChanged(value);
             if (Player != null)
+            {
                 Player.AutoPlay = value;
+            }
         }
 
         protected override void IsPlayingChanged(bool value)
         {
             base.IsPlayingChanged(value);
             if (value)
+            {
                 Player?.Resume();
+            }
             else
+            {
                 Player?.Pause();
+            }
         }
 
         protected override void VolumeChanged(int value)
         {
             base.VolumeChanged(value);
             if (Player != null)
+            {
                 Player.Volume = value;
+            }
         }
 
         protected override void SpeedChanged(float value)
         {
             base.SpeedChanged(value);
             if (Player != null)
+            {
                 Player.Speed = value;
+            }
         }
 
         protected override void LoopChanged(bool value)
         {
             base.LoopChanged(value);
             if (Player != null)
+            {
                 Player.Loop = value;
+            }
         }
 
         private void LoadMedia()
         {
             Player?.Stop();
-            if (Source != null)
-                Player?.Load(Source, true);
+            if (Source != null && Player != null)
+            {
+                _initLoaded = true;
+                Player.Load(Source, true);
+            }
         }
 
         public override void Stop()
