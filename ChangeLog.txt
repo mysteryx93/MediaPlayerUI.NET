@@ -1,0 +1,5 @@
+0.9.0
+- Added more fluid control over displayed text, and fixes cases where title wouldn't display as expected.
+- Now displays "Loading..." when loading files.
+- Added events to PlayerUIBase: PlayCommandExecuted, PauseCommandExecuted, StopCommandExecuted, SeekCommandExecuted and ChangeVolumeExecuted.
+- Added events to MpvMediaPlayerHost: MediaFinished and MediaError.

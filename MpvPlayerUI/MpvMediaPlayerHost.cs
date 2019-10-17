@@ -37,13 +37,34 @@ namespace EmergenceGuardian.MpvPlayerUI
             MpvMediaPlayerHost P = d as MpvMediaPlayerHost;
             if (!string.IsNullOrEmpty((string)e.NewValue))
             {
-                P.Title = System.IO.Path.GetFileName((string)e.NewValue);
+                P.Status = PlaybackStatus.Loading;
                 P.LoadMedia();
             }
             else
             {
+                P.Status = PlaybackStatus.Stopped;
                 P.Player.Stop();
             }
+        }
+
+        // Title
+        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(MpvMediaPlayerHost),
+            new PropertyMetadata(null, TitleChanged));
+        public string Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
+        private static void TitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            MpvMediaPlayerHost P = d as MpvMediaPlayerHost;
+            P.SetDisplayText();
+        }
+
+        // Status
+        public static readonly DependencyPropertyKey StatusProperty = DependencyProperty.RegisterReadOnly("Status", typeof(PlaybackStatus), typeof(MpvMediaPlayerHost),
+            new PropertyMetadata(PlaybackStatus.Stopped, StatusChanged));
+        public PlaybackStatus Status { get => (PlaybackStatus)GetValue(StatusProperty.DependencyProperty); protected set => SetValue(StatusProperty, value); }
+        private static void StatusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            MpvMediaPlayerHost P = d as MpvMediaPlayerHost;
+            P.SetDisplayText();
         }
 
         public override void OnApplyTemplate()
@@ -63,9 +84,13 @@ namespace EmergenceGuardian.MpvPlayerUI
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             Player = new Mpv.NET.Player.MpvPlayer(Host.Handle, DllPath);
+
+            Player.MediaError += Player_MediaError;
+            Player.MediaFinished += Player_MediaFinished;
             Player.MediaLoaded += Player_MediaLoaded;
             Player.MediaUnloaded += Player_MediaUnloaded;
             Player.PositionChanged += Player_PositionChanged;
+
             Player.AutoPlay = base.AutoPlay;
             Player.Volume = base.Volume;
             Player.Speed = base.GetSpeed();
@@ -79,20 +104,43 @@ namespace EmergenceGuardian.MpvPlayerUI
             }
         }
 
+        public event EventHandler MediaError;
+
+        private void Player_MediaError(object sender, EventArgs e)
+        {
+            if (MediaError != null)
+            {
+                Dispatcher.Invoke(() =>
+                    MediaError?.Invoke(this, new EventArgs()));
+            }
+        }
+
+        public event EventHandler MediaFinished;
+
+        private void Player_MediaFinished(object sender, EventArgs e)
+        {
+            if (MediaFinished != null)
+            {
+                Dispatcher.Invoke(() =>
+                    MediaFinished?.Invoke(this, new EventArgs()));
+            }
+        }
+
         private void Player_MediaLoaded(object sender, EventArgs e)
         {
             //Debug.WriteLine("MediaLoaded");
             Dispatcher.Invoke(() =>
             {
+                Status = PlaybackStatus.Playing;
                 base.Duration = Player.Duration;
-                base.MediaLoaded();
+                base.RaiseMediaLoaded();
             });
         }
 
         private void Player_MediaUnloaded(object sender, EventArgs e)
         {
             //Debug.WriteLine("MediaUnloaded");
-            Dispatcher.Invoke(() => base.MediaUnloaded());
+            Dispatcher.Invoke(() => base.RaiseMediaUnloaded());
         }
 
         private void Player_PositionChanged(object sender, Mpv.NET.Player.MpvPlayerPositionChangedEventArgs e)
@@ -107,6 +155,22 @@ namespace EmergenceGuardian.MpvPlayerUI
         }
 
         public override FrameworkElement InnerControl => Host;
+
+        private void SetDisplayText()
+        {
+            if (Status == PlaybackStatus.Loading)
+            {
+                Text = "Loading...";
+            }
+            else if (Status == PlaybackStatus.Playing)
+            {
+                Text = Title ?? System.IO.Path.GetFileName(Source);
+            }
+            else
+            {
+                Text = "";
+            }
+        }
 
         protected override void PositionChanged(TimeSpan value, bool isSeeking)
         {

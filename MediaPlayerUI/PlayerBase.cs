@@ -1,11 +1,11 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace EmergenceGuardian.MediaPlayerUI {
     public class PlayerBase : Control {
-
         static PlayerBase() {
             FocusableProperty.OverrideMetadata(typeof(PlayerBase), new FrameworkPropertyMetadata(false));
         }
@@ -19,8 +19,14 @@ namespace EmergenceGuardian.MediaPlayerUI {
         private bool isStopping = false;
         private DispatcherTimer stopTimer;
 
-        public event EventHandler OnMediaLoaded;
-        public event EventHandler OnMediaUnloaded;
+        /// <summary>
+        /// Occurs after a media file is loaded.
+        /// </summary>
+        public event EventHandler MediaLoaded;
+        /// <summary>
+        /// Occurs after a media file is unloaded.
+        /// </summary>
+        public event EventHandler MediaUnloaded;
 
         public PlayerBase() {
         }
@@ -164,20 +170,9 @@ namespace EmergenceGuardian.MediaPlayerUI {
         }
         protected virtual bool CoerceAutoPlay(bool value) => value;
 
-        // Title
-        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(PlayerBase),
-            new PropertyMetadata(null, TitleChanged, CoerceTitle));
-        public string Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
-        private static void TitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            PlayerBase P = d as PlayerBase;
-            P.TitleChanged((string)e.NewValue);
-        }
-        private static object CoerceTitle(DependencyObject d, object baseValue) {
-            PlayerBase P = d as PlayerBase;
-            return P.CoerceTitle((string)baseValue);
-        }
-        protected virtual void TitleChanged(string value) { }
-        protected virtual string CoerceTitle(string value) => value;
+        // Text
+        public static readonly DependencyPropertyKey TextProperty = DependencyProperty.RegisterReadOnly("Text", typeof(string), typeof(PlayerBase), null);
+        public string Text { get => (string)GetValue(TextProperty.DependencyProperty); protected set => SetValue(TextProperty, value); }
 
         // IsMediaLoaded
         public static readonly DependencyPropertyKey IsMediaLoadedPropertyKey = DependencyProperty.RegisterReadOnly("IsMediaLoaded", typeof(bool), typeof(PlayerBase),
@@ -247,24 +242,23 @@ namespace EmergenceGuardian.MediaPlayerUI {
         /// <summary>
         /// Must be called by the derived class when media is loaded.
         /// </summary>
-        protected void MediaLoaded() {
+        protected void RaiseMediaLoaded() {
             SetPositionNoSeek(TimeSpan.Zero);
             IsMediaLoaded = true;
             IsPlaying = AutoPlay;
-            OnMediaLoaded?.Invoke(this, new EventArgs());
+            MediaLoaded?.Invoke(this, new EventArgs());
         }
 
         /// <summary>
         /// Must be called by the derived class when media is unloaded.
         /// </summary>
-        protected void MediaUnloaded() {
+        protected void RaiseMediaUnloaded() {
             if (Loop && !isStopping)
                 Restart();
             else {
                 IsMediaLoaded = false;
-                Title = null;
                 Duration = TimeSpan.FromSeconds(1);
-                OnMediaUnloaded?.Invoke(this, new EventArgs());
+                MediaUnloaded?.Invoke(this, new EventArgs());
             }
         }
 
