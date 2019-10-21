@@ -75,7 +75,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mpv.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\NaturalGroundingPlayer\Solutions\packages\Mpv.NET.1.1.0\lib\netstandard2.0\Mpv.NET.dll</HintPath>
+      <HintPath>..\packages\Mpv.NET.1.1.1\lib\netstandard2.0\Mpv.NET.dll</HintPath>
     </Reference>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="PresentationFramework.Aero2" />
@@ -97,7 +97,6 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MpvMediaPlayer.cs" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

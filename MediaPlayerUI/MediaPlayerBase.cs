@@ -7,19 +7,15 @@ using System.Windows.Input;
 
 namespace EmergenceGuardian.MediaPlayerUI
 {
-    public class PlayerUIBase : Control
+    public class MediaPlayerBase : ContentControl
     {
-
-        #region Declarations / Constructor
 
         private bool isSeekBarButtonDown = false;
         private PropertyChangeNotifier PositionChangedNotifier;
 
-        public PlayerUIBase()
+        public MediaPlayerBase()
         {
         }
-
-        #endregion
 
 
         #region Commands
@@ -27,8 +23,8 @@ namespace EmergenceGuardian.MediaPlayerUI
         public event EventHandler PlayCommandExecuted;
         public event EventHandler PauseCommandExecuted;
         public event EventHandler StopCommandExecuted;
-        public event EventHandler<int> SeekCommandExecuted;
-        public event EventHandler<int> ChangeVolumeExecuted;
+        public event EventHandler<ValueEventArgs<int>> SeekCommandExecuted;
+        public event EventHandler<ValueEventArgs<int>> ChangeVolumeExecuted;
 
         public ICommand PlayPauseCommand => CommandHelper.InitCommand(ref playPauseCommand, PlayPause, CanPlayPause);
         private ICommand playPauseCommand;
@@ -70,7 +66,7 @@ namespace EmergenceGuardian.MediaPlayerUI
                 PositionBar = NewPos;
                 PlayerHost.Position = NewPos;
             }
-            SeekCommandExecuted?.Invoke(this, seconds);
+            SeekCommandExecuted?.Invoke(this, new ValueEventArgs<int>(seconds));
         }
 
         public ICommand ChangeVolumeCommand => CommandHelper.InitCommand<int>(ref changeVolumeCommand, ChangeVolume, CanChangeVolume);
@@ -79,7 +75,7 @@ namespace EmergenceGuardian.MediaPlayerUI
         private void ChangeVolume(int value)
         {
             PlayerHost.Volume = PlayerHost.Volume + value;
-            ChangeVolumeExecuted?.Invoke(this, value);
+            ChangeVolumeExecuted?.Invoke(this, new ValueEventArgs<int>(value));
         }
 
         #endregion
@@ -87,18 +83,19 @@ namespace EmergenceGuardian.MediaPlayerUI
 
         #region Dependency Properties
 
+        public PlayerHostBase PlayerHost => Content as PlayerHostBase;
+
         // PlayerHost
-        public static readonly DependencyProperty PlayerHostProperty = DependencyProperty.Register("PlayerHost", typeof(PlayerBase), typeof(PlayerUIBase),
-            new PropertyMetadata(null, OnPlayerHostChanged));
-        public PlayerBase PlayerHost { get => (PlayerBase)GetValue(PlayerHostProperty); set => SetValue(PlayerHostProperty, value); }
+        //public static readonly DependencyProperty PlayerHostProperty = DependencyProperty.Register("PlayerHost", typeof(PlayerHostBase), typeof(MediaPlayerBase));
+        //public PlayerHostBase PlayerHost { get => (PlayerHostBase)GetValue(PlayerHostProperty); set => SetValue(PlayerHostProperty, value); }
 
         // PositionBar
-        public static readonly DependencyProperty PositionBarProperty = DependencyProperty.Register("PositionBar", typeof(TimeSpan), typeof(PlayerUIBase),
+        public static readonly DependencyProperty PositionBarProperty = DependencyProperty.Register("PositionBar", typeof(TimeSpan), typeof(MediaPlayerBase),
             new PropertyMetadata(TimeSpan.Zero, null, CoercePositionBar));
         public TimeSpan PositionBar { get => (TimeSpan)GetValue(PositionBarProperty); set => SetValue(PositionBarProperty, value); }
         private static object CoercePositionBar(DependencyObject d, object value)
         {
-            PlayerUIBase P = d as PlayerUIBase;
+            MediaPlayerBase P = d as MediaPlayerBase;
             TimeSpan Pos = (TimeSpan)value;
             if (P.PlayerHost == null)
                 return DependencyProperty.UnsetValue;
@@ -111,12 +108,12 @@ namespace EmergenceGuardian.MediaPlayerUI
         }
 
         // PositionDisplay
-        public static readonly DependencyProperty PositionDisplayProperty = DependencyProperty.Register("PositionDisplay", typeof(TimeDisplayStyles), typeof(PlayerUIBase),
+        public static readonly DependencyProperty PositionDisplayProperty = DependencyProperty.Register("PositionDisplay", typeof(TimeDisplayStyles), typeof(MediaPlayerBase),
             new PropertyMetadata(TimeDisplayStyles.Standard));
         public TimeDisplayStyles PositionDisplay { get => (TimeDisplayStyles)GetValue(PositionDisplayProperty); set => SetValue(PositionDisplayProperty, value); }
 
         // PositionText
-        public static readonly DependencyPropertyKey PositionTextPropertyKey = DependencyProperty.RegisterReadOnly("PositionText", typeof(string), typeof(PlayerUIBase),
+        public static readonly DependencyPropertyKey PositionTextPropertyKey = DependencyProperty.RegisterReadOnly("PositionText", typeof(string), typeof(MediaPlayerBase),
             new PropertyMetadata(null));
         private static readonly DependencyProperty PositionTextProperty = PositionTextPropertyKey.DependencyProperty;
         public string PositionText { get => (string)GetValue(PositionTextProperty); private set => SetValue(PositionTextPropertyKey, value); }
@@ -126,28 +123,28 @@ namespace EmergenceGuardian.MediaPlayerUI
 
         #region Events
 
-        private static void OnPlayerHostChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        protected static void OnContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            PlayerUIBase P = d as PlayerUIBase;
-            if (e.OldValue is PlayerBase OldValue)
+            MediaPlayerBase P = d as MediaPlayerBase;
+            if (e.OldValue is PlayerHostBase OldValue)
             {
                 OldValue.MediaLoaded -= P.Player_MediaLoaded;
                 OldValue.MediaUnloaded -= P.Player_MediaUnloaded;
                 P.PositionChangedNotifier.ValueChanged -= P.Player_PositionChanged;
                 P.PositionChangedNotifier = null;
             }
-            if (e.NewValue is PlayerBase NewValue)
+            if (e.NewValue is PlayerHostBase NewValue)
             {
                 NewValue.MediaLoaded += P.Player_MediaLoaded;
                 NewValue.MediaUnloaded += P.Player_MediaUnloaded;
                 P.PositionChangedNotifier = new PropertyChangeNotifier(NewValue, "Position");
                 P.PositionChangedNotifier.ValueChanged += P.Player_PositionChanged;
             }
-            P.OnPlayerHostChanged(e);
+            P.OnContentChanged(e);
         }
 
         // Allow derived class to bind to new host.
-        protected virtual void OnPlayerHostChanged(DependencyPropertyChangedEventArgs e) { }
+        protected virtual void OnContentChanged(DependencyPropertyChangedEventArgs e) { }
 
         private void Player_PositionChanged(object sender, EventArgs e)
         {

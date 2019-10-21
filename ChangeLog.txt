@@ -1,5 +1,8 @@
-0.9.0
+v1.0
 - Added more fluid control over displayed text, and fixes cases where title wouldn't display as expected.
 - Now displays "Loading..." when loading files.
 - Added events to PlayerUIBase: PlayCommandExecuted, PauseCommandExecuted, StopCommandExecuted, SeekCommandExecuted and ChangeVolumeExecuted.
 - Added events to MpvMediaPlayerHost: MediaFinished and MediaError.
+- Merged MediaPlayerWpf and MediaUI, renamed to MediaPlayer.
+- You no longer need extended properties to set UI properties, and you can now bind to events.
+- Syntax changed to <ui:MediaPlayer><wpf:MediaPlayerHost /></ui:MediaPlayer>, so you always use the same generic UI class and can display various hosts into it.

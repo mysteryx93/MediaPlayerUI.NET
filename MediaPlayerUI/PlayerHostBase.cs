@@ -5,9 +5,12 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace EmergenceGuardian.MediaPlayerUI {
-    public class PlayerBase : Control {
-        static PlayerBase() {
-            FocusableProperty.OverrideMetadata(typeof(PlayerBase), new FrameworkPropertyMetadata(false));
+    /// <summary>
+    /// Represents the base class for Host controls. Each player implementation inherits from this class to manage commmon properties of a player.
+    /// </summary>
+    public abstract class PlayerHostBase : Control {
+        static PlayerHostBase() {
+            FocusableProperty.OverrideMetadata(typeof(PlayerHostBase), new FrameworkPropertyMetadata(false));
         }
 
         #region Declarations / Constructor
@@ -28,7 +31,7 @@ namespace EmergenceGuardian.MediaPlayerUI {
         /// </summary>
         public event EventHandler MediaUnloaded;
 
-        public PlayerBase() {
+        public PlayerHostBase() {
         }
 
         public override void OnApplyTemplate() {
@@ -42,15 +45,15 @@ namespace EmergenceGuardian.MediaPlayerUI {
         #region Properties
 
         // Position
-        public static readonly DependencyProperty PositionProperty = DependencyProperty.Register("Position", typeof(TimeSpan), typeof(PlayerBase),
+        public static readonly DependencyProperty PositionProperty = DependencyProperty.Register("Position", typeof(TimeSpan), typeof(PlayerHostBase),
             new PropertyMetadata(TimeSpan.Zero, PositionChanged, CoercePosition));
         public TimeSpan Position { get => (TimeSpan)GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
         private static void PositionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             P.PositionChanged((TimeSpan)e.NewValue, !P.isSettingPosition);
         }
         private static object CoercePosition(DependencyObject d, object baseValue) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             return P.CoercePosition((TimeSpan)baseValue);
         }
         protected virtual void PositionChanged(TimeSpan value, bool isSeeking) { }
@@ -64,41 +67,41 @@ namespace EmergenceGuardian.MediaPlayerUI {
         }
 
         // Duration
-        public static readonly DependencyPropertyKey DurationPropertyKey = DependencyProperty.RegisterReadOnly("Duration", typeof(TimeSpan), typeof(PlayerBase),
+        public static readonly DependencyPropertyKey DurationPropertyKey = DependencyProperty.RegisterReadOnly("Duration", typeof(TimeSpan), typeof(PlayerHostBase),
             new PropertyMetadata(TimeSpan.FromSeconds(1), DurationChanged));
         private static readonly DependencyProperty DurationProperty = DurationPropertyKey.DependencyProperty;
         public TimeSpan Duration { get => (TimeSpan)GetValue(DurationProperty); protected set => SetValue(DurationPropertyKey, value); }
         private static void DurationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             P.DurationChanged((TimeSpan)e.NewValue);
         }
         protected virtual void DurationChanged(TimeSpan value) { }
 
         // IsPlaying
-        public static readonly DependencyProperty IsPlayingProperty = DependencyProperty.Register("IsPlaying", typeof(bool), typeof(PlayerBase),
+        public static readonly DependencyProperty IsPlayingProperty = DependencyProperty.Register("IsPlaying", typeof(bool), typeof(PlayerHostBase),
             new PropertyMetadata(false, IsPlayingChanged, CoerceIsPlaying));
         public bool IsPlaying { get => (bool)GetValue(IsPlayingProperty); set => SetValue(IsPlayingProperty, value); }
         private static void IsPlayingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             P.IsPlayingChanged((bool)e.NewValue);
         }
         private static object CoerceIsPlaying(DependencyObject d, object baseValue) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             return P.CoerceIsPlaying((bool)baseValue);
         }
         protected virtual void IsPlayingChanged(bool value) { }
         protected virtual bool CoerceIsPlaying(bool value) => value;
 
         // Volume
-        public static readonly DependencyProperty VolumeProperty = DependencyProperty.Register("Volume", typeof(int), typeof(PlayerBase),
+        public static readonly DependencyProperty VolumeProperty = DependencyProperty.Register("Volume", typeof(int), typeof(PlayerHostBase),
             new PropertyMetadata(50, VolumeChanged, CoerceVolume));
         public int Volume { get => (int)GetValue(VolumeProperty); set => SetValue(VolumeProperty, value); }
         private static void VolumeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             P.VolumeChanged((int)e.NewValue);
         }
         private static object CoerceVolume(DependencyObject d, object baseValue) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             return P.CoerceVolume((int)baseValue);
         }
         protected virtual void VolumeChanged(int value) { }
@@ -112,55 +115,55 @@ namespace EmergenceGuardian.MediaPlayerUI {
         }
 
         // SpeedFloat
-        public static readonly DependencyProperty SpeedFloatProperty = DependencyProperty.Register("SpeedFloat", typeof(float), typeof(PlayerBase),
+        public static readonly DependencyProperty SpeedFloatProperty = DependencyProperty.Register("SpeedFloat", typeof(float), typeof(PlayerHostBase),
             new PropertyMetadata(1f, SpeedChanged, CoerceSpeedFloat));
         public float SpeedFloat { get => (float)GetValue(SpeedFloatProperty); set => SetValue(SpeedFloatProperty, value); }
         private static void SpeedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             P.SpeedChanged(P.GetSpeed());
         }
         private static object CoerceSpeedFloat(DependencyObject d, object baseValue) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             return P.CoerceSpeedFloat((float)baseValue);
         }
         protected virtual void SpeedChanged(float value) { }
         protected virtual float CoerceSpeedFloat(float value) => value == 0 ? 1 : value;
 
         // SpeedInt
-        public static readonly DependencyProperty SpeedIntProperty = DependencyProperty.Register("SpeedInt", typeof(int), typeof(PlayerBase),
+        public static readonly DependencyProperty SpeedIntProperty = DependencyProperty.Register("SpeedInt", typeof(int), typeof(PlayerHostBase),
             new PropertyMetadata(0, SpeedChanged, CoerceSpeedInt));
         private static object CoerceSpeedInt(DependencyObject d, object baseValue) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             return P.CoerceSpeedInt((int)baseValue);
         }
         public int SpeedInt { get => (int)GetValue(SpeedIntProperty); set => SetValue(SpeedIntProperty, value); }
         protected virtual int CoerceSpeedInt(int value) => value;
 
         // Loop
-        public static readonly DependencyProperty LoopProperty = DependencyProperty.Register("Loop", typeof(bool), typeof(PlayerBase),
+        public static readonly DependencyProperty LoopProperty = DependencyProperty.Register("Loop", typeof(bool), typeof(PlayerHostBase),
             new PropertyMetadata(false, LoopChanged, CoerceLoop));
         public bool Loop { get => (bool)GetValue(LoopProperty); set => SetValue(LoopProperty, value); }
         private static void LoopChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             P.LoopChanged((bool)e.NewValue);
         }
         private static object CoerceLoop(DependencyObject d, object baseValue) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             return P.CoerceLoop((bool)baseValue);
         }
         protected virtual void LoopChanged(bool value) { }
         protected virtual bool CoerceLoop(bool value) => value;
 
         // AutoPlay
-        public static readonly DependencyProperty AutoPlayProperty = DependencyProperty.Register("AutoPlay", typeof(bool), typeof(PlayerBase),
+        public static readonly DependencyProperty AutoPlayProperty = DependencyProperty.Register("AutoPlay", typeof(bool), typeof(PlayerHostBase),
             new PropertyMetadata(true, AutoPlayChanged, CoerceAutoPlay));
         public bool AutoPlay { get => (bool)GetValue(AutoPlayProperty); set => SetValue(AutoPlayProperty, value); }
         private static void AutoPlayChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             P.AutoPlayChanged((bool)e.NewValue);
         }
         private static object CoerceAutoPlay(DependencyObject d, object baseValue) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             return P.CoerceAutoPlay((bool)baseValue);
         }
         protected virtual void AutoPlayChanged(bool value) {
@@ -171,25 +174,25 @@ namespace EmergenceGuardian.MediaPlayerUI {
         protected virtual bool CoerceAutoPlay(bool value) => value;
 
         // Text
-        public static readonly DependencyPropertyKey TextProperty = DependencyProperty.RegisterReadOnly("Text", typeof(string), typeof(PlayerBase), null);
+        public static readonly DependencyPropertyKey TextProperty = DependencyProperty.RegisterReadOnly("Text", typeof(string), typeof(PlayerHostBase), null);
         public string Text { get => (string)GetValue(TextProperty.DependencyProperty); protected set => SetValue(TextProperty, value); }
 
         // IsMediaLoaded
-        public static readonly DependencyPropertyKey IsMediaLoadedPropertyKey = DependencyProperty.RegisterReadOnly("IsMediaLoaded", typeof(bool), typeof(PlayerBase),
+        public static readonly DependencyPropertyKey IsMediaLoadedPropertyKey = DependencyProperty.RegisterReadOnly("IsMediaLoaded", typeof(bool), typeof(PlayerHostBase),
             new PropertyMetadata(false));
         private static readonly DependencyProperty IsMediaLoadedProperty = IsMediaLoadedPropertyKey.DependencyProperty;
         public bool IsMediaLoaded { get => (bool)GetValue(IsMediaLoadedProperty); private set => SetValue(IsMediaLoadedPropertyKey, value); }
 
         // IsVideoVisible
-        public static readonly DependencyProperty IsVideoVisibleProperty = DependencyProperty.Register("IsVideoVisible", typeof(bool), typeof(PlayerBase),
+        public static readonly DependencyProperty IsVideoVisibleProperty = DependencyProperty.Register("IsVideoVisible", typeof(bool), typeof(PlayerHostBase),
             new PropertyMetadata(false, IsVideoVisibleChanged, CoerceIsVideoVisible));
         public bool IsVideoVisible { get => (bool)GetValue(IsVideoVisibleProperty); set => SetValue(IsVideoVisibleProperty, value); }
         private static void IsVideoVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             P.IsVideoVisibleChanged((bool)e.NewValue);
         }
         private static object CoerceIsVideoVisible(DependencyObject d, object baseValue) {
-            PlayerBase P = d as PlayerBase;
+            PlayerHostBase P = d as PlayerHostBase;
             return P.CoerceIsVideoVisible((bool)baseValue);
         }
         protected virtual void IsVideoVisibleChanged(bool value) {

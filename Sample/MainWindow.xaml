@@ -4,17 +4,19 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:Sample"
 		xmlns:mpv="clr-namespace:EmergenceGuardian.MpvPlayerUI;assembly=MpvPlayerUI" x:Class="Sample.MainWindow"
 		mc:Ignorable="d" Title="MainWindow" Height="450" Width="800">
-	<Window.InputBindings>
-		<KeyBinding Key="Space" Command="{Binding UI.PlayPauseCommand, ElementName=Player}" />
-		<KeyBinding Key="Right" Command="{Binding UI.SeekCommand, ElementName=Player}" CommandParameter="{ui:Int32 1}" />
-		<KeyBinding Key="Right" Modifiers="Ctrl" Command="{Binding UI.SeekCommand, ElementName=Player}" CommandParameter="{ui:Int32 10}" />
-		<KeyBinding Key="Left" Command="{Binding UI.SeekCommand, ElementName=Player}" CommandParameter="{ui:Int32 -1}" />
-		<KeyBinding Key="Left" Modifiers="Ctrl" Command="{Binding UI.SeekCommand, ElementName=Player}" CommandParameter="{ui:Int32 -10}" />
-		<KeyBinding Key="Up" Command="{Binding UI.ChangeVolumeCommand, ElementName=Player}" CommandParameter="{ui:Int32 5}" />
-		<KeyBinding Key="Down" Command="{Binding UI.ChangeVolumeCommand, ElementName=Player}" CommandParameter="{ui:Int32 -5}" />
-		<KeyBinding Key="Enter" Modifiers="Alt" Command="{Binding UI.ToggleFullScreenCommand, ElementName=Player}" />
+    <Window.InputBindings>
+		<KeyBinding Key="Space" Command="{Binding PlayPauseCommand, ElementName=Player}" />
+		<KeyBinding Key="Right" Command="{Binding SeekCommand, ElementName=Player}" CommandParameter="{ui:Int32 1}" />
+		<KeyBinding Key="Right" Modifiers="Ctrl" Command="{Binding SeekCommand, ElementName=Player}" CommandParameter="{ui:Int32 10}" />
+		<KeyBinding Key="Left" Command="{Binding SeekCommand, ElementName=Player}" CommandParameter="{ui:Int32 -1}" />
+		<KeyBinding Key="Left" Modifiers="Ctrl" Command="{Binding SeekCommand, ElementName=Player}" CommandParameter="{ui:Int32 -10}" />
+		<KeyBinding Key="Up" Command="{Binding ChangeVolumeCommand, ElementName=Player}" CommandParameter="{ui:Int32 5}" />
+		<KeyBinding Key="Down" Command="{Binding ChangeVolumeCommand, ElementName=Player}" CommandParameter="{ui:Int32 -5}" />
+		<KeyBinding Key="Enter" Modifiers="Alt" Command="{Binding ToggleFullScreenCommand, ElementName=Player}" />
 	</Window.InputBindings>
-	<Grid>
-        <mpv:MpvMediaPlayer x:Name="Player" ui:UIProperties.IsVolumeVisible="False" />
+    <Grid>
+        <ui:MediaPlayer IsSpeedVisible="False" x:Name="Player">
+            <mpv:MpvMediaPlayerHost x:Name="PlayerHost" Source="E:\NaturalGrounding\AOA\Like a Cat.mp4" />
+        </ui:MediaPlayer>
     </Grid>
 </Window>

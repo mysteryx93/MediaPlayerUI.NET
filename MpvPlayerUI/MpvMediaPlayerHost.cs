@@ -7,7 +7,7 @@ using System.Windows.Forms.Integration;
 namespace EmergenceGuardian.MpvPlayerUI
 {
     [TemplatePart(Name = MpvMediaPlayerHost.PART_Host, Type = typeof(WindowsFormsHost))]
-    public class MpvMediaPlayerHost : PlayerBase
+    public class MpvMediaPlayerHost : PlayerHostBase
     {
         static MpvMediaPlayerHost()
         {

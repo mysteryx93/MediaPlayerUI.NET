@@ -27,11 +27,9 @@ namespace Sample {
 
             // 3. Run.
 
-            // If you need further customization of the player, MpvPlayer.NET is a very simple project that you can edit as you wish.
-
-            Player.MediaPlayerInitialized += (o, e) => {
-                Player.Host.Source = @"E:\NaturalGrounding\AOA\Like a Cat.mp4";
-            };
+            //PlayerHost.MediaPlayerInitialized += (o, e) => {
+            //    PlayerHost.Source = @"E:\NaturalGrounding\AOA\Like a Cat.mp4";
+            //};
         }
 	}
 }
