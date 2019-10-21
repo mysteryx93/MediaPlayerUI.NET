@@ -167,7 +167,6 @@
                             <ContentPresenter x:Name="PART_HostGrid" Content="{TemplateBinding Content}" Grid.Row="0" />
 
                             <Grid Grid.Row="1">
-                                <TextBlock x:Name="HostIsPlaying" Visibility="Collapsed" Text="{Binding PlayerHost.IsPlaying, RelativeSource={RelativeSource TemplatedParent}}" />
                                 <Border x:Name="PART_UI" 
                                         Background="{TemplateBinding Background}" 
                                         BorderBrush="{TemplateBinding BorderBrush}" 
@@ -265,11 +264,9 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger SourceName="HostIsPlaying" Property="Text" Value="True">
+                        <DataTrigger Value="True" Binding="{Binding PlayerHost.IsPlaying, RelativeSource={RelativeSource Self}}">
                             <Setter TargetName="PlayButton" Property="Content" Value="{StaticResource PauseIcon}" />
-                        </Trigger>
-                        <!--<DataTrigger Value="True" Binding="{Binding PlayerHost.IsPlaying, RelativeSource={RelativeSource TemplatedParent}}">
-                        </DataTrigger>-->
+                        </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
