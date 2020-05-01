@@ -1,88 +1,91 @@
-﻿using EmergenceGuardian.MediaPlayerUI;
-using System;
+﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Forms.Integration;
+using HanumanInstitute.MediaPlayerUI;
 
-namespace EmergenceGuardian.MpvPlayerUI
+namespace HanumanInstitute.MpvPlayerUI
 {
-    [TemplatePart(Name = MpvMediaPlayerHost.PART_Host, Type = typeof(WindowsFormsHost))]
-    public class MpvMediaPlayerHost : PlayerHostBase
+    [TemplatePart(Name = HostPartName, Type = typeof(WindowsFormsHost))]
+    public class MpvPlayerHost : PlayerHostBase
     {
-        static MpvMediaPlayerHost()
+        static MpvPlayerHost()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(MpvMediaPlayerHost), new FrameworkPropertyMetadata(typeof(MpvMediaPlayerHost)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(MpvPlayerHost), new FrameworkPropertyMetadata(typeof(MpvPlayerHost)));
         }
 
-        public const string PART_Host = "PART_Host";
-        public WindowsFormsHost Host => GetTemplateChild(PART_Host) as WindowsFormsHost;
+        public MpvPlayerHost()
+        {
+            if (!DesignerProperties.GetIsInDesignMode(this))
+            {
+                Loaded += UserControl_Loaded;
+                Unloaded += UserControl_Unloaded;
+                Dispatcher.ShutdownStarted += (s2, e2) => UserControl_Unloaded(s2, null);
+            }
+        }
 
-        public Mpv.NET.Player.MpvPlayer Player;
-        public event EventHandler MediaPlayerInitialized;
+        public const string HostPartName = "PART_Host";
+        public WindowsFormsHost? Host => _host ?? (_host = GetTemplateChild(HostPartName) as WindowsFormsHost);
+        private WindowsFormsHost? _host;
+
+        public Mpv.NET.Player.MpvPlayer? Player { get; private set; }
+        public event EventHandler? MediaPlayerInitialized;
+        public event EventHandler? MediaError;
+        public event EventHandler? MediaFinished;
+
         private bool _initLoaded = false;
 
-        public MpvMediaPlayerHost()
-        { }
-
         // DllPath
-        public static readonly DependencyProperty DllPathProperty = DependencyProperty.Register("DllPath", typeof(string), typeof(MpvMediaPlayerHost));
+        public static readonly DependencyProperty DllPathProperty = DependencyProperty.Register("DllPath", typeof(string), typeof(MpvPlayerHost));
         public string DllPath { get => (string)GetValue(DllPathProperty); set => SetValue(DllPathProperty, value); }
 
         // Source
-        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register("Source", typeof(string), typeof(MpvMediaPlayerHost),
+        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register("Source", typeof(string), typeof(MpvPlayerHost),
             new PropertyMetadata(null, SourceChanged));
         public string Source { get => (string)GetValue(SourceProperty); set => SetValue(SourceProperty, value); }
         private static void SourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            MpvMediaPlayerHost P = d as MpvMediaPlayerHost;
+            var p = (MpvPlayerHost)d;
             if (!string.IsNullOrEmpty((string)e.NewValue))
             {
-                P.Status = PlaybackStatus.Loading;
-                P.LoadMedia();
+                p.Status = PlaybackStatus.Loading;
+                p.LoadMedia();
             }
             else
             {
-                P.Status = PlaybackStatus.Stopped;
-                P.Player.Stop();
+                p.Status = PlaybackStatus.Stopped;
+                p.Player!.Stop();
             }
         }
 
         // Title
-        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(MpvMediaPlayerHost),
+        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(MpvPlayerHost),
             new PropertyMetadata(null, TitleChanged));
         public string Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
         private static void TitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            MpvMediaPlayerHost P = d as MpvMediaPlayerHost;
-            P.SetDisplayText();
+            var p = (MpvPlayerHost)d;
+            p.SetDisplayText();
         }
 
         // Status
-        public static readonly DependencyPropertyKey StatusProperty = DependencyProperty.RegisterReadOnly("Status", typeof(PlaybackStatus), typeof(MpvMediaPlayerHost),
+        public static readonly DependencyPropertyKey StatusProperty = DependencyProperty.RegisterReadOnly("Status", typeof(PlaybackStatus), typeof(MpvPlayerHost),
             new PropertyMetadata(PlaybackStatus.Stopped, StatusChanged));
         public PlaybackStatus Status { get => (PlaybackStatus)GetValue(StatusProperty.DependencyProperty); protected set => SetValue(StatusProperty, value); }
         private static void StatusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            MpvMediaPlayerHost P = d as MpvMediaPlayerHost;
-            P.SetDisplayText();
-        }
-
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-
-            if (DesignerProperties.GetIsInDesignMode(this))
-            {
-                return;
-            }
-
-            Loaded += UserControl_Loaded;
-            Unloaded += UserControl_Unloaded;
-            Dispatcher.ShutdownStarted += (s2, e2) => UserControl_Unloaded(s2, null);
+            var p = (MpvPlayerHost)d;
+            p.SetDisplayText();
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            if (Host == null)
+            {
+                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, HostPartName, typeof(WindowsFormsHost).Name));
+            }
+
             Player = new Mpv.NET.Player.MpvPlayer(Host.Handle, DllPath);
 
             Player.MediaError += Player_MediaError;
@@ -104,9 +107,7 @@ namespace EmergenceGuardian.MpvPlayerUI
             }
         }
 
-        public event EventHandler MediaError;
-
-        private void Player_MediaError(object sender, EventArgs e)
+        private void Player_MediaError(object? sender, EventArgs e)
         {
             if (MediaError != null)
             {
@@ -115,9 +116,7 @@ namespace EmergenceGuardian.MpvPlayerUI
             }
         }
 
-        public event EventHandler MediaFinished;
-
-        private void Player_MediaFinished(object sender, EventArgs e)
+        private void Player_MediaFinished(object? sender, EventArgs e)
         {
             if (MediaFinished != null)
             {
@@ -126,41 +125,41 @@ namespace EmergenceGuardian.MpvPlayerUI
             }
         }
 
-        private void Player_MediaLoaded(object sender, EventArgs e)
+        private void Player_MediaLoaded(object? sender, EventArgs e)
         {
             //Debug.WriteLine("MediaLoaded");
             Dispatcher.Invoke(() =>
             {
                 Status = PlaybackStatus.Playing;
-                base.Duration = Player.Duration;
-                base.RaiseMediaLoaded();
+                base.Duration = Player!.Duration;
+                base.OnMediaLoaded();
             });
         }
 
-        private void Player_MediaUnloaded(object sender, EventArgs e)
+        private void Player_MediaUnloaded(object? sender, EventArgs e)
         {
             //Debug.WriteLine("MediaUnloaded");
-            Dispatcher.Invoke(() => base.RaiseMediaUnloaded());
+            Dispatcher.Invoke(() => base.OnMediaUnloaded());
         }
 
-        private void Player_PositionChanged(object sender, Mpv.NET.Player.MpvPlayerPositionChangedEventArgs e)
+        private void Player_PositionChanged(object? sender, Mpv.NET.Player.MpvPlayerPositionChangedEventArgs e)
         {
             Dispatcher.BeginInvoke(new Action(() => base.SetPositionNoSeek(e.NewPosition)));
         }
 
-        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        private void UserControl_Unloaded(object? sender, RoutedEventArgs? e)
         {
             Player?.Dispose();
             Player = null;
         }
 
-        public override FrameworkElement InnerControl => Host;
+        public override FrameworkElement? HostContainer => Host;
 
         private void SetDisplayText()
         {
             if (Status == PlaybackStatus.Loading)
             {
-                Text = "Loading...";
+                Text = Properties.Resources.Loading;
             }
             else if (Status == PlaybackStatus.Playing)
             {
@@ -218,7 +217,7 @@ namespace EmergenceGuardian.MpvPlayerUI
             }
         }
 
-        protected override void SpeedChanged(float value)
+        protected override void SpeedChanged(double value)
         {
             base.SpeedChanged(value);
             if (Player != null)
@@ -238,8 +237,10 @@ namespace EmergenceGuardian.MpvPlayerUI
 
         private void LoadMedia()
         {
-            Player?.Stop();
-            if (Source != null && Player != null)
+            if (Player == null) { return; }
+
+            Player.Stop();
+            if (!string.IsNullOrEmpty(Source))
             {
                 _initLoaded = true;
                 Player.Load(Source, true);
@@ -249,7 +250,7 @@ namespace EmergenceGuardian.MpvPlayerUI
         public override void Stop()
         {
             base.Stop();
-            Source = null;
+            Source = string.Empty;
         }
     }
 }

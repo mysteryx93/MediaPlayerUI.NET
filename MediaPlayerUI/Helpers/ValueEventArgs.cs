@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EmergenceGuardian.MediaPlayerUI
+namespace HanumanInstitute.MediaPlayerUI
 {
     /// <summary>
     /// Holds a typed value as an event argument.
@@ -10,9 +10,8 @@ namespace EmergenceGuardian.MediaPlayerUI
     {
         public T Value { get; set; }
 
-        public ValueEventArgs()
-        {
-        }
+        //public ValueEventArgs()
+        //{ }
 
         public ValueEventArgs(T value)
         {

@@ -1,73 +1,89 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using EmergenceGuardian.MediaPlayerUI.Mvvm;
+using HanumanInstitute.MediaPlayerUI.Mvvm;
 
-namespace EmergenceGuardian.MediaPlayerUI {
-    [TemplatePart(Name = MediaPlayer.PART_HostGrid, Type = typeof(Grid))]
-    [TemplatePart(Name = MediaPlayer.PART_UI, Type = typeof(Border))]
-    [TemplatePart(Name = MediaPlayer.PART_SeekBar, Type = typeof(Slider))]
+namespace HanumanInstitute.MediaPlayerUI
+{
+    /// <summary>
+    /// A media player graphical interface that can be used with any video host.
+    /// </summary>
+    [TemplatePart(Name = MediaPlayer.UIPartName, Type = typeof(Border))]
+    [TemplatePart(Name = MediaPlayer.SeekBarPartName, Type = typeof(Slider))]
+    //[TemplatePart(Name = MediaPlayer.SeekBarTrackPartName, Type = typeof(Track))]
     public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        public const string PART_HostGrid = "PART_HostGrid";
-        public Grid HostGrid => GetTemplateChild(PART_HostGrid) as Grid;
-        public const string PART_UI = "PART_UI";
-        public Border UI => GetTemplateChild(PART_UI) as Border;
-        public const string PART_SeekBar = "PART_SeekBar";
-        public Slider SeekBar => GetTemplateChild(PART_SeekBar) as Slider;
-
-        static MediaPlayer() {
+        static MediaPlayer()
+        {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MediaPlayer), new FrameworkPropertyMetadata(typeof(MediaPlayer)));
             BackgroundProperty.OverrideMetadata(typeof(MediaPlayer), new FrameworkPropertyMetadata(Brushes.Black));
             HorizontalAlignmentProperty.OverrideMetadata(typeof(MediaPlayer), new FrameworkPropertyMetadata(HorizontalAlignment.Stretch));
             VerticalAlignmentProperty.OverrideMetadata(typeof(MediaPlayer), new FrameworkPropertyMetadata(VerticalAlignment.Stretch));
             ContentProperty.OverrideMetadata(typeof(MediaPlayer), new FrameworkPropertyMetadata(ContentChanged, CoerceContent));
-            // FocusableProperty.OverrideMetadata(typeof(MediaPlayerWpf), new FrameworkPropertyMetadata(false));
         }
 
-        public MediaPlayer() {
-        }
+        private static void ContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => MediaPlayerBase.OnContentChanged(d, e);
 
-        public override void OnApplyTemplate() {
-            base.OnApplyTemplate();
+        private static object? CoerceContent(DependencyObject d, object baseValue) => baseValue as PlayerHostBase;
 
-            // ApplyTemplate can get called several times (switching full screen), attach to events only once.
-            if (DesignerProperties.GetIsInDesignMode(this))
-                return;
+        public MediaPlayer()
+        { }
 
-            Slider Bar = SeekBar;
-            if (Bar != null)
-            {
-                MouseDown += UserControl_MouseDown;
-                Bar.AddHandler(Slider.PreviewMouseDownEvent, new MouseButtonEventHandler(base.SeekBar_PreviewMouseLeftButtonDown), true);
-                // Thumb doesn't yet exist.
-                Bar.Loaded += (s, e) => {
-                    Thumb SeekBarThumb = GetSliderThumb(Bar);
-                    if (SeekBarThumb != null)
-                    {
-                        SeekBarThumb.DragStarted += SeekBar_DragStarted;
-                        SeekBarThumb.DragCompleted += SeekBar_DragCompleted;
-                    }
-                };
-            }
-        }
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        private static void ContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public const string UIPartName = "PART_UI";
+        public Border? UI => _ui ?? (_ui = GetTemplateChild(UIPartName) as Border);
+        private Border? _ui;
+
+        public const string SeekBarPartName = "PART_SeekBar";
+        public Slider? SeekBar => _seekBar ?? (_seekBar = GetTemplateChild(SeekBarPartName) as Slider);
+        private Slider? _seekBar;
+
+        public const string SeekBarTrackPartName = "PART_Track";
+        public Track? SeekBarTrack => _seekBarTrack ?? (_seekBarTrack = SeekBar?.Template.FindName(SeekBarTrackPartName, SeekBar) as Track);
+        private Track? _seekBarTrack;
+
+        public Thumb? SeekBarThumb => _seekBarThumb ?? (_seekBarThumb = SeekBarTrack?.Thumb);
+        private Thumb? _seekBarThumb;
+
+        public override void OnApplyTemplate()
         {
-            MediaPlayerBase.OnContentChanged(d, e);
+            base.OnApplyTemplate();
+            if (DesignerProperties.GetIsInDesignMode(this)) { return; }
+
+            if (UI == null)
+            {
+                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, UIPartName, typeof(Border).Name));
+            }
+            if (SeekBar == null)
+            {
+                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, SeekBarPartName, typeof(Slider).Name));
+            }
+
+            MouseDown += UserControl_MouseDown;
+            SeekBar.AddHandler(Slider.PreviewMouseDownEvent, new MouseButtonEventHandler(OnSeekBarPreviewMouseLeftButtonDown), true);
+            // Thumb doesn't yet exist.
+            SeekBar.Loaded += (s, e) =>
+            {
+                if (SeekBarThumb == null)
+                {
+                    throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, SeekBarTrackPartName, typeof(Track).Name));
+                }
+
+                SeekBarThumb.DragStarted += OnSeekBarDragStarted;
+                SeekBarThumb.DragCompleted += OnSeekBarDragCompleted;
+            };
         }
 
-        private static object CoerceContent(DependencyObject d, object baseValue) => baseValue as PlayerHostBase;
-
-        protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e) {
+        protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
             base.OnPreviewMouseLeftButtonDown(e);
-            this.Focus();
+            Focus();
         }
 
         /// <summary>
@@ -96,24 +112,30 @@ namespace EmergenceGuardian.MediaPlayerUI {
             }
         }
 
-        private void Host_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void Host_MouseWheel(object? sender, MouseWheelEventArgs e)
         {
+            if (PlayerHost == null) { return; }
+
             if (ChangeVolumeOnMouseWheel)
             {
                 if (e.Delta > 0)
+                {
                     PlayerHost.Volume += 5;
+                }
                 else if (e.Delta < 0)
+                {
                     PlayerHost.Volume -= 5;
+                }
             }
         }
 
-        private void Host_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void Host_MouseDoubleClick(object? sender, MouseButtonEventArgs e)
         {
             // ** Double clicks aren't working properly yet.
             HandleMouseAction(sender, e, 2);
         }
 
-        private void Host_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Host_MouseDown(object? sender, MouseButtonEventArgs e)
         {
             HandleMouseAction(sender, e, 1);
         }
@@ -121,37 +143,54 @@ namespace EmergenceGuardian.MediaPlayerUI {
         /// <summary>
         /// Handles mouse click events for both Host and Fullscreen.
         /// </summary>
-        private void HandleMouseAction(object sender, MouseButtonEventArgs e, int clickCount)
+        private void HandleMouseAction(object? sender, MouseButtonEventArgs e, int clickCount)
         {
-            bool IsFullScreen = sender is FullScreenUI;
+            var isFullScreen = sender is FullScreenUI;
             if (IsActionFullScreen(e, clickCount))
             {
-                FullScreen = !IsFullScreen; // using !FullScreen can return wrong value when exiting fullscreen
+                FullScreen = !isFullScreen; // using !FullScreen can return wrong value when exiting fullscreen
                 e.Handled = true;
             }
             else if (IsActionPause(e, clickCount))
             {
                 if (PlayPauseCommand.CanExecute(null))
+                {
                     PlayPauseCommand.Execute(null);
+                }
+
                 e.Handled = true;
             }
         }
 
         private bool IsActionFullScreen(MouseButtonEventArgs e, int clickCount) => IsMouseAction(MouseFullscreen, e, clickCount);
+
         private bool IsActionPause(MouseButtonEventArgs e, int clickCount) => IsMouseAction(MousePause, e, clickCount);
 
         private bool IsMouseAction(MouseTrigger a, MouseButtonEventArgs e, int clickCount)
         {
             if (clickCount != TriggerClickCount(a))
+            {
                 return false;
+            }
+
             if (a == MouseTrigger.LeftClick && e.ChangedButton == MouseButton.Left)
+            {
                 return true;
+            }
+
             if (a == MouseTrigger.MiddleClick && e.ChangedButton == MouseButton.Middle)
+            {
                 return true;
+            }
+
             if (a == MouseTrigger.RightClick && e.ChangedButton == MouseButton.Right)
+            {
                 return true;
+            }
             else
+            {
                 return false;
+            }
         }
 
         /// <summary>
@@ -160,28 +199,38 @@ namespace EmergenceGuardian.MediaPlayerUI {
         private int TriggerClickCount(MouseTrigger a)
         {
             if (a == MouseTrigger.None)
+            {
                 return 0;
+            }
             else if (a == MouseTrigger.LeftClick || a == MouseTrigger.MiddleClick || a == MouseTrigger.RightClick)
+            {
                 return 1;
+            }
             else
+            {
                 return 2;
-        }
-
-        private Panel uiParentCache;
-        /// <summary>
-        /// Returns the container of this control the first time it is called and maintain reference to that container.
-        /// </summary>
-        private Panel UIParentCache {
-            get {
-                if (uiParentCache == null)
-                    uiParentCache = UI.Parent as Panel;
-                if (uiParentCache == null)
-                    throw new NullReferenceException("UIParentCache returned null.");
-                return uiParentCache;
             }
         }
 
-        #region Properties
+        private Panel? _uiParentCache;
+        /// <summary>
+        /// Returns the container of this control the first time it is called and maintain reference to that container.
+        /// </summary>
+        private Panel UIParentCache
+        {
+            get
+            {
+                if (_uiParentCache == null)
+                {
+                    _uiParentCache = UI?.Parent as Panel;
+                }
+                if (_uiParentCache == null)
+                {
+                    throw new NullReferenceException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.ParentMustBePanel, UIPartName, UI?.Parent?.GetType()));
+                }
+                return _uiParentCache;
+            }
+        }
 
         // TitleProperty
         public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(bool), typeof(MediaPlayer));
@@ -232,30 +281,73 @@ namespace EmergenceGuardian.MediaPlayerUI {
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
         public bool IsSeekBarVisible { get => (bool)GetValue(IsSeekBarVisibleProperty); set => SetValue(IsSeekBarVisibleProperty, value); }
 
-        #endregion
 
 
-        #region Fullscreen
+        public void OnSeekBarPreviewMouseLeftButtonDown(object? sender, MouseButtonEventArgs e)
+        {
+            if (PlayerHost == null) { return; }
+            e.CheckNotNull(nameof(e));
 
-        public FullScreenUI FullScreenUI { get; private set; }
+            // Only process event if click is not on thumb.
+            if (SeekBarThumb != null)
+            {
+                var pos = e.GetPosition(SeekBarThumb);
+                if (pos.X < 0 || pos.Y < 0 || pos.X > SeekBarThumb.ActualWidth || pos.Y > SeekBarThumb.ActualHeight)
+                {
+                    // Immediate seek when clicking elsewhere.
+                    IsSeekBarPressed = true;
+                    PlayerHost.Position = PositionBar;
+                    IsSeekBarPressed = false;
+                }
+            }
+        }
 
-        private ICommand toggleFullScreenCommand;
+        public void OnSeekBarDragStarted(object? sender, DragStartedEventArgs e)
+        {
+            if (PlayerHost == null) { return; }
 
-        public ICommand ToggleFullScreenCommand => CommandHelper.InitCommand(ref toggleFullScreenCommand, ToggleFullScreen, CanToggleFullScreen);
+            IsSeekBarPressed = true;
+        }
 
+        private DateTime _lastDragCompleted = DateTime.MinValue;
+        public void OnSeekBarDragCompleted(object? sender, DragCompletedEventArgs e)
+        {
+            if (PlayerHost == null) { return; }
+
+            // DragCompleted can trigger multiple times after switching to/from fullscreen. Ignore multiple events within a second.
+            if ((DateTime.Now - _lastDragCompleted).TotalSeconds < 1)
+            {
+                return;
+            }
+
+            _lastDragCompleted = DateTime.Now;
+
+            PlayerHost.Position = PositionBar;
+            IsSeekBarPressed = false;
+        }
+
+
+        public FullScreenUI? FullScreenUI { get; private set; }
+
+        public ICommand ToggleFullScreenCommand => CommandHelper.InitCommand(ref _toggleFullScreenCommand, ToggleFullScreen, CanToggleFullScreen);
+        private RelayCommand? _toggleFullScreenCommand;
         private bool CanToggleFullScreen() => PlayerHost != null;
         private void ToggleFullScreen()
         {
             FullScreen = !FullScreen;
         }
 
-        public bool FullScreen {
+        public bool FullScreen
+        {
             get => FullScreenUI != null;
-            set {
+            set
+            {
+                if (PlayerHost == null) { return; }
+                if (UI == null) { return; }
+                if (PlayerHost.HostContainer == null) { return; }
+
                 if (value != FullScreen)
                 {
-                    if (PlayerHost == null)
-                        throw new ArgumentException("PlayerHost must be set to use FullScreen");
                     if (value)
                     {
                         // Create full screen.
@@ -265,7 +357,7 @@ namespace EmergenceGuardian.MediaPlayerUI {
                         // Transfer key bindings.
                         InputBindingBehavior.TransferBindingsToWindow(Window.GetWindow(this), FullScreenUI, false);
                         // Transfer player.
-                        TransferElement(PlayerHost.InnerControlParentCache, FullScreenUI.ContentGrid, PlayerHost.InnerControl);
+                        TransferElement(PlayerHost.GetInnerControlParent(), FullScreenUI.ContentGrid, PlayerHost.HostContainer);
                         TransferElement(UIParentCache, FullScreenUI.AirspaceGrid, UI);
                         FullScreenUI.Airspace.VerticalOffset = -UI.ActualHeight;
                         // Show.
@@ -274,15 +366,15 @@ namespace EmergenceGuardian.MediaPlayerUI {
                     else if (FullScreenUI != null)
                     {
                         // Transfer player back.
-                        TransferElement(FullScreenUI.ContentGrid, PlayerHost.InnerControlParentCache, PlayerHost.InnerControl);
+                        TransferElement(FullScreenUI.ContentGrid, PlayerHost.GetInnerControlParent(), PlayerHost.HostContainer);
                         TransferElement(FullScreenUI.AirspaceGrid, UIParentCache, UI);
                         // Close.
-                        var F = FullScreenUI;
+                        var f = FullScreenUI;
                         FullScreenUI = null;
-                        F.CloseOnce();
+                        f.CloseOnce();
                         // Activate.
                         Window.GetWindow(this).Activate();
-                        this.Focus();
+                        Focus();
                     }
                 }
             }
@@ -290,20 +382,13 @@ namespace EmergenceGuardian.MediaPlayerUI {
 
         private static void TransferElement(Panel src, Panel dst, FrameworkElement element)
         {
-            if (src == null) throw new ArgumentNullException(nameof(src));
-            if (dst == null) throw new ArgumentNullException(nameof(dst));
-            if (element == null) throw new ArgumentNullException(nameof(element));
-
             src.Children.Remove(element);
             dst.Children.Add(element);
         }
 
-        private void FullScreenUI_Closed(object sender, EventArgs e)
+        private void FullScreenUI_Closed(object? sender, EventArgs e)
         {
             FullScreen = false;
         }
-
-        #endregion
-
     }
 }

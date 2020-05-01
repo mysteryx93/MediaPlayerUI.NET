@@ -1,8 +1,10 @@
-﻿namespace EmergenceGuardian.MediaPlayerUI {
+﻿namespace HanumanInstitute.MediaPlayerUI
+{
     /// <summary>
     /// Specifies how time is displayed within the player.
     /// </summary>
-    public enum TimeDisplayStyles {
+    public enum TimeDisplayStyle
+    {
         None,
         Standard,
         Seconds
@@ -11,7 +13,8 @@
     /// <summary>
     /// Specifies which mouse click triggers an action.
     /// </summary>
-    public enum MouseTrigger {
+    public enum MouseTrigger
+    {
         None,
         LeftClick,
         MiddleClick,

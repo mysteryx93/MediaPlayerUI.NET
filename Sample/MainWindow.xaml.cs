@@ -12,14 +12,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using NAudio.Wave;
+using SoundTouch.Net.NAudioSupport;
 
-namespace Sample {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
-	public partial class MainWindow : Window {
-		public MainWindow() {
-			InitializeComponent();
+namespace Sample
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
 
             // 1. Make sure mpv-1.dll is in the project's folder.
 
@@ -31,5 +36,18 @@ namespace Sample {
             //    PlayerHost.Source = @"E:\NaturalGrounding\AOA\Like a Cat.mp4";
             //};
         }
-	}
+
+        private WaveOutEvent _mediaOut = new WaveOutEvent();
+        private SoundTouchWaveStream? _mediaFile;
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var Source = @"E:\Music\Inna - Body And The Sun (Super Deluxe Edition) (2015)\CD1\07 Fool Me.mp3";
+            _mediaOut.Stop();
+            using var reader = new MediaFoundationReader(Source, new MediaFoundationReader.MediaFoundationReaderSettings() { RequestFloatOutput = true });
+            _mediaFile = new SoundTouchWaveStream(reader);
+            _mediaOut.Init(reader);
+            _mediaOut.Play();
+        }
+    }
 }

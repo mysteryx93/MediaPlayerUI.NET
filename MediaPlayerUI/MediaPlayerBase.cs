@@ -1,36 +1,65 @@
-﻿using EmergenceGuardian.MediaPlayerUI.Mvvm;
-using System;
+﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using HanumanInstitute.MediaPlayerUI.Mvvm;
 
-namespace EmergenceGuardian.MediaPlayerUI
+namespace HanumanInstitute.MediaPlayerUI
 {
-    public class MediaPlayerBase : ContentControl
+    /// <summary>
+    /// Handles the business logic of MediaPlayer.
+    /// MediaPlayer derives from this and handles only the UI.
+    /// </summary>
+    public abstract class MediaPlayerBase : ContentControl, IDisposable
     {
-
-        private bool isSeekBarButtonDown = false;
-        private PropertyChangeNotifier PositionChangedNotifier;
-
         public MediaPlayerBase()
+        { }
+
+        public event EventHandler? PlayCommandExecuted;
+        public event EventHandler? PauseCommandExecuted;
+        public event EventHandler? StopCommandExecuted;
+        public event EventHandler<ValueEventArgs<int>>? SeekCommandExecuted;
+        public event EventHandler<ValueEventArgs<int>>? ChangeVolumeExecuted;
+
+        protected bool IsSeekBarPressed { get; set; } = false;
+        private PropertyChangeNotifier? _positionChangedNotifier;
+
+        private PlayerHostBase? _playerHost; // Cache to avoid constant casting.
+        public PlayerHostBase? PlayerHost => _playerHost ?? (_playerHost = Content as PlayerHostBase);
+
+        protected static void OnContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            var p = (MediaPlayerBase)d.CheckNotNull(nameof(d));
+            if (e.OldValue is PlayerHostBase oldValue)
+            {
+                oldValue.MediaLoaded -= p.Player_MediaLoaded;
+                oldValue.MediaUnloaded -= p.Player_MediaUnloaded;
+                p._positionChangedNotifier!.ValueChanged -= p.Player_PositionChanged;
+                p._positionChangedNotifier = null;
+            }
+            if (e.NewValue is PlayerHostBase newValue)
+            {
+                newValue.MediaLoaded += p.Player_MediaLoaded;
+                newValue.MediaUnloaded += p.Player_MediaUnloaded;
+                p._positionChangedNotifier = new PropertyChangeNotifier(newValue, "Position");
+                p._positionChangedNotifier.ValueChanged += p.Player_PositionChanged;
+            }
+            p.OnContentChanged(e);
         }
 
+        // Allow derived class to bind to new host.
+        protected virtual void OnContentChanged(DependencyPropertyChangedEventArgs e) { }
 
-        #region Commands
 
-        public event EventHandler PlayCommandExecuted;
-        public event EventHandler PauseCommandExecuted;
-        public event EventHandler StopCommandExecuted;
-        public event EventHandler<ValueEventArgs<int>> SeekCommandExecuted;
-        public event EventHandler<ValueEventArgs<int>> ChangeVolumeExecuted;
-
-        public ICommand PlayPauseCommand => CommandHelper.InitCommand(ref playPauseCommand, PlayPause, CanPlayPause);
-        private ICommand playPauseCommand;
+        public ICommand PlayPauseCommand => CommandHelper.InitCommand(ref _playPauseCommand, PlayPause, CanPlayPause);
+        private RelayCommand? _playPauseCommand;
         private bool CanPlayPause() => PlayerHost?.IsMediaLoaded ?? false;
         private void PlayPause()
         {
+            if (PlayerHost == null) { return; }
+
             PlayerHost.IsPlaying = !PlayerHost.IsPlaying;
             if (PlayerHost.IsPlaying)
             {
@@ -42,52 +71,52 @@ namespace EmergenceGuardian.MediaPlayerUI
             }
         }
 
-        public ICommand StopCommand => CommandHelper.InitCommand(ref stopCommand, Stop, CanStop);
-        private ICommand stopCommand;
+        public ICommand StopCommand => CommandHelper.InitCommand(ref _stopCommand, Stop, CanStop);
+        private RelayCommand? _stopCommand;
         private bool CanStop() => PlayerHost?.IsMediaLoaded ?? false;
         private void Stop()
         {
+            if (PlayerHost == null) { return; }
+
             PlayerHost.Stop();
             StopCommandExecuted?.Invoke(this, new EventArgs());
         }
 
-        public ICommand SeekCommand => CommandHelper.InitCommand<int>(ref seekCommand, Seek, CanSeek);
-        private ICommand seekCommand;
+        public ICommand SeekCommand => CommandHelper.InitCommand<int>(ref _seekCommand, Seek, CanSeek);
+        private RelayCommand<int>? _seekCommand;
         private bool CanSeek(int seconds) => PlayerHost?.IsMediaLoaded ?? false;
         private void Seek(int seconds)
         {
-            TimeSpan NewPos = PlayerHost.Position.Add(TimeSpan.FromSeconds(seconds));
-            if (NewPos < TimeSpan.Zero)
-                NewPos = TimeSpan.Zero;
-            else if (NewPos > PlayerHost.Duration)
-                NewPos = PlayerHost.Duration;
-            if (NewPos != PlayerHost.Position)
+            if (PlayerHost == null) { return; }
+
+            var newPos = PlayerHost.Position.Add(TimeSpan.FromSeconds(seconds));
+            if (newPos < TimeSpan.Zero)
             {
-                PositionBar = NewPos;
-                PlayerHost.Position = NewPos;
+                newPos = TimeSpan.Zero;
+            }
+            else if (newPos > PlayerHost.Duration)
+            {
+                newPos = PlayerHost.Duration;
+            }
+
+            if (newPos != PlayerHost.Position)
+            {
+                PositionBar = newPos;
+                PlayerHost.Position = newPos;
             }
             SeekCommandExecuted?.Invoke(this, new ValueEventArgs<int>(seconds));
         }
 
-        public ICommand ChangeVolumeCommand => CommandHelper.InitCommand<int>(ref changeVolumeCommand, ChangeVolume, CanChangeVolume);
-        private ICommand changeVolumeCommand;
+        public ICommand ChangeVolumeCommand => CommandHelper.InitCommand<int>(ref _changeVolumeCommand, ChangeVolume, CanChangeVolume);
+        private RelayCommand<int>? _changeVolumeCommand;
         private bool CanChangeVolume(int value) => true;
         private void ChangeVolume(int value)
         {
-            PlayerHost.Volume = PlayerHost.Volume + value;
+            if (PlayerHost == null) { return; }
+
+            PlayerHost.Volume += value;
             ChangeVolumeExecuted?.Invoke(this, new ValueEventArgs<int>(value));
         }
-
-        #endregion
-
-
-        #region Dependency Properties
-
-        public PlayerHostBase PlayerHost => Content as PlayerHostBase;
-
-        // PlayerHost
-        //public static readonly DependencyProperty PlayerHostProperty = DependencyProperty.Register("PlayerHost", typeof(PlayerHostBase), typeof(MediaPlayerBase));
-        //public PlayerHostBase PlayerHost { get => (PlayerHostBase)GetValue(PlayerHostProperty); set => SetValue(PlayerHostProperty, value); }
 
         // PositionBar
         public static readonly DependencyProperty PositionBarProperty = DependencyProperty.Register("PositionBar", typeof(TimeSpan), typeof(MediaPlayerBase),
@@ -95,147 +124,115 @@ namespace EmergenceGuardian.MediaPlayerUI
         public TimeSpan PositionBar { get => (TimeSpan)GetValue(PositionBarProperty); set => SetValue(PositionBarProperty, value); }
         private static object CoercePositionBar(DependencyObject d, object value)
         {
-            MediaPlayerBase P = d as MediaPlayerBase;
-            TimeSpan Pos = (TimeSpan)value;
-            if (P.PlayerHost == null)
+            var p = (MediaPlayerBase)d;
+            var pos = (TimeSpan)value;
+            if (p.PlayerHost == null)
+            {
                 return DependencyProperty.UnsetValue;
+            }
 
-            if (Pos < TimeSpan.Zero)
-                Pos = TimeSpan.Zero;
-            if (Pos > P.PlayerHost.Duration)
-                Pos = P.PlayerHost.Duration;
-            return Pos;
+            if (pos < TimeSpan.Zero)
+            {
+                pos = TimeSpan.Zero;
+            }
+
+            if (pos > p.PlayerHost.Duration)
+            {
+                pos = p.PlayerHost.Duration;
+            }
+
+            return pos;
         }
 
         // PositionDisplay
-        public static readonly DependencyProperty PositionDisplayProperty = DependencyProperty.Register("PositionDisplay", typeof(TimeDisplayStyles), typeof(MediaPlayerBase),
-            new PropertyMetadata(TimeDisplayStyles.Standard));
-        public TimeDisplayStyles PositionDisplay { get => (TimeDisplayStyles)GetValue(PositionDisplayProperty); set => SetValue(PositionDisplayProperty, value); }
+        public static readonly DependencyProperty PositionDisplayProperty = DependencyProperty.Register("PositionDisplay", typeof(TimeDisplayStyle), typeof(MediaPlayerBase),
+            new PropertyMetadata(TimeDisplayStyle.Standard));
+        public TimeDisplayStyle PositionDisplay { get => (TimeDisplayStyle)GetValue(PositionDisplayProperty); set => SetValue(PositionDisplayProperty, value); }
 
         // PositionText
         public static readonly DependencyPropertyKey PositionTextPropertyKey = DependencyProperty.RegisterReadOnly("PositionText", typeof(string), typeof(MediaPlayerBase),
             new PropertyMetadata(null));
-        private static readonly DependencyProperty PositionTextProperty = PositionTextPropertyKey.DependencyProperty;
-        public string PositionText { get => (string)GetValue(PositionTextProperty); private set => SetValue(PositionTextPropertyKey, value); }
-
-        #endregion
+        private static readonly DependencyProperty s_positionTextProperty = PositionTextPropertyKey.DependencyProperty;
+        public string PositionText { get => (string)GetValue(s_positionTextProperty); private set => SetValue(PositionTextPropertyKey, value); }
 
 
-        #region Events
-
-        protected static void OnContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            MediaPlayerBase P = d as MediaPlayerBase;
-            if (e.OldValue is PlayerHostBase OldValue)
-            {
-                OldValue.MediaLoaded -= P.Player_MediaLoaded;
-                OldValue.MediaUnloaded -= P.Player_MediaUnloaded;
-                P.PositionChangedNotifier.ValueChanged -= P.Player_PositionChanged;
-                P.PositionChangedNotifier = null;
-            }
-            if (e.NewValue is PlayerHostBase NewValue)
-            {
-                NewValue.MediaLoaded += P.Player_MediaLoaded;
-                NewValue.MediaUnloaded += P.Player_MediaUnloaded;
-                P.PositionChangedNotifier = new PropertyChangeNotifier(NewValue, "Position");
-                P.PositionChangedNotifier.ValueChanged += P.Player_PositionChanged;
-            }
-            P.OnContentChanged(e);
-        }
-
-        // Allow derived class to bind to new host.
-        protected virtual void OnContentChanged(DependencyPropertyChangedEventArgs e) { }
-
-        private void Player_PositionChanged(object sender, EventArgs e)
+        private void Player_PositionChanged(object? sender, EventArgs e)
         {
             UpdatePositionText();
-            if (!isSeekBarButtonDown)
+            if (!IsSeekBarPressed && PlayerHost != null)
+            {
                 PositionBar = PlayerHost.Position;
+            }
         }
 
         private void UpdatePositionText()
         {
-            if (PlayerHost != null && PlayerHost.IsMediaLoaded && PositionDisplay != TimeDisplayStyles.None)
-                PositionText = string.Format("{0} / {1}",
+            if (PlayerHost?.IsMediaLoaded == true && PositionDisplay != TimeDisplayStyle.None)
+            {
+                PositionText = string.Format(CultureInfo.InvariantCulture, "{0} / {1}",
                     FormatTime(PlayerHost.Position),
                     FormatTime(PlayerHost.Duration));
+            }
             else
+            {
                 PositionText = "";
+            }
         }
 
-        private void Player_MediaLoaded(object sender, EventArgs e)
+        private void Player_MediaLoaded(object? sender, EventArgs e)
         {
             Player_PositionChanged(sender, e);
             CommandManager.InvalidateRequerySuggested();
         }
 
-        private void Player_MediaUnloaded(object sender, EventArgs e)
+        private void Player_MediaUnloaded(object? sender, EventArgs e)
         {
             UpdatePositionText();
             CommandManager.InvalidateRequerySuggested();
             PositionBar = TimeSpan.Zero;
         }
 
-        public void SeekBar_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            // Only process event if click is not on thumb.
-            Thumb Obj = GetSliderThumb(sender as Slider);
-            Point Pos = e.GetPosition(Obj);
-            if (Pos.X < 0 || Pos.Y < 0 || Pos.X > Obj.ActualWidth || Pos.Y > Obj.ActualHeight)
-            {
-                // Immediate seek when clicking elsewhere.
-                isSeekBarButtonDown = true;
-                PlayerHost.Position = PositionBar;
-                isSeekBarButtonDown = false;
-            }
-        }
-
-        public void SeekBar_DragStarted(object sender, DragStartedEventArgs e)
-        {
-            isSeekBarButtonDown = true;
-        }
-
-        private DateTime lastDragCompleted = DateTime.MinValue;
-        public void SeekBar_DragCompleted(object sender, DragCompletedEventArgs e)
-        {
-            // DragCompleted can trigger multiple times after switching to/from fullscreen. Ignore multiple events within a second.
-            if ((DateTime.Now - lastDragCompleted).TotalSeconds < 1)
-                return;
-            lastDragCompleted = DateTime.Now;
-
-            PlayerHost.Position = PositionBar;
-            isSeekBarButtonDown = false;
-        }
-
-        #endregion
-
-
-        #region Helper Functions
-
         private string FormatTime(TimeSpan t)
         {
-            if (PositionDisplay == TimeDisplayStyles.Standard)
+            if (PositionDisplay == TimeDisplayStyle.Standard)
             {
                 if (t.TotalHours >= 1)
-                    return t.ToString("h\\:mm\\:ss");
+                {
+                    return t.ToString("h\\:mm\\:ss", CultureInfo.InvariantCulture);
+                }
                 else
-                    return t.ToString("m\\:ss");
+                {
+                    return t.ToString("m\\:ss", CultureInfo.InvariantCulture);
+                }
             }
-            else if (PositionDisplay == TimeDisplayStyles.Seconds)
+            else if (PositionDisplay == TimeDisplayStyle.Seconds)
             {
-                return t.TotalSeconds.ToString();
+                return t.TotalSeconds.ToString(CultureInfo.InvariantCulture);
             }
             else
-                return null;
+            {
+                return string.Empty;
+            }
         }
 
-        public Thumb GetSliderThumb(Slider obj)
+        private bool _disposedValue = false;
+        protected virtual void Dispose(bool disposing)
         {
-            var track = obj.Template.FindName("PART_Track", obj) as Track;
-            return track?.Thumb;
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _positionChangedNotifier?.Dispose();
+                }
+                _disposedValue = true;
+            }
         }
 
-        #endregion
-
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

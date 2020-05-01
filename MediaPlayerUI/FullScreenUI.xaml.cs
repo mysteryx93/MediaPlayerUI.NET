@@ -2,33 +2,42 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace EmergenceGuardian.MediaPlayerUI {
+namespace HanumanInstitute.MediaPlayerUI
+{
     /// <summary>
     /// Interaction logic for FullScreenUI.xaml
     /// </summary>
-    public partial class FullScreenUI : Window {
+    public partial class FullScreenUI : Window
+    {
         public bool IsClosing { get; private set; }
 
-        public FullScreenUI() {
+        public FullScreenUI()
+        {
             InitializeComponent();
         }
 
-        public Grid ContentGrid => this.MainGrid;
+        public Grid ContentGrid => MainGrid;
 
-        public void CloseOnce() {
-            if (!IsClosing) {
+        public void CloseOnce()
+        {
+            if (!IsClosing)
+            {
                 IsClosing = true;
-                this.Close();
+                Close();
             }
         }
 
-        private void UI_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+        private void UI_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
             IsClosing = true;
         }
 
-        private void Window_Deactivated(object sender, EventArgs e) {
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
             if (IsLoaded)
+            {
                 CloseOnce();
+            }
         }
     }
 }

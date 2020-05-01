@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HanumanInstitute.MpvPlayerUI
+namespace HanumanInstitute.NAudioPlayerUI
 {
     /// <summary>
     /// Represents the status of the player control.

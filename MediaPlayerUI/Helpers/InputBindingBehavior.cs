@@ -1,44 +1,54 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
 
-namespace EmergenceGuardian.MediaPlayerUI {
-    public class InputBindingBehavior {
-        public static bool GetPropagateInputBindingsToWindow(FrameworkElement obj) {
-            return (bool)obj.GetValue(PropagateInputBindingsToWindowProperty);
-        }
-
-        public static void SetPropagateInputBindingsToWindow(FrameworkElement obj, bool value) {
-            obj.SetValue(PropagateInputBindingsToWindowProperty, value);
-        }
-
+namespace HanumanInstitute.MediaPlayerUI
+{
+    public static class InputBindingBehavior
+    {
         public static readonly DependencyProperty PropagateInputBindingsToWindowProperty =
             DependencyProperty.RegisterAttached("PropagateInputBindingsToWindow", typeof(bool), typeof(InputBindingBehavior),
             new PropertyMetadata(false, OnPropagateInputBindingsToWindowChanged));
+        public static bool GetPropagateInputBindingsToWindow(FrameworkElement d) => (bool)(d.CheckNotNull(nameof(d)).GetValue(PropagateInputBindingsToWindowProperty) ?? false);
+        public static void SetPropagateInputBindingsToWindow(FrameworkElement d, bool value) => d.CheckNotNull(nameof(d)).SetValue(PropagateInputBindingsToWindowProperty, value);
 
-        private static void OnPropagateInputBindingsToWindowChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+        private static void OnPropagateInputBindingsToWindowChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
             if ((bool)e.OldValue == false && (bool)e.NewValue == true)
-                ((FrameworkElement)d).Loaded += frameworkElement_Loaded;
+            {
+                if (d is FrameworkElement elem)
+                {
+                    elem.Loaded += FrameworkElement_Loaded;
+                }
+            }
         }
 
-        private static void frameworkElement_Loaded(object sender, RoutedEventArgs e) {
+        private static void FrameworkElement_Loaded(object sender, RoutedEventArgs e)
+        {
             var frameworkElement = (FrameworkElement)sender;
-            frameworkElement.Loaded -= frameworkElement_Loaded;
+            frameworkElement.Loaded -= FrameworkElement_Loaded;
 
             var window = Window.GetWindow(frameworkElement);
-            if (window == null) {
-                return;
+            if (window != null)
+            {
+                // Move input bindings from the FrameworkElement to the window.
+                TransferBindingsToWindow(frameworkElement, window, true);
             }
-
-            // Move input bindings from the FrameworkElement to the window.
-            TransferBindingsToWindow(frameworkElement, window, true);
         }
 
-        public static void TransferBindingsToWindow(FrameworkElement src, FrameworkElement dst, bool remove) {
-            for (int i = src.InputBindings.Count - 1; i >= 0; i--) {
+        public static void TransferBindingsToWindow(FrameworkElement src, FrameworkElement dst, bool remove)
+        {
+            src.CheckNotNull(nameof(src));
+            dst.CheckNotNull(nameof(dst));
+
+            for (var i = src.InputBindings.Count - 1; i >= 0; i--)
+            {
                 var inputBinding = (InputBinding)src.InputBindings[i];
                 dst.InputBindings.Add(inputBinding);
                 if (remove)
+                {
                     src.InputBindings.Remove(inputBinding);
+                }
             }
 
         }

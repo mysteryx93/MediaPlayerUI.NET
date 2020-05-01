@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Sample.Properties {
+namespace HanumanInstitute.MediaPlayerUI.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Sample.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sample.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HanumanInstitute.MediaPlayerUI.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,33 @@ namespace Sample.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Argument &apos;{0}&apos; cannot be null or empty..
+        /// </summary>
+        internal static string ArgumentNullOrEmpty {
+            get {
+                return ResourceManager.GetString("ArgumentNullOrEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} must be within a Panel or Grid control. Container is of type &apos;{1}&apos;..
+        /// </summary>
+        internal static string ParentMustBePanel {
+            get {
+                return ResourceManager.GetString("ParentMustBePanel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find template element &apos;{0}&apos; of type &apos;{1}&apos;..
+        /// </summary>
+        internal static string TemplateElementNotFound {
+            get {
+                return ResourceManager.GetString("TemplateElementNotFound", resourceCulture);
             }
         }
     }
