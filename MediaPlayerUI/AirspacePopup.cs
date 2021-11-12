@@ -109,26 +109,26 @@ namespace HanumanInstitute.MediaPlayerUI
             }
         }
 
-        private double CutLeft(FrameworkElement placementTarget)
+        private static double CutLeft(FrameworkElement placementTarget)
         {
             var point = placementTarget.PointToScreen(new Point(0, placementTarget.ActualWidth));
             return Math.Min(0, point.X);
         }
 
-        private double CutTop(FrameworkElement placementTarget)
+        private static double CutTop(FrameworkElement placementTarget)
         {
             var point = placementTarget.PointToScreen(new Point(placementTarget.ActualHeight, 0));
             return Math.Min(0, point.Y);
         }
 
-        private double CutRight(FrameworkElement placementTarget)
+        private static double CutRight(FrameworkElement placementTarget)
         {
             var point = placementTarget.PointToScreen(new Point(0, placementTarget.ActualWidth));
             point.X += placementTarget.ActualWidth;
             return Math.Min(0, SystemParameters.VirtualScreenWidth - (Math.Max(SystemParameters.VirtualScreenWidth, point.X)));
         }
 
-        private double CutBottom(FrameworkElement placementTarget)
+        private static double CutBottom(FrameworkElement placementTarget)
         {
             var point = placementTarget.PointToScreen(new Point(placementTarget.ActualHeight, 0));
             point.Y += placementTarget.ActualHeight;

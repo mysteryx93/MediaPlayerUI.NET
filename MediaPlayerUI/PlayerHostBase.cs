@@ -19,12 +19,12 @@ namespace HanumanInstitute.MediaPlayerUI
         public PlayerHostBase()
         { }
 
-        private bool _isSettingPosition = false;
+        private bool _isSettingPosition;
         private Panel? _innerControlParentCache;
 
         // Restart won't be triggered after Stop while this timer is running.
-        private bool _isStopping = false;
-        private DispatcherTimer? _stopTimer = null;
+        private bool _isStopping;
+        private DispatcherTimer? _stopTimer;
 
         /// <summary>
         /// Occurs after a media file is loaded.
@@ -128,20 +128,14 @@ namespace HanumanInstitute.MediaPlayerUI
 
         // SpeedFloat
         public static readonly DependencyProperty SpeedFloatProperty = DependencyProperty.Register("SpeedFloat", typeof(double), typeof(PlayerHostBase),
-            new PropertyMetadata(1.0, SpeedChanged, CoerceSpeedFloat));
+            new PropertyMetadata(1.0, SpeedChanged, CoerceDouble));
         public double SpeedFloat { get => (double)GetValue(SpeedFloatProperty); set => SetValue(SpeedFloatProperty, value); }
         private static void SpeedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var p = (PlayerHostBase)d;
             p.SpeedChanged(p.GetSpeed());
         }
-        protected static object CoerceSpeedFloat(DependencyObject d, object baseValue)
-        {
-            var p = (PlayerHostBase)d.CheckNotNull(nameof(d));
-            return p.CoerceSpeedFloat((double)baseValue);
-        }
         protected virtual void SpeedChanged(double value) { }
-        protected virtual double CoerceSpeedFloat(double value) => !(value > 0) ? 1 : value;
 
         // SpeedInt
         public static readonly DependencyProperty SpeedIntProperty = DependencyProperty.Register("SpeedInt", typeof(int), typeof(PlayerHostBase),
@@ -226,6 +220,11 @@ namespace HanumanInstitute.MediaPlayerUI
         }
         protected virtual bool CoerceIsVideoVisible(bool value) => value;
 
+        protected static object CoerceDouble(DependencyObject d, object baseValue)
+        {
+            var value = (double)baseValue;
+            return !(value > 0) ? 1 : value;
+        }
 
         /// <summary>
         /// Sets the position without raising PositionChanged.

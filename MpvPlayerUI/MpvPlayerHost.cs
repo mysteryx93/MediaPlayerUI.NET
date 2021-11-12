@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms.Integration;
 using HanumanInstitute.MediaPlayerUI;
@@ -26,7 +28,7 @@ namespace HanumanInstitute.MpvPlayerUI
         }
 
         public const string HostPartName = "PART_Host";
-        public WindowsFormsHost? Host => _host ?? (_host = GetTemplateChild(HostPartName) as WindowsFormsHost);
+        public WindowsFormsHost? Host => _host ??= GetTemplateChild(HostPartName) as WindowsFormsHost;
         private WindowsFormsHost? _host;
 
         public Mpv.NET.Player.MpvPlayer? Player { get; private set; }
@@ -34,7 +36,7 @@ namespace HanumanInstitute.MpvPlayerUI
         public event EventHandler? MediaError;
         public event EventHandler? MediaFinished;
 
-        private bool _initLoaded = false;
+        private bool _initLoaded;
 
         // DllPath
         public static readonly DependencyProperty DllPathProperty = DependencyProperty.Register("DllPath", typeof(string), typeof(MpvPlayerHost));
@@ -55,7 +57,7 @@ namespace HanumanInstitute.MpvPlayerUI
             else
             {
                 p.Status = PlaybackStatus.Stopped;
-                p.Player!.Stop();
+                p.Player?.Stop();
             }
         }
 
@@ -79,6 +81,19 @@ namespace HanumanInstitute.MpvPlayerUI
             p.SetDisplayText();
         }
 
+        // Pitch
+        public static readonly DependencyProperty PitchProperty = DependencyProperty.Register("Pitch", typeof(double), typeof(MpvPlayerHost),
+            new PropertyMetadata(1.0, PitchChanged, CoerceDouble));
+        public double Pitch { get => (double)GetValue(PitchProperty); set => SetValue(PitchProperty, value); }
+        private static void PitchChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var p = (MpvPlayerHost)d;
+            if (p.Player != null)
+            {
+                p.Player.API.SetPropertyString("af", string.Format(CultureInfo.InvariantCulture, "rubberband=pitch-scale={0}", e.NewValue));
+            }
+        }
+
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             if (Host == null)
@@ -98,6 +113,10 @@ namespace HanumanInstitute.MpvPlayerUI
             Player.Volume = base.Volume;
             Player.Speed = base.GetSpeed();
             Player.Loop = base.Loop;
+            if (Pitch != 1)
+            {
+                Player.API.SetPropertyString("af", string.Format(CultureInfo.InvariantCulture, "rubberband=pitch-scale={0}", Pitch));
+            }
 
             MediaPlayerInitialized?.Invoke(this, new EventArgs());
 
@@ -243,6 +262,7 @@ namespace HanumanInstitute.MpvPlayerUI
             if (!string.IsNullOrEmpty(Source))
             {
                 _initLoaded = true;
+                Thread.Sleep(10);
                 Player.Load(Source, true);
             }
         }

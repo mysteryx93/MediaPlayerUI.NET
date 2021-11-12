@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Threading;
 using HanumanInstitute.MediaPlayerUI;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using SoundTouch.Net.NAudioSupport;
 
 namespace HanumanInstitute.NAudioPlayerUI
@@ -21,13 +22,17 @@ namespace HanumanInstitute.NAudioPlayerUI
             if (!DesignerProperties.GetIsInDesignMode(this))
             {
                 Loaded += UserControl_Loaded;
+                Unloaded += UserControl_Unloaded;
+                Dispatcher.ShutdownStarted += (s2, e2) => UserControl_Unloaded(s2, null);
             }
         }
 
         private WaveOutEvent? _mediaOut;
-        private SoundTouchWaveStream? _mediaFile;
+        private WaveStream? _mediaFile;
+        private SoundTouchWaveProvider? _mediaProvider;
         private DispatcherTimer? _posTimer;
         private bool _initLoaded = false;
+        private readonly object _lock = new object();
 
         public event EventHandler? MediaError;
         public event EventHandler? MediaFinished;
@@ -40,13 +45,14 @@ namespace HanumanInstitute.NAudioPlayerUI
             _posTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(PositionRefreshMilliseconds), DispatcherPriority.Render, Timer_PositionChanged, Dispatcher) { IsEnabled = false };
 
             _mediaOut.Volume = (float)base.Volume / 100;
-            //_mediaOut.Loop = base.Loop;
 
-            if (Source != null && !_initLoaded)
+            if (!string.IsNullOrEmpty(Source) && !_initLoaded)
             {
                 LoadMedia();
             }
         }
+
+        private void UserControl_Unloaded(object? sender, RoutedEventArgs? e) => Dispose();
 
         // DllPath
         public static readonly DependencyProperty DllPathProperty = DependencyProperty.Register("DllPath", typeof(string), typeof(NAudioPlayerHost));
@@ -68,6 +74,8 @@ namespace HanumanInstitute.NAudioPlayerUI
             {
                 p.Status = PlaybackStatus.Stopped;
                 p._mediaOut?.Stop();
+                p._mediaFile?.Dispose();
+                p._mediaFile = null;
             }
         }
 
@@ -111,52 +119,57 @@ namespace HanumanInstitute.NAudioPlayerUI
 
         // Rate
         public static readonly DependencyProperty RateProperty = DependencyProperty.Register("Rate", typeof(double), typeof(NAudioPlayerHost),
-            new PropertyMetadata(1.0, RateChanged, CoerceSpeedFloat));
+            new PropertyMetadata(1.0, RateChanged, CoerceDouble));
         public double Rate { get => (double)GetValue(RateProperty); set => SetValue(RateProperty, value); }
         private static void RateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var p = (NAudioPlayerHost)d;
-            if (p._mediaFile != null)
+            if (p._mediaProvider != null)
             {
-                p._mediaFile.Rate = (double)e.NewValue;
+                p._mediaProvider.Rate = (double)e.NewValue;
             }
         }
 
         // Pitch
         public static readonly DependencyProperty PitchProperty = DependencyProperty.Register("Pitch", typeof(double), typeof(NAudioPlayerHost),
-            new PropertyMetadata(1.0, PitchChanged, CoerceSpeedFloat));
+            new PropertyMetadata(1.0, PitchChanged, CoerceDouble));
         public double Pitch { get => (double)GetValue(PitchProperty); set => SetValue(PitchProperty, value); }
         private static void PitchChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var p = (NAudioPlayerHost)d;
-            if (p._mediaFile != null)
+            if (p._mediaProvider != null)
             {
-                p._mediaFile.Pitch = (double)e.NewValue;
+                p._mediaProvider.Pitch = (double)e.NewValue;
             }
         }
 
-        private void Player_MediaError()
+        // VolumeBoost
+        public static readonly DependencyProperty VolumeBoostProperty = DependencyProperty.Register("VolumeBoost", typeof(double), typeof(NAudioPlayerHost),
+            new PropertyMetadata(1.0, VolumeBoostChanged, CoerceDouble));
+        public double VolumeBoost { get => (double)GetValue(VolumeBoostProperty); set => SetValue(VolumeBoostProperty, value); }
+        private static void VolumeBoostChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (MediaError != null)
-            {
-                Dispatcher.Invoke(() => MediaError?.Invoke(this, new EventArgs()));
-            }
+            var p = (NAudioPlayerHost)d;
+            p.VolumeChanged(p.Volume);
         }
+
+        // UseSoundTouch
+        public static readonly DependencyProperty UseSoundTouchProperty = DependencyProperty.Register("UseSoundTouch", typeof(bool), typeof(NAudioPlayerHost),
+            new PropertyMetadata(false));
+        public bool UseSoundTouch { get => (bool)GetValue(UseSoundTouchProperty); set => SetValue(UseSoundTouchProperty, value); }
+
 
         private void Player_PlaybackStopped(object? sender, StoppedEventArgs e)
         {
-            if (_mediaFile == null) { return; }
+            // if (_mediaFile == null) { return; }
 
             Dispatcher.Invoke(() =>
             {
-                if (Math.Abs((_mediaFile.TotalTime - _mediaFile.CurrentTime).TotalSeconds) < 0.2)
+                if (_mediaFile != null && (_mediaFile.TotalTime - _mediaFile.CurrentTime).TotalSeconds < 1.0)
                 {
                     MediaFinished?.Invoke(this, new EventArgs());
                 }
-                if (!Loop)
-                {
-                    base.OnMediaUnloaded();
-                }
+                base.OnMediaUnloaded();
             });
         }
 
@@ -175,7 +188,13 @@ namespace HanumanInstitute.NAudioPlayerUI
         {
             if (_mediaFile != null)
             {
-                base.SetPositionNoSeek(_mediaFile.CurrentTime);
+                lock (_lock)
+                {
+                    if (_mediaFile != null)
+                    {
+                        base.SetPositionNoSeek(_mediaFile.CurrentTime);
+                    }
+                }
             }
         }
 
@@ -200,7 +219,7 @@ namespace HanumanInstitute.NAudioPlayerUI
             base.PositionChanged(value, isSeeking);
             if (_mediaFile != null && isSeeking)
             {
-                lock (_mediaOut!)
+                lock (_lock)
                 {
                     if (_mediaFile != null && isSeeking)
                     {
@@ -232,16 +251,16 @@ namespace HanumanInstitute.NAudioPlayerUI
             base.VolumeChanged(value);
             if (_mediaOut != null)
             {
-                _mediaOut.Volume = (float)value / 100;
+                _mediaOut.Volume = (float)(VolumeBoost * value / 100);
             }
         }
 
         protected override void SpeedChanged(double value)
         {
             base.SpeedChanged(value);
-            if (_mediaFile != null)
+            if (_mediaProvider != null)
             {
-                _mediaFile.Tempo = value;
+                _mediaProvider.Tempo = value;
             }
         }
 
@@ -267,27 +286,39 @@ namespace HanumanInstitute.NAudioPlayerUI
         private void LoadMedia()
         {
             _mediaOut?.Stop();
+            _mediaFile?.Dispose();
+            _mediaFile = null;
             if (Source != null && _mediaOut != null)
             {
                 _initLoaded = true;
                 // Store locally because properties can't be accessed from new thread.
                 var fileName = Source;
-                var speed = SpeedFloat;
+                var speed = GetSpeed();
                 var rate = Rate;
                 var pitch = Pitch;
                 var autoPlay = AutoPlay;
-                _ = Task.Run(async () =>
+                var useSoundTouch = UseSoundTouch || speed != 1 || rate != 1 || pitch != 1;
+                _ = Task.Run(() =>
                 {
                     try
                     {
-                        using var reader = new MediaFoundationReader(fileName, new MediaFoundationReader.MediaFoundationReaderSettings() { RequestFloatOutput = true });
-                        _mediaFile = new SoundTouchWaveStream(reader)
+                        _mediaFile = new MediaFoundationReader(fileName, 
+                            new MediaFoundationReader.MediaFoundationReaderSettings() { RequestFloatOutput = true });
+
+                        if (useSoundTouch)
                         {
-                            Tempo = speed,
-                            Rate = rate,
-                            Pitch = pitch
-                        };
-                        _mediaOut.Init(_mediaFile);
+                            // Resample to 48000hz and then use SoundTouch to provide best quality.
+                            var resampler = new WdlResamplingSampleProvider(_mediaFile.ToSampleProvider(), 48000);
+
+                            _mediaProvider = new SoundTouchWaveProvider(resampler.ToWaveProvider())
+                            {
+                                Tempo = speed,
+                                Rate = rate,
+                                Pitch = pitch
+                            };
+                        }
+
+                        _mediaOut.Init((IWaveProvider?)_mediaProvider ?? _mediaFile);
                         if (autoPlay)
                         {
                             _mediaOut.Play();
@@ -299,7 +330,8 @@ namespace HanumanInstitute.NAudioPlayerUI
                     {
                         _mediaFile?.Dispose();
                         _mediaFile = null;
-                        Player_MediaError();
+                        _mediaProvider = null;
+                        MediaError?.Invoke(this, new EventArgs());
                     }
                 }).ConfigureAwait(false);
             }
@@ -319,8 +351,9 @@ namespace HanumanInstitute.NAudioPlayerUI
             {
                 if (disposing)
                 {
-                    _mediaFile?.Dispose();
                     _mediaOut?.Dispose();
+                    _mediaFile?.Dispose();
+                    _mediaFile = null;
                 }
                 _disposedValue = true;
             }

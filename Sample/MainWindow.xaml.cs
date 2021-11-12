@@ -49,5 +49,10 @@ namespace Sample
             _mediaOut.Init(reader);
             _mediaOut.Play();
         }
+
+        private void PlayerHost_MediaUnloaded(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -61,7 +61,7 @@ namespace HanumanInstitute.MediaPlayerUI
             //}
         }
 
-        private MouseButton? ConvertToWpf(MouseButtons winformButton)
+        private static MouseButton? ConvertToWpf(MouseButtons winformButton)
         {
             return winformButton switch
             {

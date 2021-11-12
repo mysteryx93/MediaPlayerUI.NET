@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Data;
 
@@ -79,6 +80,7 @@ namespace HanumanInstitute.MediaPlayerUI
         [Description("Returns / sets the value of the property")]
         [Category("Behavior")]
         [Bindable(true)]
+        [SuppressMessage("Naming", "CA1721:Property names should not match get methods", Justification = "Reviewed")]
         public object Value
         {
             get
@@ -93,7 +95,7 @@ namespace HanumanInstitute.MediaPlayerUI
 
         public event EventHandler? ValueChanged;
 
-        private bool _disposedValue = false;
+        private bool _disposedValue;
 
         void Dispose(bool disposing)
         {

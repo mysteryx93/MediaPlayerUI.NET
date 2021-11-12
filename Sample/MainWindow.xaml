@@ -16,9 +16,9 @@
 		<KeyBinding Key="Enter" Modifiers="Alt" Command="{Binding ToggleFullScreenCommand, ElementName=Player}" />
 	</Window.InputBindings>
     <Grid>
-        <Button Click="Button_Click" />
-        <!--<ui:MediaPlayer x:Name="Player">
-            <naudio:NAudioPlayerHost x:Name="PlayerHost" Source="E:\Music\Inna - Body And The Sun (Super Deluxe Edition) (2015)\CD1\07 Fool Me.mp3" Pitch="0.9818181818181818181818" AutoPlay="true" />
-        </ui:MediaPlayer>-->
+        <ui:MediaPlayer x:Name="Player">
+            <mpv:MpvPlayerHost x:Name="PlayerHost" Source="E:\Music\Inna - Body And The Sun (Super Deluxe Edition) (2015)\CD1\07 Fool Me.mp3" AutoPlay="true" MediaUnloaded="PlayerHost_MediaUnloaded" />
+            <!--<naudio:NAudioPlayerHost x:Name="PlayerHost" Source="E:\Music\Inna - Body And The Sun (Super Deluxe Edition) (2015)\CD1\07 Fool Me.mp3" Pitch="0.9818181818181818181818" AutoPlay="true" MediaUnloaded="PlayerHost_MediaUnloaded" />-->
+        </ui:MediaPlayer>
     </Grid>
 </Window>

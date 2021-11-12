@@ -37,18 +37,18 @@ namespace HanumanInstitute.MediaPlayerUI
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public const string UIPartName = "PART_UI";
-        public Border? UI => _ui ?? (_ui = GetTemplateChild(UIPartName) as Border);
+        public Border? UIPart => _ui ??= GetTemplateChild(UIPartName) as Border;
         private Border? _ui;
 
         public const string SeekBarPartName = "PART_SeekBar";
-        public Slider? SeekBar => _seekBar ?? (_seekBar = GetTemplateChild(SeekBarPartName) as Slider);
+        public Slider? SeekBarPart => _seekBar ??= GetTemplateChild(SeekBarPartName) as Slider;
         private Slider? _seekBar;
 
         public const string SeekBarTrackPartName = "PART_Track";
-        public Track? SeekBarTrack => _seekBarTrack ?? (_seekBarTrack = SeekBar?.Template.FindName(SeekBarTrackPartName, SeekBar) as Track);
+        public Track? SeekBarTrackPart => _seekBarTrack ??= SeekBarPart?.Template.FindName(SeekBarTrackPartName, SeekBarPart) as Track;
         private Track? _seekBarTrack;
 
-        public Thumb? SeekBarThumb => _seekBarThumb ?? (_seekBarThumb = SeekBarTrack?.Thumb);
+        public Thumb? SeekBarThumbPart => _seekBarThumb ??= SeekBarTrackPart?.Thumb;
         private Thumb? _seekBarThumb;
 
         public override void OnApplyTemplate()
@@ -56,27 +56,27 @@ namespace HanumanInstitute.MediaPlayerUI
             base.OnApplyTemplate();
             if (DesignerProperties.GetIsInDesignMode(this)) { return; }
 
-            if (UI == null)
+            if (UIPart == null)
             {
                 throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, UIPartName, typeof(Border).Name));
             }
-            if (SeekBar == null)
+            if (SeekBarPart == null)
             {
                 throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, SeekBarPartName, typeof(Slider).Name));
             }
 
             MouseDown += UserControl_MouseDown;
-            SeekBar.AddHandler(Slider.PreviewMouseDownEvent, new MouseButtonEventHandler(OnSeekBarPreviewMouseLeftButtonDown), true);
+            SeekBarPart.AddHandler(Slider.PreviewMouseDownEvent, new MouseButtonEventHandler(OnSeekBarPreviewMouseLeftButtonDown), true);
             // Thumb doesn't yet exist.
-            SeekBar.Loaded += (s, e) =>
+            SeekBarPart.Loaded += (s, e) =>
             {
-                if (SeekBarThumb == null)
+                if (SeekBarThumbPart == null)
                 {
                     throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, SeekBarTrackPartName, typeof(Track).Name));
                 }
 
-                SeekBarThumb.DragStarted += OnSeekBarDragStarted;
-                SeekBarThumb.DragCompleted += OnSeekBarDragCompleted;
+                SeekBarThumbPart.DragStarted += OnSeekBarDragStarted;
+                SeekBarThumbPart.DragCompleted += OnSeekBarDragCompleted;
             };
         }
 
@@ -166,7 +166,7 @@ namespace HanumanInstitute.MediaPlayerUI
 
         private bool IsActionPause(MouseButtonEventArgs e, int clickCount) => IsMouseAction(MousePause, e, clickCount);
 
-        private bool IsMouseAction(MouseTrigger a, MouseButtonEventArgs e, int clickCount)
+        private static bool IsMouseAction(MouseTrigger a, MouseButtonEventArgs e, int clickCount)
         {
             if (clickCount != TriggerClickCount(a))
             {
@@ -196,7 +196,7 @@ namespace HanumanInstitute.MediaPlayerUI
         /// <summary>
         /// Returns the amount of clicks represented by specified mouse trigger.
         /// </summary>
-        private int TriggerClickCount(MouseTrigger a)
+        private static int TriggerClickCount(MouseTrigger a)
         {
             if (a == MouseTrigger.None)
             {
@@ -222,11 +222,11 @@ namespace HanumanInstitute.MediaPlayerUI
             {
                 if (_uiParentCache == null)
                 {
-                    _uiParentCache = UI?.Parent as Panel;
+                    _uiParentCache = UIPart?.Parent as Panel;
                 }
                 if (_uiParentCache == null)
                 {
-                    throw new NullReferenceException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.ParentMustBePanel, UIPartName, UI?.Parent?.GetType()));
+                    throw new NullReferenceException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.ParentMustBePanel, UIPartName, UIPart?.Parent?.GetType()));
                 }
                 return _uiParentCache;
             }
@@ -289,10 +289,10 @@ namespace HanumanInstitute.MediaPlayerUI
             e.CheckNotNull(nameof(e));
 
             // Only process event if click is not on thumb.
-            if (SeekBarThumb != null)
+            if (SeekBarThumbPart != null)
             {
-                var pos = e.GetPosition(SeekBarThumb);
-                if (pos.X < 0 || pos.Y < 0 || pos.X > SeekBarThumb.ActualWidth || pos.Y > SeekBarThumb.ActualHeight)
+                var pos = e.GetPosition(SeekBarThumbPart);
+                if (pos.X < 0 || pos.Y < 0 || pos.X > SeekBarThumbPart.ActualWidth || pos.Y > SeekBarThumbPart.ActualHeight)
                 {
                     // Immediate seek when clicking elsewhere.
                     IsSeekBarPressed = true;
@@ -343,7 +343,7 @@ namespace HanumanInstitute.MediaPlayerUI
             set
             {
                 if (PlayerHost == null) { return; }
-                if (UI == null) { return; }
+                if (UIPart == null) { return; }
                 if (PlayerHost.HostContainer == null) { return; }
 
                 if (value != FullScreen)
@@ -358,8 +358,8 @@ namespace HanumanInstitute.MediaPlayerUI
                         InputBindingBehavior.TransferBindingsToWindow(Window.GetWindow(this), FullScreenUI, false);
                         // Transfer player.
                         TransferElement(PlayerHost.GetInnerControlParent(), FullScreenUI.ContentGrid, PlayerHost.HostContainer);
-                        TransferElement(UIParentCache, FullScreenUI.AirspaceGrid, UI);
-                        FullScreenUI.Airspace.VerticalOffset = -UI.ActualHeight;
+                        TransferElement(UIParentCache, FullScreenUI.AirspaceGrid, UIPart);
+                        FullScreenUI.Airspace.VerticalOffset = -UIPart.ActualHeight;
                         // Show.
                         FullScreenUI.ShowDialog();
                     }
@@ -367,7 +367,7 @@ namespace HanumanInstitute.MediaPlayerUI
                     {
                         // Transfer player back.
                         TransferElement(FullScreenUI.ContentGrid, PlayerHost.GetInnerControlParent(), PlayerHost.HostContainer);
-                        TransferElement(FullScreenUI.AirspaceGrid, UIParentCache, UI);
+                        TransferElement(FullScreenUI.AirspaceGrid, UIParentCache, UIPart);
                         // Close.
                         var f = FullScreenUI;
                         FullScreenUI = null;

@@ -23,11 +23,11 @@ namespace HanumanInstitute.MediaPlayerUI
         public event EventHandler<ValueEventArgs<int>>? SeekCommandExecuted;
         public event EventHandler<ValueEventArgs<int>>? ChangeVolumeExecuted;
 
-        protected bool IsSeekBarPressed { get; set; } = false;
+        protected bool IsSeekBarPressed { get; set; }
         private PropertyChangeNotifier? _positionChangedNotifier;
 
         private PlayerHostBase? _playerHost; // Cache to avoid constant casting.
-        public PlayerHostBase? PlayerHost => _playerHost ?? (_playerHost = Content as PlayerHostBase);
+        public PlayerHostBase? PlayerHost => _playerHost ??= Content as PlayerHostBase;
 
         protected static void OnContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -215,7 +215,7 @@ namespace HanumanInstitute.MediaPlayerUI
             }
         }
 
-        private bool _disposedValue = false;
+        private bool _disposedValue;
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)
