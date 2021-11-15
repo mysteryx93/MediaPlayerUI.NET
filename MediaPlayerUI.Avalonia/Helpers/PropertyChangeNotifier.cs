@@ -1,8 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Windows;
-using System.Windows.Data;
+using System.Reflection;
+using Avalonia;
+using Avalonia.Data;
 
 // PropertyDescriptor AddValueChanged Alternative
 // https://agsmith.wordpress.com/2008/04/07/propertydescriptor-addvaluechanged-alternative/
@@ -13,35 +14,32 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia.Helpers
     /// <summary>
     /// Tracks changes to a dependency property while avoiding memory leaks.
     /// </summary>
-    public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
+    public sealed class PropertyChangeNotifier : AvaloniaObject, IDisposable
     {
-
         private readonly WeakReference _propertySource;
 
-        public PropertyChangeNotifier(DependencyObject propertySource, string path)
-        : this(propertySource, new PropertyPath(path))
-        { }
+        // public PropertyChangeNotifier(AvaloniaObject propertySource, string path)
+        // : this(propertySource, new PropertyPath(path))
+        // { }
+        //
+        // public PropertyChangeNotifier(AvaloniaObject propertySource, AvaloniaProperty property)
+        // : this(propertySource, new PropertyPath(property))
+        // { }
 
-        public PropertyChangeNotifier(DependencyObject propertySource, DependencyProperty property)
-        : this(propertySource, new PropertyPath(property))
-        { }
-
-        public PropertyChangeNotifier(DependencyObject propertySource, PropertyPath property)
+        public PropertyChangeNotifier(IAvaloniaObject propertySource, string property)
         {
             propertySource.CheckNotNull(nameof(propertySource));
             property.CheckNotNull(nameof(property));
 
             _propertySource = new WeakReference(propertySource);
-            var binding = new Binding
+            var binding = new Binding(property, BindingMode.OneWay)
             {
-                Path = property,
-                Mode = BindingMode.OneWay,
                 Source = propertySource
             };
-            BindingOperations.SetBinding(this, ValueProperty, binding);
+            BindingOperations.Apply(this, ValueProperty, binding, null);
         }
 
-        public DependencyObject? PropertySource
+        public AvaloniaObject? PropertySource
         {
             get
             {
@@ -51,7 +49,7 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia.Helpers
                     // will result in an exception so i’ve wrapped this check
                     // in a try catch
                     return _propertySource.IsAlive
-                    ? _propertySource.Target as DependencyObject
+                    ? _propertySource.Target as AvaloniaObject
                     : null;
                 }
                 catch
@@ -64,14 +62,7 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia.Helpers
         /// <summary>
         /// Identifies the <see cref="Value"/> dependency property
         /// </summary>
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value",
-        typeof(object), typeof(PropertyChangeNotifier), new FrameworkPropertyMetadata(null, new PropertyChangedCallback(OnPropertyChanged)));
-
-        private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var notifier = (PropertyChangeNotifier)d.CheckNotNull(nameof(d));
-            notifier.ValueChanged?.Invoke(notifier.PropertySource, EventArgs.Empty);
-        }
+        public static readonly DirectProperty<PropertyChangeNotifier, object> ValueProperty = AvaloniaProperty.RegisterDirect<PropertyChangeNotifier, object>(nameof(Value), o => o.Value);
 
         /// <summary>
         /// Returns/sets the value of the property
@@ -80,18 +71,17 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia.Helpers
         [Description("Returns / sets the value of the property")]
         [Category("Behavior")]
         [Bindable(true)]
-        [SuppressMessage("Naming", "CA1721:Property names should not match get methods", Justification = "Reviewed")]
-        public object Value
+        public object? Value
         {
-            get
-            {
-                return (object)GetValue(PropertyChangeNotifier.ValueProperty);
-            }
+            get => _value;
             set
             {
-                SetValue(PropertyChangeNotifier.ValueProperty, value);
+                _value = value;
+                ValueChanged?.Invoke(PropertySource, EventArgs.Empty);
             }
         }
+
+        private object? _value;
 
         public event EventHandler? ValueChanged;
 
@@ -103,7 +93,7 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia.Helpers
             {
                 if (disposing)
                 {
-                    BindingOperations.ClearBinding(this, ValueProperty);
+                    // BindingOperations.ClearBinding(this, ValueProperty);
                 }
                 _disposedValue = true;
             }
