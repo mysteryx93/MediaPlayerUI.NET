@@ -7,7 +7,7 @@
     <RootNamespace>HanumanInstitute.MediaPlayerUI</RootNamespace>
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>
-    <PackageId>MediaPlayerUI</PackageId>
+    <PackageId>MediaPlayerUI.WPF</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
