@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Threading;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Threading;
 
 namespace HanumanInstitute.MediaPlayerUI.Avalonia
 {
@@ -13,11 +13,8 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
     {
         static PlayerHostBase()
         {
-            FocusableProperty.OverrideMetadata(typeof(PlayerHostBase), new FrameworkPropertyMetadata(false));
+            FocusableProperty.OverrideMetadata(typeof(PlayerHostBase), new StyledPropertyMetadata<bool>(false));
         }
-
-        public PlayerHostBase()
-        { }
 
         private bool _isSettingPosition;
         private Panel? _innerControlParentCache;
@@ -30,199 +27,221 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
         /// Occurs after a media file is loaded.
         /// </summary>
         public event EventHandler? MediaLoaded;
+
         /// <summary>
         /// Occurs after a media file is unloaded.
         /// </summary>
         public event EventHandler? MediaUnloaded;
 
-        public override void OnApplyTemplate()
+        public override void ApplyTemplate()
         {
-            base.OnApplyTemplate();
+            base.ApplyTemplate();
             _stopTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, (s, e) =>
             {
                 _stopTimer?.Stop();
                 _isStopping = false;
-            }, Dispatcher);
+            });
         }
 
 
         // Position
-        public static readonly DependencyProperty PositionProperty = DependencyProperty.Register("Position", typeof(TimeSpan), typeof(PlayerHostBase),
-            new PropertyMetadata(TimeSpan.Zero, PositionChanged, CoercePosition));
-        public TimeSpan Position { get => (TimeSpan)GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
-        private static void PositionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static readonly DirectProperty<PlayerHostBase, TimeSpan> PositionProperty =
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, TimeSpan>(nameof(Position), o => o.Position);
+
+        private TimeSpan _position { get; set; }
+
+        public TimeSpan Position
         {
-            var p = (PlayerHostBase)d;
-            p.PositionChanged((TimeSpan)e.NewValue, !p._isSettingPosition);
-        }
-        private static object CoercePosition(DependencyObject d, object baseValue)
-        {
-            var p = (PlayerHostBase)d;
-            return p.CoercePosition((TimeSpan)baseValue);
-        }
-        protected virtual void PositionChanged(TimeSpan value, bool isSeeking) { }
-        protected virtual TimeSpan CoercePosition(TimeSpan value)
-        {
-            if (value < TimeSpan.Zero)
+            get => _position;
+            set
             {
-                return TimeSpan.Zero;
-            }
-            else if (value > Duration)
-            {
-                return Duration;
-            }
-            else
-            {
-                return value;
+                _position = TimeSpan.FromTicks(Math.Max(0, Math.Min(Duration.Ticks, value.Ticks)));
+                PositionChanged(_position, !_isSettingPosition);
             }
         }
 
+        protected virtual void PositionChanged(TimeSpan value, bool isSeeking) { }
+
         // Duration
-        public static readonly DependencyPropertyKey DurationPropertyKey = DependencyProperty.RegisterReadOnly("Duration", typeof(TimeSpan), typeof(PlayerHostBase),
-            new PropertyMetadata(TimeSpan.FromSeconds(1), DurationChanged));
-        private static readonly DependencyProperty s_durationProperty = DurationPropertyKey.DependencyProperty;
-        public TimeSpan Duration { get => (TimeSpan)GetValue(s_durationProperty); protected set => SetValue(DurationPropertyKey, value); }
-        private static void DurationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static readonly DirectProperty<PlayerHostBase, TimeSpan> DurationProperty =
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, TimeSpan>(nameof(Duration), o => o.Duration);
+
+        private TimeSpan _duration = TimeSpan.FromSeconds((1));
+
+        public TimeSpan Duration
         {
-            var p = (PlayerHostBase)d;
-            p.DurationChanged((TimeSpan)e.NewValue);
+            get => _duration;
+            protected set
+            {
+                _duration = value;
+                DurationChanged(value);
+            }
         }
+
         protected virtual void DurationChanged(TimeSpan value) { }
 
         // IsPlaying
-        public static readonly DependencyProperty IsPlayingProperty = DependencyProperty.Register("IsPlaying", typeof(bool), typeof(PlayerHostBase),
-            new PropertyMetadata(false, IsPlayingChanged, CoerceIsPlaying));
-        public bool IsPlaying { get => (bool)GetValue(IsPlayingProperty); set => SetValue(IsPlayingProperty, value); }
-        private static void IsPlayingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static readonly DirectProperty<PlayerHostBase, bool> IsPlayingProperty =
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsPlaying), o => o.IsPlaying);
+
+        private bool _isPlaying;
+
+        public bool IsPlaying
         {
-            var p = (PlayerHostBase)d;
-            p.IsPlayingChanged((bool)e.NewValue);
+            get => _isPlaying;
+            set
+            {
+                _isPlaying = CoerceIsPlaying(value);
+                IsPlayingChanged(_isPlaying);
+            }
         }
-        private static object CoerceIsPlaying(DependencyObject d, object baseValue)
-        {
-            var p = (PlayerHostBase)d;
-            return p.CoerceIsPlaying((bool)baseValue);
-        }
+
         protected virtual void IsPlayingChanged(bool value) { }
         protected virtual bool CoerceIsPlaying(bool value) => value;
 
         // Volume
-        public static readonly DependencyProperty VolumeProperty = DependencyProperty.Register("Volume", typeof(int), typeof(PlayerHostBase),
-            new PropertyMetadata(50, VolumeChanged, CoerceVolume));
-        public int Volume { get => (int)GetValue(VolumeProperty); set => SetValue(VolumeProperty, value); }
-        private static void VolumeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static readonly DirectProperty<PlayerHostBase, int> VolumeProperty =
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, int>(nameof(Volume), o => o.Volume);
+
+        private int _volume;
+
+        public int Volume
         {
-            var p = (PlayerHostBase)d;
-            p.VolumeChanged((int)e.NewValue);
+            get => _volume;
+            set
+            {
+                _volume = CoerceVolume(value);
+                VolumeChanged(_volume);
+            }
         }
-        private static object CoerceVolume(DependencyObject d, object baseValue)
-        {
-            var p = (PlayerHostBase)d;
-            return p.CoerceVolume((int)baseValue);
-        }
+
         protected virtual void VolumeChanged(int value) { }
+
         protected virtual int CoerceVolume(int value)
         {
             return Math.Max(0, (Math.Min(100, value)));
         }
 
         // SpeedFloat
-        public static readonly DependencyProperty SpeedFloatProperty = DependencyProperty.Register("SpeedFloat", typeof(double), typeof(PlayerHostBase),
-            new PropertyMetadata(1.0, SpeedChanged, CoerceDouble));
-        public double SpeedFloat { get => (double)GetValue(SpeedFloatProperty); set => SetValue(SpeedFloatProperty, value); }
-        private static void SpeedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static readonly DirectProperty<PlayerHostBase, double> SpeedFloatProperty =
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, double>(nameof(SpeedFloat), o => o.SpeedFloat);
+
+        private double _speedFloat;
+
+        public double SpeedFloat
         {
-            var p = (PlayerHostBase)d;
-            p.SpeedChanged(p.GetSpeed());
+            get => _speedFloat;
+            set
+            {
+                _speedFloat = CoerceDouble(value);
+                SpeedChanged(GetSpeed());
+            }
         }
+
         protected virtual void SpeedChanged(double value) { }
 
         // SpeedInt
-        public static readonly DependencyProperty SpeedIntProperty = DependencyProperty.Register("SpeedInt", typeof(int), typeof(PlayerHostBase),
-            new PropertyMetadata(0, SpeedChanged, CoerceSpeedInt));
-        private static object CoerceSpeedInt(DependencyObject d, object baseValue)
+        public static readonly DirectProperty<PlayerHostBase, int> SpeedIntProperty =
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, int>(nameof(SpeedInt), o => o.SpeedInt);
+
+        private int _speedInt;
+
+        public int SpeedInt
         {
-            var p = (PlayerHostBase)d;
-            return p.CoerceSpeedInt((int)baseValue);
+            get => _speedInt;
+            set
+            {
+                _speedInt = CoerceSpeedInt(value);
+                SpeedChanged(GetSpeed());
+            }
         }
-        public int SpeedInt { get => (int)GetValue(SpeedIntProperty); set => SetValue(SpeedIntProperty, value); }
+
         protected virtual int CoerceSpeedInt(int value) => value;
 
         // Loop
-        public static readonly DependencyProperty LoopProperty = DependencyProperty.Register("Loop", typeof(bool), typeof(PlayerHostBase),
-            new PropertyMetadata(false, LoopChanged, CoerceLoop));
-        public bool Loop { get => (bool)GetValue(LoopProperty); set => SetValue(LoopProperty, value); }
-        private static void LoopChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static readonly DirectProperty<PlayerHostBase, bool> LoopProperty =
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(Loop), o => o.Loop);
+
+        private bool _loop;
+
+        public bool Loop
         {
-            var p = (PlayerHostBase)d;
-            p.LoopChanged((bool)e.NewValue);
+            get => _loop;
+            set
+            {
+                _loop = CoerceLoop(value);
+                LoopChanged(_loop);
+            }
         }
-        private static object CoerceLoop(DependencyObject d, object baseValue)
-        {
-            var p = (PlayerHostBase)d;
-            return p.CoerceLoop((bool)baseValue);
-        }
+
         protected virtual void LoopChanged(bool value) { }
         protected virtual bool CoerceLoop(bool value) => value;
 
         // AutoPlay
-        public static readonly DependencyProperty AutoPlayProperty = DependencyProperty.Register("AutoPlay", typeof(bool), typeof(PlayerHostBase),
-            new PropertyMetadata(true, AutoPlayChanged, CoerceAutoPlay));
-        public bool AutoPlay { get => (bool)GetValue(AutoPlayProperty); set => SetValue(AutoPlayProperty, value); }
-        private static void AutoPlayChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static readonly DirectProperty<PlayerHostBase, bool> AutoPlayProperty =
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(AutoPlay), o => o.AutoPlay);
+
+        private bool _autoPlay;
+
+        public bool AutoPlay
         {
-            var p = (PlayerHostBase)d;
-            p.AutoPlayChanged((bool)e.NewValue);
+            get => _autoPlay;
+            set
+            {
+                _autoPlay = CoerceAutoPlay(value);
+                AutoPlayChanged(_autoPlay);
+            }
         }
-        private static object CoerceAutoPlay(DependencyObject d, object baseValue)
-        {
-            var p = (PlayerHostBase)d;
-            return p.CoerceAutoPlay((bool)baseValue);
-        }
+
         protected virtual void AutoPlayChanged(bool value)
         {
             // AutoPlay can be set AFTER Script, we need to reset IsPlaying in that case.
             // Default value needs to be false otherwise it can cause video to start loading and immediately stop which can cause issues.
             IsPlaying = value;
         }
+
         protected virtual bool CoerceAutoPlay(bool value) => value;
 
         // Text
-        public static readonly DependencyPropertyKey TextProperty = DependencyProperty.RegisterReadOnly("Text", typeof(string), typeof(PlayerHostBase), null);
-        public string Text { get => (string)GetValue(TextProperty.DependencyProperty); protected set => SetValue(TextProperty, value); }
+        public static readonly DirectProperty<PlayerHostBase, string> TextProperty =
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, string>(nameof(Text), o => o.Text);
+
+        public string Text { get; private set; }
 
         // IsMediaLoaded
-        public static readonly DependencyPropertyKey IsMediaLoadedPropertyKey = DependencyProperty.RegisterReadOnly("IsMediaLoaded", typeof(bool), typeof(PlayerHostBase),
-            new PropertyMetadata(false));
-        private static readonly DependencyProperty s_isMediaLoadedProperty = IsMediaLoadedPropertyKey.DependencyProperty;
-        public bool IsMediaLoaded { get => (bool)GetValue(s_isMediaLoadedProperty); private set => SetValue(IsMediaLoadedPropertyKey, value); }
+        public static readonly DirectProperty<PlayerHostBase, bool> IsMediaLoadedProperty =
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsMediaLoaded), o => o.IsMediaLoaded);
+
+        public bool IsMediaLoaded { get; private set; } = false;
 
         // IsVideoVisible
-        public static readonly DependencyProperty IsVideoVisibleProperty = DependencyProperty.Register("IsVideoVisible", typeof(bool), typeof(PlayerHostBase),
-            new PropertyMetadata(false, IsVideoVisibleChanged, CoerceIsVideoVisible));
-        public bool IsVideoVisible { get => (bool)GetValue(IsVideoVisibleProperty); set => SetValue(IsVideoVisibleProperty, value); }
-        private static void IsVideoVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static readonly DirectProperty<PlayerHostBase, bool> IsVideoVisibleProperty =
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsVideoVisible), o => o.IsVideoVisible);
+
+        private bool _isVideoVisible = false;
+
+        public bool IsVideoVisible
         {
-            var p = (PlayerHostBase)d;
-            p.IsVideoVisibleChanged((bool)e.NewValue);
+            get => _isVideoVisible;
+            set
+            {
+                _isVideoVisible = CoerceIsVideoVisible(value);
+                IsVideoVisibleChanged(_isVideoVisible);
+            }
         }
-        private static object CoerceIsVideoVisible(DependencyObject d, object baseValue)
-        {
-            var p = (PlayerHostBase)d;
-            return p.CoerceIsVideoVisible((bool)baseValue);
-        }
+
         protected virtual void IsVideoVisibleChanged(bool value)
         {
             if (HostContainer != null)
             {
-                HostContainer.Visibility = value ? Visibility.Visible : Visibility.Hidden;
+                HostContainer.IsVisible = value;
             }
         }
+
         protected virtual bool CoerceIsVideoVisible(bool value) => value;
 
-        protected static object CoerceDouble(DependencyObject d, object baseValue)
+        protected static double CoerceDouble(double value)
         {
-            var value = (double)baseValue;
             return !(value > 0) ? 1 : value;
         }
 
@@ -240,14 +259,14 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
         /// <summary>
         /// Returns the media player control UI. This object will be transferred during full-screen mode.
         /// </summary>
-        public virtual FrameworkElement? HostContainer { get; }
-
+        public virtual Visual? HostContainer { get; }
 
 
         /// <summary>
         /// Stops playback and unloads media file.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "Reviewed: It's the right name.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords",
+            Justification = "Reviewed: It's the right name.")]
         public virtual void Stop()
         {
             _isStopping = true;
@@ -261,7 +280,6 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
         /// </summary>
         public virtual void Restart() { }
 
-
         /// <summary>
         /// Must be called by the derived class when media is loaded.
         /// </summary>
@@ -270,7 +288,7 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
             SetPositionNoSeek(TimeSpan.Zero);
             IsMediaLoaded = true;
             IsPlaying = AutoPlay;
-            MediaLoaded?.Invoke(this, new EventArgs());
+            MediaLoaded?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -286,7 +304,7 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
             {
                 IsMediaLoaded = false;
                 Duration = TimeSpan.FromSeconds(1);
-                MediaUnloaded?.Invoke(this, new EventArgs());
+                MediaUnloaded?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -312,14 +330,14 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
         /// </summary>
         public Panel GetInnerControlParent()
         {
+            _innerControlParentCache ??= HostContainer?.Parent as Panel;
+
             if (_innerControlParentCache == null)
             {
-                _innerControlParentCache = HostContainer?.Parent as Panel;
+                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
+                    Properties.Resources.ParentMustBePanel, "PlayerHostBase", HostContainer?.Parent?.GetType()));
             }
-            if (_innerControlParentCache == null)
-            {
-                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.ParentMustBePanel, "PlayerHostBase", HostContainer?.Parent?.GetType()));
-            }
+
             return _innerControlParentCache;
         }
     }
