@@ -6,6 +6,7 @@
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>
     <PackageId>MediaPlayerUI.Avalonia</PackageId>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

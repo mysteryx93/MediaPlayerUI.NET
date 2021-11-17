@@ -7,7 +7,7 @@ using Avalonia.Threading;
 namespace HanumanInstitute.MediaPlayerUI.Avalonia
 {
     /// <summary>
-    /// Represents the base class for Host controls. Each player implementation inherits from this class to manage commmon properties of a player.
+    /// Represents the base class for Host controls. Each player implementation inherits from this class to manage common properties of a player.
     /// </summary>
     public abstract class PlayerHostBase : Control
     {
@@ -36,7 +36,7 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
         public override void ApplyTemplate()
         {
             base.ApplyTemplate();
-            _stopTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, (s, e) =>
+            _stopTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, (_, _) =>
             {
                 _stopTimer?.Stop();
                 _isStopping = false;
@@ -48,7 +48,7 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
         public static readonly DirectProperty<PlayerHostBase, TimeSpan> PositionProperty =
             AvaloniaProperty.RegisterDirect<PlayerHostBase, TimeSpan>(nameof(Position), o => o.Position);
 
-        private TimeSpan _position { get; set; }
+        private TimeSpan _position;
 
         public TimeSpan Position
         {
@@ -206,19 +206,19 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
         public static readonly DirectProperty<PlayerHostBase, string> TextProperty =
             AvaloniaProperty.RegisterDirect<PlayerHostBase, string>(nameof(Text), o => o.Text);
 
-        public string Text { get; private set; }
+        public string Text { get; private set; } = string.Empty;
 
         // IsMediaLoaded
         public static readonly DirectProperty<PlayerHostBase, bool> IsMediaLoadedProperty =
             AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsMediaLoaded), o => o.IsMediaLoaded);
 
-        public bool IsMediaLoaded { get; private set; } = false;
+        public bool IsMediaLoaded { get; private set; }
 
         // IsVideoVisible
         public static readonly DirectProperty<PlayerHostBase, bool> IsVideoVisibleProperty =
             AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsVideoVisible), o => o.IsVideoVisible);
 
-        private bool _isVideoVisible = false;
+        private bool _isVideoVisible;
 
         public bool IsVideoVisible
         {
@@ -259,8 +259,7 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
         /// <summary>
         /// Returns the media player control UI. This object will be transferred during full-screen mode.
         /// </summary>
-        public virtual Visual? HostContainer { get; }
-
+        public virtual Visual? HostContainer { get; } = null;
 
         /// <summary>
         /// Stops playback and unloads media file.

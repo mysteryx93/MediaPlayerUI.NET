@@ -1,78 +1,93 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
-using HanumanInstitute.MediaPlayerUI.Mvvm;
+using HanumanInstitute.MediaPlayerUI.Avalonia.Helpers.Mvvm;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Data;
+using Avalonia.Input;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Styling;
 
 namespace HanumanInstitute.MediaPlayerUI.Avalonia
 {
     /// <summary>
     /// A media player graphical interface that can be used with any video host.
     /// </summary>
-    [TemplatePart(Name = MediaPlayer.UIPartName, Type = typeof(Border))]
-    [TemplatePart(Name = MediaPlayer.SeekBarPartName, Type = typeof(Slider))]
-    //[TemplatePart(Name = MediaPlayer.SeekBarTrackPartName, Type = typeof(Track))]
-    public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
+    public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged, IStyleable
     {
         static MediaPlayer()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(MediaPlayer), new FrameworkPropertyMetadata(typeof(MediaPlayer)));
-            BackgroundProperty.OverrideMetadata(typeof(MediaPlayer), new FrameworkPropertyMetadata(Brushes.Black));
-            HorizontalAlignmentProperty.OverrideMetadata(typeof(MediaPlayer), new FrameworkPropertyMetadata(HorizontalAlignment.Stretch));
-            VerticalAlignmentProperty.OverrideMetadata(typeof(MediaPlayer), new FrameworkPropertyMetadata(VerticalAlignment.Stretch));
-            ContentProperty.OverrideMetadata(typeof(MediaPlayer), new FrameworkPropertyMetadata(ContentChanged, CoerceContent));
+            BackgroundProperty.OverrideMetadata(typeof(MediaPlayer),
+                new StyledPropertyMetadata<IBrush?>(new Optional<IBrush?>(Brushes.Black)));
+            HorizontalAlignmentProperty.OverrideMetadata(typeof(MediaPlayer),
+                new StyledPropertyMetadata<HorizontalAlignment>(HorizontalAlignment.Stretch));
+            VerticalAlignmentProperty.OverrideMetadata(typeof(MediaPlayer),
+                new StyledPropertyMetadata<VerticalAlignment>(VerticalAlignment.Stretch));
+            ContentProperty.Changed.Subscribe(ContentChanged);
+        }
+        
+        Type IStyleable.StyleKey => typeof(MediaPlayer);
+
+        private static void ContentChanged(AvaloniaPropertyChangedEventArgs e)
+        {
+            if (e.Sender is MediaPlayerBase p)
+            {
+                p.ContentHasChanged(e);
+            }
         }
 
-        private static void ContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => MediaPlayerBase.OnContentChanged(d, e);
-
-        private static object? CoerceContent(DependencyObject d, object baseValue) => baseValue as PlayerHostBase;
+        // private static object? CoerceContent(IAvaloniaObject d, object baseValue) => baseValue as PlayerHostBase;
 
         public MediaPlayer()
-        { }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public const string UIPartName = "PART_UI";
-        public Border? UIPart => _ui ??= GetTemplateChild(UIPartName) as Border;
-        private Border? _ui;
+        {
+        }
+        
+        public const string UiPartName = "PART_UI";
+        public Border? UiPart { get; private set; }
 
         public const string SeekBarPartName = "PART_SeekBar";
-        public Slider? SeekBarPart => _seekBar ??= GetTemplateChild(SeekBarPartName) as Slider;
-        private Slider? _seekBar;
+        public Slider? SeekBarPart { get; private set; }
 
         public const string SeekBarTrackPartName = "PART_Track";
-        public Track? SeekBarTrackPart => _seekBarTrack ??= SeekBarPart?.Template.FindName(SeekBarTrackPartName, SeekBarPart) as Track;
-        private Track? _seekBarTrack;
+        public Track? SeekBarTrackPart { get; private set; }
 
-        public Thumb? SeekBarThumbPart => _seekBarThumb ??= SeekBarTrackPart?.Thumb;
-        private Thumb? _seekBarThumb;
+        public Thumb? SeekBarThumbPart => SeekBarTrackPart?.Thumb;
 
-        public override void OnApplyTemplate()
+        public override void OnApplyTemplate(TemplateAppliedEventArgs e)
         {
-            base.OnApplyTemplate();
-            if (DesignerProperties.GetIsInDesignMode(this)) { return; }
-
-            if (UIPart == null)
+            base.OnApplyTemplate(e);
+            if (DesignerProperties.GetIsInDesignMode(this))
             {
-                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, UIPartName, typeof(Border).Name));
+                return;
+            }
+
+            UiPart = e.NameScope.Find<Border>(UiPartName);
+            SeekBarPart = e.NameScope.Find<Slider>(SeekBarPartName);
+            SeekBarTrackPart = e.NameScope.Find<Track>(SeekBarTrackPartName);
+            if (UiPart == null)
+            {
+                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
+                    Properties.Resources.TemplateElementNotFound, UiPartName, nameof(Border)));
             }
             if (SeekBarPart == null)
             {
-                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, SeekBarPartName, typeof(Slider).Name));
+                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
+                    Properties.Resources.TemplateElementNotFound, SeekBarPartName, nameof(Slider)));
             }
 
-            MouseDown += UserControl_MouseDown;
-            SeekBarPart.AddHandler(Slider.PreviewMouseDownEvent, new MouseButtonEventHandler(OnSeekBarPreviewMouseLeftButtonDown), true);
+            PointerPressed += UserControl_PointerPressed;
+            SeekBarPart.AddHandler(Slider.PointerPressedEvent,
+                OnSeekBarPreviewMouseLeftButtonDown);
             // Thumb doesn't yet exist.
             SeekBarPart.Loaded += (s, e) =>
             {
                 if (SeekBarThumbPart == null)
                 {
-                    throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, SeekBarTrackPartName, typeof(Track).Name));
+                    throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
+                        Properties.Resources.TemplateElementNotFound, SeekBarTrackPartName, nameof(Track)));
                 }
 
                 SeekBarThumbPart.DragStarted += OnSeekBarDragStarted;
@@ -89,13 +104,14 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
         /// <summary>
         /// Prevents the Host from receiving mouse events when clicking on controls bar.
         /// </summary>
-        private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
+        private void UserControl_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
             e.Handled = true;
         }
-
-        protected override void OnContentChanged(DependencyPropertyChangedEventArgs e)
+        
+        protected override void OnContentChanged(AvaloniaPropertyChangedEventArgs e)
         {
+            RaisePropertyChanged<PlayerHostBase>(PlayerHost, e.OldValue, e.NewValue, BindingPriority.TemplatedParent);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PlayerHost)));
             // PlayerHost = e.NewValue as PlayerHostBase;
             if (e.OldValue != null)
@@ -104,6 +120,7 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
                 ((Control)e.OldValue).MouseWheel -= Host_MouseWheel;
                 ((Control)e.OldValue).MouseDoubleClick -= Host_MouseDoubleClick;
             }
+
             if (e.NewValue != null)
             {
                 ((Control)e.NewValue).MouseDown += Host_MouseDown;
@@ -162,7 +179,8 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
             }
         }
 
-        private bool IsActionFullScreen(MouseButtonEventArgs e, int clickCount) => IsMouseAction(MouseFullscreen, e, clickCount);
+        private bool IsActionFullScreen(MouseButtonEventArgs e, int clickCount) =>
+            IsMouseAction(MouseFullscreen, e, clickCount);
 
         private bool IsActionPause(MouseButtonEventArgs e, int clickCount) => IsMouseAction(MousePause, e, clickCount);
 
@@ -213,6 +231,7 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
         }
 
         private Panel? _uiParentCache;
+
         /// <summary>
         /// Returns the container of this control the first time it is called and maintain reference to that container.
         /// </summary>
@@ -222,77 +241,145 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
             {
                 if (_uiParentCache == null)
                 {
-                    _uiParentCache = UIPart?.Parent as Panel;
+                    _uiParentCache = UiPart?.Parent as Panel;
                 }
+
                 if (_uiParentCache == null)
                 {
-                    throw new NullReferenceException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.ParentMustBePanel, UIPartName, UIPart?.Parent?.GetType()));
+                    throw new NullReferenceException(string.Format(CultureInfo.InvariantCulture,
+                        Properties.Resources.ParentMustBePanel, UiPartName, UiPart?.Parent?.GetType()));
                 }
+
                 return _uiParentCache;
             }
         }
 
-        // TitleProperty
-        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(bool), typeof(MediaPlayer));
-        public string Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
+// TitleProperty
+        public static readonly DependencyProperty TitleProperty =
+            DependencyProperty.Register("Title", typeof(bool), typeof(MediaPlayer));
 
-        // MouseFullscreen
-        public static readonly DependencyProperty MouseFullscreenProperty = DependencyProperty.Register("MouseFullscreen", typeof(MouseTrigger), typeof(MediaPlayer),
+        public string Title
+        {
+            get => (string)GetValue(TitleProperty);
+            set => SetValue(TitleProperty, value);
+        }
+
+// MouseFullscreen
+        public static readonly DependencyProperty MouseFullscreenProperty = DependencyProperty.Register(
+            "MouseFullscreen",
+            typeof(MouseTrigger), typeof(MediaPlayer),
             new PropertyMetadata(MouseTrigger.MiddleClick));
-        public MouseTrigger MouseFullscreen { get => (MouseTrigger)GetValue(MouseFullscreenProperty); set => SetValue(MouseFullscreenProperty, value); }
 
-        // MousePause
-        public static readonly DependencyProperty MousePauseProperty = DependencyProperty.Register("MousePause", typeof(MouseTrigger), typeof(MediaPlayer),
+        public MouseTrigger MouseFullscreen
+        {
+            get => (MouseTrigger)GetValue(MouseFullscreenProperty);
+            set => SetValue(MouseFullscreenProperty, value);
+        }
+
+// MousePause
+        public static readonly DependencyProperty MousePauseProperty = DependencyProperty.Register("MousePause",
+            typeof(MouseTrigger), typeof(MediaPlayer),
             new PropertyMetadata(MouseTrigger.LeftClick));
-        public MouseTrigger MousePause { get => (MouseTrigger)GetValue(MousePauseProperty); set => SetValue(MousePauseProperty, value); }
 
-        // ChangeVolumeOnMouseWheel
-        public static readonly DependencyProperty ChangeVolumeOnMouseWheelProperty = DependencyProperty.Register("ChangeVolumeOnMouseWheel", typeof(bool), typeof(MediaPlayer),
+        public MouseTrigger MousePause
+        {
+            get => (MouseTrigger)GetValue(MousePauseProperty);
+            set => SetValue(MousePauseProperty, value);
+        }
+
+// ChangeVolumeOnMouseWheel
+        public static readonly DependencyProperty ChangeVolumeOnMouseWheelProperty = DependencyProperty.Register(
+            "ChangeVolumeOnMouseWheel", typeof(bool), typeof(MediaPlayer),
             new PropertyMetadata(true));
-        public bool ChangeVolumeOnMouseWheel { get => (bool)GetValue(ChangeVolumeOnMouseWheelProperty); set => SetValue(ChangeVolumeOnMouseWheelProperty, value); }
 
-        // IsPlayPauseVisible
-        public static readonly DependencyProperty IsPlayPauseVisibleProperty = DependencyProperty.Register("IsPlayPauseVisible", typeof(bool), typeof(MediaPlayer),
+        public bool ChangeVolumeOnMouseWheel
+        {
+            get => (bool)GetValue(ChangeVolumeOnMouseWheelProperty);
+            set => SetValue(ChangeVolumeOnMouseWheelProperty, value);
+        }
+
+// IsPlayPauseVisible
+        public static readonly DependencyProperty IsPlayPauseVisibleProperty = DependencyProperty.Register(
+            "IsPlayPauseVisible",
+            typeof(bool), typeof(MediaPlayer),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
-        public bool IsPlayPauseVisible { get => (bool)GetValue(IsPlayPauseVisibleProperty); set => SetValue(IsPlayPauseVisibleProperty, value); }
 
-        // IsStopVisible
-        public static readonly DependencyProperty IsStopVisibleProperty = DependencyProperty.Register("IsStopVisible", typeof(bool), typeof(MediaPlayer),
+        public bool IsPlayPauseVisible
+        {
+            get => (bool)GetValue(IsPlayPauseVisibleProperty);
+            set => SetValue(IsPlayPauseVisibleProperty, value);
+        }
+
+// IsStopVisible
+        public static readonly DependencyProperty IsStopVisibleProperty = DependencyProperty.Register("IsStopVisible",
+            typeof(bool), typeof(MediaPlayer),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
-        public bool IsStopVisible { get => (bool)GetValue(IsStopVisibleProperty); set => SetValue(IsStopVisibleProperty, value); }
 
-        // IsLoopVisible
-        public static readonly DependencyProperty IsLoopVisibleProperty = DependencyProperty.Register("IsLoopVisible", typeof(bool), typeof(MediaPlayer),
+        public bool IsStopVisible
+        {
+            get => (bool)GetValue(IsStopVisibleProperty);
+            set => SetValue(IsStopVisibleProperty, value);
+        }
+
+// IsLoopVisible
+        public static readonly DependencyProperty IsLoopVisibleProperty = DependencyProperty.Register("IsLoopVisible",
+            typeof(bool), typeof(MediaPlayer),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
-        public bool IsLoopVisible { get => (bool)GetValue(IsLoopVisibleProperty); set => SetValue(IsLoopVisibleProperty, value); }
 
-        // IsVolumeVisible
-        public static readonly DependencyProperty IsVolumeVisibleProperty = DependencyProperty.Register("IsVolumeVisible", typeof(bool), typeof(MediaPlayer),
+        public bool IsLoopVisible
+        {
+            get => (bool)GetValue(IsLoopVisibleProperty);
+            set => SetValue(IsLoopVisibleProperty, value);
+        }
+
+// IsVolumeVisible
+        public static readonly DependencyProperty IsVolumeVisibleProperty = DependencyProperty.Register(
+            "IsVolumeVisible",
+            typeof(bool), typeof(MediaPlayer),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
-        public bool IsVolumeVisible { get => (bool)GetValue(IsVolumeVisibleProperty); set => SetValue(IsVolumeVisibleProperty, value); }
 
-        // IsSpeedVisible
-        public static readonly DependencyProperty IsSpeedVisibleProperty = DependencyProperty.Register("IsSpeedVisible", typeof(bool), typeof(MediaPlayer),
+        public bool IsVolumeVisible
+        {
+            get => (bool)GetValue(IsVolumeVisibleProperty);
+            set => SetValue(IsVolumeVisibleProperty, value);
+        }
+
+// IsSpeedVisible
+        public static readonly DependencyProperty IsSpeedVisibleProperty = DependencyProperty.Register("IsSpeedVisible",
+            typeof(bool), typeof(MediaPlayer),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
-        public bool IsSpeedVisible { get => (bool)GetValue(IsSpeedVisibleProperty); set => SetValue(IsSpeedVisibleProperty, value); }
 
-        // IsSeekBarVisible
-        public static readonly DependencyProperty IsSeekBarVisibleProperty = DependencyProperty.Register("IsSeekBarVisible", typeof(bool), typeof(MediaPlayer),
+        public bool IsSpeedVisible
+        {
+            get => (bool)GetValue(IsSpeedVisibleProperty);
+            set => SetValue(IsSpeedVisibleProperty, value);
+        }
+
+// IsSeekBarVisible
+        public static readonly DependencyProperty IsSeekBarVisibleProperty = DependencyProperty.Register(
+            "IsSeekBarVisible",
+            typeof(bool), typeof(MediaPlayer),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
-        public bool IsSeekBarVisible { get => (bool)GetValue(IsSeekBarVisibleProperty); set => SetValue(IsSeekBarVisibleProperty, value); }
+
+        public bool IsSeekBarVisible
+        {
+            get => (bool)GetValue(IsSeekBarVisibleProperty);
+            set => SetValue(IsSeekBarVisibleProperty, value);
+        }
 
 
-
-        public void OnSeekBarPreviewMouseLeftButtonDown(object? sender, MouseButtonEventArgs e)
+        public void OnSeekBarPreviewMouseLeftButtonDown(object? sender, PointerPressedEventArgs e)
         {
             if (PlayerHost == null) { return; }
+
             e.CheckNotNull(nameof(e));
 
             // Only process event if click is not on thumb.
             if (SeekBarThumbPart != null)
             {
                 var pos = e.GetPosition(SeekBarThumbPart);
-                if (pos.X < 0 || pos.Y < 0 || pos.X > SeekBarThumbPart.ActualWidth || pos.Y > SeekBarThumbPart.ActualHeight)
+                if (pos.X < 0 || pos.Y < 0 || pos.X > SeekBarThumbPart.ActualWidth ||
+                    pos.Y > SeekBarThumbPart.ActualHeight)
                 {
                     // Immediate seek when clicking elsewhere.
                     IsSeekBarPressed = true;
@@ -302,7 +389,7 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
             }
         }
 
-        public void OnSeekBarDragStarted(object? sender, DragStartedEventArgs e)
+        public void OnSeekBarDragStarted(object? sender, VectorEventArgs e)
         {
             if (PlayerHost == null) { return; }
 
@@ -310,7 +397,8 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
         }
 
         private DateTime _lastDragCompleted = DateTime.MinValue;
-        public void OnSeekBarDragCompleted(object? sender, DragCompletedEventArgs e)
+
+        public void OnSeekBarDragCompleted(object? sender, VectorEventArgs e)
         {
             if (PlayerHost == null) { return; }
 
@@ -327,11 +415,19 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
         }
 
 
-        public FullScreenUI? FullScreenUI { get; private set; }
+        public FullScreenUI? FullScreenUI
+        {
+            get;
+            private set;
+        }
 
-        public ICommand ToggleFullScreenCommand => CommandHelper.InitCommand(ref _toggleFullScreenCommand, ToggleFullScreen, CanToggleFullScreen);
+        public ICommand ToggleFullScreenCommand => CommandHelper.InitCommand(ref _toggleFullScreenCommand,
+            ToggleFullScreen,
+            CanToggleFullScreen);
+
         private RelayCommand? _toggleFullScreenCommand;
         private bool CanToggleFullScreen() => PlayerHost != null;
+
         private void ToggleFullScreen()
         {
             FullScreen = !FullScreen;
@@ -343,7 +439,9 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
             set
             {
                 if (PlayerHost == null) { return; }
-                if (UIPart == null) { return; }
+
+                if (UiPart == null) { return; }
+
                 if (PlayerHost.HostContainer == null) { return; }
 
                 if (value != FullScreen)
@@ -357,17 +455,19 @@ namespace HanumanInstitute.MediaPlayerUI.Avalonia
                         // Transfer key bindings.
                         InputBindingBehavior.TransferBindingsToWindow(Window.GetWindow(this), FullScreenUI, false);
                         // Transfer player.
-                        TransferElement(PlayerHost.GetInnerControlParent(), FullScreenUI.ContentGrid, PlayerHost.HostContainer);
-                        TransferElement(UIParentCache, FullScreenUI.AirspaceGrid, UIPart);
-                        FullScreenUI.Airspace.VerticalOffset = -UIPart.ActualHeight;
+                        TransferElement(PlayerHost.GetInnerControlParent(), FullScreenUI.ContentGrid,
+                            PlayerHost.HostContainer);
+                        TransferElement(UIParentCache, FullScreenUI.AirspaceGrid, UiPart);
+                        FullScreenUI.Airspace.VerticalOffset = -UiPart.ActualHeight;
                         // Show.
                         FullScreenUI.ShowDialog();
                     }
                     else if (FullScreenUI != null)
                     {
                         // Transfer player back.
-                        TransferElement(FullScreenUI.ContentGrid, PlayerHost.GetInnerControlParent(), PlayerHost.HostContainer);
-                        TransferElement(FullScreenUI.AirspaceGrid, UIParentCache, UIPart);
+                        TransferElement(FullScreenUI.ContentGrid, PlayerHost.GetInnerControlParent(),
+                            PlayerHost.HostContainer);
+                        TransferElement(FullScreenUI.AirspaceGrid, UIParentCache, UiPart);
                         // Close.
                         var f = FullScreenUI;
                         FullScreenUI = null;
