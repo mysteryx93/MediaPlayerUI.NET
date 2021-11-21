@@ -120,7 +120,4 @@
   <data name="Loading" xml:space="preserve">
     <value>Loading...</value>
   </data>
-  <data name="MediaError" xml:space="preserve">
-    <value>Error loading media</value>
-  </data>
 </root>

@@ -8,6 +8,8 @@
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>
     <AssemblyName>MediaPlayer.WPF.Sample</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <Authors>Etienne Charland</Authors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

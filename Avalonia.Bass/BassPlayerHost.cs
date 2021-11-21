@@ -3,23 +3,19 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using HanumanInstitute.MediaPlayer;
+using Avalonia.Controls;
+using HanumanInstitute.MediaPlayer.Avalonia;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using SoundTouch.Net.NAudioSupport;
 
-namespace HanumanInstitute.MediaPlayer.WPF.NAudio
+namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
 {
-    public class NAudioPlayerHost : PlayerHostBase, IDisposable
+    public class BassPlayerHost : PlayerHostBase, IDisposable
     {
-        static NAudioPlayerHost()
+        public BassPlayerHost()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(NAudioPlayerHost), new FrameworkPropertyMetadata(typeof(NAudioPlayerHost)));
-        }
-
-        public NAudioPlayerHost()
-        {
-            if (!DesignerProperties.GetIsInDesignMode(this))
+            if (!Design.IsDesignMode)
             {
                 Loaded += UserControl_Loaded;
                 Unloaded += UserControl_Unloaded;
@@ -200,13 +196,18 @@ namespace HanumanInstitute.MediaPlayer.WPF.NAudio
 
         private void SetDisplayText()
         {
-            Text = Status switch
+            if (Status == PlaybackStatus.Loading)
             {
-                PlaybackStatus.Loading => Properties.Resources.Loading,
-                PlaybackStatus.Playing => Title ?? System.IO.Path.GetFileName(Source),
-                PlaybackStatus.Error => Properties.Resources.MediaError,
-                _ => ""
-            };
+                Text = Properties.Resources.Loading;
+            }
+            else if (Status == PlaybackStatus.Playing)
+            {
+                Text = Title ?? System.IO.Path.GetFileName(Source);
+            }
+            else
+            {
+                Text = "";
+            }
         }
 
         protected override void PositionChanged(TimeSpan value, bool isSeeking)
@@ -326,7 +327,6 @@ namespace HanumanInstitute.MediaPlayer.WPF.NAudio
                         _mediaFile?.Dispose();
                         _mediaFile = null;
                         _mediaProvider = null;
-                        Status = PlaybackStatus.Error;
                         MediaError?.Invoke(this, EventArgs.Empty);
                     }
                 }).ConfigureAwait(false);

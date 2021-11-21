@@ -5,9 +5,10 @@
     <RootNamespace>HanumanInstitute.MediaPlayer.Avalonia</RootNamespace>
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>
-    <PackageId>MediaPlayerUI.Avalonia</PackageId>
+    <PackageId>MediaPlayer.Avalonia</PackageId>
     <LangVersion>10</LangVersion>
     <AssemblyName>MediaPlayer.Avalonia</AssemblyName>
+    <Authors>Etienne Charland</Authors>
   </PropertyGroup>
 
   <ItemGroup>

@@ -39,7 +39,7 @@ namespace HanumanInstitute.MediaPlayer.WPF.NAudio.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HanumanInstitute.MediaPlayer.WPF.NAudio.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HanumanInstitute.NAudioPlayerUI.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -66,15 +66,6 @@ namespace HanumanInstitute.MediaPlayer.WPF.NAudio.Properties {
         internal static string Loading {
             get {
                 return ResourceManager.GetString("Loading", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error loading media.
-        /// </summary>
-        internal static string MediaError {
-            get {
-                return ResourceManager.GetString("MediaError", resourceCulture);
             }
         }
     }

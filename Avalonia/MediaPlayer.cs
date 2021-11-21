@@ -166,7 +166,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
         /// </summary>
         private void HandleMouseAction(object? sender, PointerPressedEventArgs e, int clickCount)
         {
-            var isFullScreen = sender is FullScreenUI;
+            var isFullScreen = false; // sender is FullScreenUI;
             if (IsActionFullScreen(e.MouseButton, clickCount))
             {
                 FullScreen = !isFullScreen; // using !FullScreen can return wrong value when exiting fullscreen
@@ -412,11 +412,11 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
         }
 
 
-        public FullScreenUI? FullScreenUI
-        {
-            get;
-            private set;
-        }
+        // public FullScreenUI? FullScreenUI
+        // {
+        //     get;
+        //     private set;
+        // }
 
         public ICommand ToggleFullScreenCommand =>
             _toggleFullScreenCommand ??= new RelayCommand(ToggleFullScreen, CanToggleFullScreen);
@@ -431,7 +431,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
 
         public bool FullScreen
         {
-            get => FullScreenUI != null;
+            get => false; // FullScreenUI != null;
             set
             {
                 // if (PlayerHost == null) { return; }
@@ -476,13 +476,13 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
             }
         }
 
-        private static void TransferElement(Panel src, Panel dst, IControl element)
+        private static void TransferElement(IPanel src, IPanel dst, IControl element)
         {
             src.Children.Remove(element);
             dst.Children.Add(element);
         }
 
-        private void FullScreenUI_Closed(object? sender, EventArgs e)
+        private void FullScreenUI_Closed(object? sender, EventArgs _)
         {
             FullScreen = false;
         }

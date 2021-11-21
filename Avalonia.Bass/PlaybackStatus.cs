@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HanumanInstitute.MediaPlayer.WPF.NAudio
+namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
 {
     /// <summary>
     /// Represents the status of the player control.
