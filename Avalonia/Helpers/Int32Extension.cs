@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Markup;
 using Avalonia.Markup.Xaml;
 
 namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers

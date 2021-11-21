@@ -62,10 +62,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
         protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
         {
             base.OnApplyTemplate(e);
-            if (DesignerProperties.GetIsInDesignMode(this))
-            {
-                return;
-            }
+            if (Design.IsDesignMode) { return; }
 
             UIPart = e.NameScope.Find<Border>(UIPartName);
             SeekBarPart = e.NameScope.Find<Slider>(SeekBarPartName);
@@ -421,7 +418,9 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
             private set;
         }
 
-        public ICommand ToggleFullScreenCommand => _toggleFullScreenCommand ??= new RelayCommand(ToggleFullScreen, CanToggleFullScreen);
+        public ICommand ToggleFullScreenCommand =>
+            _toggleFullScreenCommand ??= new RelayCommand(ToggleFullScreen, CanToggleFullScreen);
+
         private RelayCommand? _toggleFullScreenCommand;
         private bool CanToggleFullScreen() => PlayerHost != null;
 

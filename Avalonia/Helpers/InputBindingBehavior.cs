@@ -1,34 +1,46 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Input;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Data;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 
 namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers
 {
-    public static class InputBindingBehavior
+    public class InputBindingBehavior : AvaloniaObject
     {
-        public static readonly DependencyProperty PropagateInputBindingsToWindowProperty =
-            DependencyProperty.RegisterAttached("PropagateInputBindingsToWindow", typeof(bool), typeof(InputBindingBehavior),
-            new PropertyMetadata(false, OnPropagateInputBindingsToWindowChanged));
-        public static bool GetPropagateInputBindingsToWindow(FrameworkElement d) => (bool)(d.CheckNotNull(nameof(d)).GetValue(PropagateInputBindingsToWindowProperty) ?? false);
-        public static void SetPropagateInputBindingsToWindow(FrameworkElement d, bool value) => d.CheckNotNull(nameof(d)).SetValue(PropagateInputBindingsToWindowProperty, value);
-
-        private static void OnPropagateInputBindingsToWindowChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public InputBindingBehavior()
         {
-            if ((bool)e.OldValue == false && (bool)e.NewValue == true)
+            PropagateInputBindingsToWindowProperty.Changed.Subscribe(OnPropagateInputBindingsToWindowChanged);
+        }
+
+        public static readonly AttachedProperty<bool> PropagateInputBindingsToWindowProperty =
+            AvaloniaProperty.RegisterAttached<InputBindingBehavior, Control, bool>("PropagateInputBindingsToWindow",
+                false, false, BindingMode.OneTime);
+
+        public static bool GetPropagateInputBindingsToWindow(AvaloniaObject d) =>
+            d.CheckNotNull(nameof(d)).GetValue(PropagateInputBindingsToWindowProperty);
+
+        public static void SetPropagateInputBindingsToWindow(AvaloniaObject d, bool value) =>
+            d.CheckNotNull(nameof(d)).SetValue(PropagateInputBindingsToWindowProperty, value);
+
+        private static void OnPropagateInputBindingsToWindowChanged(AvaloniaPropertyChangedEventArgs<bool> e)
+        {
+            if (!e.OldValue.GetValueOrDefault() && e.NewValue.GetValueOrDefault())
             {
-                if (d is FrameworkElement elem)
+                if (e.Sender is StyledElement elem)
                 {
-                    elem.Loaded += FrameworkElement_Loaded;
+                    elem.Initialized += FrameworkElement_Initialized;
                 }
             }
         }
 
-        private static void FrameworkElement_Loaded(object sender, RoutedEventArgs e)
+        private static void FrameworkElement_Initialized(object? sender, EventArgs e)
         {
-            var frameworkElement = (FrameworkElement)sender;
-            frameworkElement.Loaded -= FrameworkElement_Loaded;
+            var frameworkElement = (Control)sender!;
+            frameworkElement.Initialized -= FrameworkElement_Initialized;
 
-            var window = Window.GetWindow(frameworkElement);
+            var window = GetParentWindow(frameworkElement);
             if (window != null)
             {
                 // Move input bindings from the FrameworkElement to the window.
@@ -36,21 +48,31 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers
             }
         }
 
-        public static void TransferBindingsToWindow(FrameworkElement src, FrameworkElement dst, bool remove)
+        private static Window? GetParentWindow(Interactive obj)
+        {
+            IStyledElement i = obj;
+            while (i is not Window && i != null)
+            {
+                i = i.Parent;
+            }
+
+            return i as Window;
+        }
+
+        public static void TransferBindingsToWindow(IInputElement src, IInputElement dst, bool remove)
         {
             src.CheckNotNull(nameof(src));
             dst.CheckNotNull(nameof(dst));
 
-            for (var i = src.InputBindings.Count - 1; i >= 0; i--)
+            for (var i = src.KeyBindings.Count - 1; i >= 0; i--)
             {
-                var inputBinding = (InputBinding)src.InputBindings[i];
-                dst.InputBindings.Add(inputBinding);
+                var key = src.KeyBindings[i];
+                dst.KeyBindings.Add(key);
                 if (remove)
                 {
-                    src.InputBindings.Remove(inputBinding);
+                    src.KeyBindings.Remove(key);
                 }
             }
-
         }
     }
 }

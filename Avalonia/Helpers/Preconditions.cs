@@ -52,7 +52,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers
             {
                 ThrowArgumentNullOrEmpty(name);
             }
-            return value;
+            return value!;
         }
 
         /// <summary>
