@@ -15,7 +15,8 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv
     {
         static MpvPlayerHost()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(MpvPlayerHost), new FrameworkPropertyMetadata(typeof(MpvPlayerHost)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(MpvPlayerHost),
+                new FrameworkPropertyMetadata(typeof(MpvPlayerHost)));
         }
 
         public MpvPlayerHost()
@@ -40,13 +41,18 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv
         private bool _initLoaded;
 
         // DllPath
-        public static readonly DependencyProperty DllPathProperty = DependencyProperty.Register("DllPath", typeof(string), typeof(MpvPlayerHost));
+        public static readonly DependencyProperty DllPathProperty =
+            DependencyProperty.Register("DllPath", typeof(string), typeof(MpvPlayerHost));
+
         public string DllPath { get => (string)GetValue(DllPathProperty); set => SetValue(DllPathProperty, value); }
 
         // Source
-        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register("Source", typeof(string), typeof(MpvPlayerHost),
+        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register("Source", typeof(string),
+            typeof(MpvPlayerHost),
             new PropertyMetadata(null, SourceChanged));
+
         public string Source { get => (string)GetValue(SourceProperty); set => SetValue(SourceProperty, value); }
+
         private static void SourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var p = (MpvPlayerHost)d;
@@ -63,9 +69,12 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv
         }
 
         // Title
-        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(MpvPlayerHost),
+        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(string),
+            typeof(MpvPlayerHost),
             new PropertyMetadata(null, TitleChanged));
+
         public string Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
+
         private static void TitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var p = (MpvPlayerHost)d;
@@ -73,9 +82,16 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv
         }
 
         // Status
-        public static readonly DependencyPropertyKey StatusProperty = DependencyProperty.RegisterReadOnly("Status", typeof(PlaybackStatus), typeof(MpvPlayerHost),
+        public static readonly DependencyPropertyKey StatusProperty = DependencyProperty.RegisterReadOnly("Status",
+            typeof(PlaybackStatus), typeof(MpvPlayerHost),
             new PropertyMetadata(PlaybackStatus.Stopped, StatusChanged));
-        public PlaybackStatus Status { get => (PlaybackStatus)GetValue(StatusProperty.DependencyProperty); protected set => SetValue(StatusProperty, value); }
+
+        public PlaybackStatus Status
+        {
+            get => (PlaybackStatus)GetValue(StatusProperty.DependencyProperty);
+            protected set => SetValue(StatusProperty, value);
+        }
+
         private static void StatusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var p = (MpvPlayerHost)d;
@@ -83,15 +99,19 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv
         }
 
         // Pitch
-        public static readonly DependencyProperty PitchProperty = DependencyProperty.Register("Pitch", typeof(double), typeof(MpvPlayerHost),
+        public static readonly DependencyProperty PitchProperty = DependencyProperty.Register("Pitch", typeof(double),
+            typeof(MpvPlayerHost),
             new PropertyMetadata(1.0, PitchChanged, CoerceDouble));
+
         public double Pitch { get => (double)GetValue(PitchProperty); set => SetValue(PitchProperty, value); }
+
         private static void PitchChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var p = (MpvPlayerHost)d;
             if (p.Player != null)
             {
-                p.Player.API.SetPropertyString("af", string.Format(CultureInfo.InvariantCulture, "rubberband=pitch-scale={0}", e.NewValue));
+                p.Player.API.SetPropertyString("af",
+                    string.Format(CultureInfo.InvariantCulture, "rubberband=pitch-scale={0}", e.NewValue));
             }
         }
 
@@ -99,7 +119,8 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv
         {
             if (Host == null)
             {
-                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, HostPartName, typeof(WindowsFormsHost).Name));
+                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
+                    Properties.Resources.TemplateElementNotFound, HostPartName, typeof(WindowsFormsHost).Name));
             }
 
             Player = new MpvPlayer(Host.Handle, DllPath);
@@ -116,12 +137,13 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv
             Player.Loop = base.Loop;
             if (Pitch != 1)
             {
-                Player.API.SetPropertyString("af", string.Format(CultureInfo.InvariantCulture, "rubberband=pitch-scale={0}", Pitch));
+                Player.API.SetPropertyString("af",
+                    string.Format(CultureInfo.InvariantCulture, "rubberband=pitch-scale={0}", Pitch));
             }
 
-            MediaPlayerInitialized?.Invoke(this, new EventArgs());
+            MediaPlayerInitialized?.Invoke(this, EventArgs.Empty);
 
-            if (Source != null && !_initLoaded)
+            if (!string.IsNullOrEmpty(Source) && !_initLoaded)
             {
                 LoadMedia();
             }
@@ -129,11 +151,11 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv
 
         private void Player_MediaError(object? sender, EventArgs e)
         {
-            if (MediaError != null)
+            Dispatcher.Invoke(() =>
             {
-                Dispatcher.Invoke(() =>
-                    MediaError?.Invoke(this, new EventArgs()));
-            }
+                Status = PlaybackStatus.Error;
+                MediaError?.Invoke(this, EventArgs.Empty);
+            });
         }
 
         private void Player_MediaFinished(object? sender, EventArgs e)
@@ -141,7 +163,7 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv
             if (MediaFinished != null)
             {
                 Dispatcher.Invoke(() =>
-                    MediaFinished?.Invoke(this, new EventArgs()));
+                    MediaFinished?.Invoke(this, EventArgs.Empty));
             }
         }
 
@@ -184,6 +206,10 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv
             else if (Status == PlaybackStatus.Playing)
             {
                 Text = Title ?? System.IO.Path.GetFileName(Source);
+            }
+            else if (Status == PlaybackStatus.Error)
+            {
+                Text = Properties.Resources.MediaError;
             }
             else
             {

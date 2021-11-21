@@ -9,6 +9,7 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv
     {
         Stopped = 0,
         Loading = 1,
-        Playing = 2
+        Playing = 2,
+        Error = 3
     }
 }

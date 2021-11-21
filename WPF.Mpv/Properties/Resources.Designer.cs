@@ -70,6 +70,15 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error loading media.
+        /// </summary>
+        internal static string MediaError {
+            get {
+                return ResourceManager.GetString("MediaError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find template element &apos;{0}&apos; of type &apos;{1}&apos;..
         /// </summary>
         internal static string TemplateElementNotFound {

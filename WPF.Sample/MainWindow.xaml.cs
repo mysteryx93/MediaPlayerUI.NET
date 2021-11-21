@@ -32,27 +32,27 @@ namespace HanumanInstitute.MediaPlayer.WPF.Sample
 
             // 3. Run.
 
-            //PlayerHost.MediaPlayerInitialized += (o, e) => {
-            //    PlayerHost.Source = @"E:\NaturalGrounding\AOA\Like a Cat.mp4";
-            //};
+            // PlayerHost.MediaPlayerInitialized += (o, e) => {
+            //     PlayerHost.Source = @"E:\NaturalGrounding\AOA\Like a Cat.mp4";
+            // };
         }
 
-        private WaveOutEvent _mediaOut = new WaveOutEvent();
-        private SoundTouchWaveStream? _mediaFile;
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            var Source = @"E:\Music\Inna - Body And The Sun (Super Deluxe Edition) (2015)\CD1\07 Fool Me.mp3";
-            _mediaOut.Stop();
-            using var reader = new MediaFoundationReader(Source, new MediaFoundationReader.MediaFoundationReaderSettings() { RequestFloatOutput = true });
-            _mediaFile = new SoundTouchWaveStream(reader);
-            _mediaOut.Init(reader);
-            _mediaOut.Play();
-        }
-
-        private void PlayerHost_MediaUnloaded(object sender, EventArgs e)
-        {
-
-        }
+        // private WaveOutEvent _mediaOut = new WaveOutEvent();
+        // private SoundTouchWaveStream? _mediaFile;
+        //
+        // private void Button_Click(object sender, RoutedEventArgs e)
+        // {
+        //     var Source = @"E:\Music\INNA\Body And The Sun\07 Fool Me.mp3";
+        //     _mediaOut.Stop();
+        //     using var reader = new MediaFoundationReader(Source, new MediaFoundationReader.MediaFoundationReaderSettings() { RequestFloatOutput = true });
+        //     _mediaFile = new SoundTouchWaveStream(reader);
+        //     _mediaOut.Init(reader);
+        //     _mediaOut.Play();
+        // }
+        //
+        // private void PlayerHost_MediaUnloaded(object sender, EventArgs e)
+        // {
+        //
+        // }
     }
 }

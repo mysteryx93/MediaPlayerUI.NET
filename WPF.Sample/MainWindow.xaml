@@ -17,7 +17,7 @@
 	</Window.InputBindings>
     <Grid>
         <ui:MediaPlayer x:Name="Player">
-            <mpv:MpvPlayerHost x:Name="PlayerHost" Source="E:\Music\Inna - Body And The Sun (Super Deluxe Edition) (2015)\CD1\07 Fool Me.mp3" AutoPlay="true" MediaUnloaded="PlayerHost_MediaUnloaded" />
+            <mpv:MpvPlayerHost x:Name="PlayerHost" Source="E:\NaturalGrounding\AOA\Like a Cat.mp4" AutoPlay="true" />
             <!--<naudio:NAudioPlayerHost x:Name="PlayerHost" Source="E:\Music\Inna - Body And The Sun (Super Deluxe Edition) (2015)\CD1\07 Fool Me.mp3" Pitch="0.9818181818181818181818" AutoPlay="true" MediaUnloaded="PlayerHost_MediaUnloaded" />-->
         </ui:MediaPlayer>
     </Grid>

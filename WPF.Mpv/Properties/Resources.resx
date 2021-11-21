@@ -123,4 +123,7 @@
   <data name="TemplateElementNotFound" xml:space="preserve">
     <value>Could not find template element '{0}' of type '{1}'.</value>
   </data>
+  <data name="MediaError" xml:space="preserve">
+    <value>Error loading media</value>
+  </data>
 </root>
