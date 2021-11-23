@@ -206,7 +206,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
         public static readonly DirectProperty<PlayerHostBase, string> TextProperty =
             AvaloniaProperty.RegisterDirect<PlayerHostBase, string>(nameof(Text), o => o.Text);
 
-        public string Text { get; private set; } = string.Empty;
+        public string Text { get; protected set; } = string.Empty;
 
         // IsMediaLoaded
         public static readonly DirectProperty<PlayerHostBase, bool> IsMediaLoadedProperty =

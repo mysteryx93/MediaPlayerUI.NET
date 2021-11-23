@@ -40,23 +40,12 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers
             var frameworkElement = (Control)sender!;
             frameworkElement.Initialized -= FrameworkElement_Initialized;
 
-            var window = GetParentWindow(frameworkElement);
+            var window = frameworkElement.FindAncestor<TopLevel>();
             if (window != null)
             {
                 // Move input bindings from the FrameworkElement to the window.
                 TransferBindingsToWindow(frameworkElement, window, true);
             }
-        }
-
-        private static Window? GetParentWindow(Interactive obj)
-        {
-            IStyledElement i = obj;
-            while (i is not Window && i != null)
-            {
-                i = i.Parent;
-            }
-
-            return i as Window;
         }
 
         public static void TransferBindingsToWindow(IInputElement src, IInputElement dst, bool remove)

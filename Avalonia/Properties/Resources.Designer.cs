@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HanumanInstitute.MediaPlayer.Properties {
+namespace HanumanInstitute.MediaPlayer.Avalonia.Properties {
     using System;
     
     

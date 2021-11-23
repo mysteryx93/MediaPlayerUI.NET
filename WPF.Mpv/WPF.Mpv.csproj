@@ -9,6 +9,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>MediaPlayer.WPF.Mpv</AssemblyName>
     <Authors>Etienne Charland</Authors>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

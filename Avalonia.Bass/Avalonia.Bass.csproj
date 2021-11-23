@@ -8,12 +8,8 @@
     <AssemblyName>MediaPlayer.Avalonia.Bass</AssemblyName>
     <PackageId>MediaPlayer.Avalonia.Bass</PackageId>
     <Authors>Etienne Charland</Authors>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="NAudio" Version="1.10.0" />
-    <PackageReference Include="SoundTouch.Net.NAudioSupport" Version="2.3.2" />
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -32,6 +28,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Avalonia\Avalonia.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ManagedBass" Version="3.1.0" />
+    <PackageReference Include="ManagedBass.Fx" Version="3.1.0" />
   </ItemGroup>
 
 </Project>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HanumanInstitute.MediaPlayer.WPF.NAudio.Properties {
+namespace HanumanInstitute.MediaPlayer.Avalonia.Bass.Properties {
     using System;
     
     

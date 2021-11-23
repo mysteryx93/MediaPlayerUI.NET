@@ -10,6 +10,7 @@
     <AssemblyName>MediaPlayer.WPF.Sample</AssemblyName>
     <IsPackable>false</IsPackable>
     <Authors>Etienne Charland</Authors>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

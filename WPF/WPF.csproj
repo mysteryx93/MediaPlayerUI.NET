@@ -10,6 +10,7 @@
     <PackageId>MediaPlayer.WPF</PackageId>
     <AssemblyName>MediaPlayer.WPF</AssemblyName>
     <Authors>Etienne Charland</Authors>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

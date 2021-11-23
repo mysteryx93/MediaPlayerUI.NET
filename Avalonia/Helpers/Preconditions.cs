@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
-using HanumanInstitute.MediaPlayer.Properties;
 
 namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers
 {
@@ -61,7 +60,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers
         /// <param name="name">The name of the parameter.</param>
         public static void ThrowArgumentNullOrEmpty(this string name)
         {
-            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentNullOrEmpty, name), name);
+            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.ArgumentNullOrEmpty, name), name);
         }
     }
 }

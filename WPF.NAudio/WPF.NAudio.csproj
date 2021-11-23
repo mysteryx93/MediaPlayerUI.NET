@@ -8,6 +8,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>MediaPlayer.WPF.NAudio</AssemblyName>
     <Authors>Etienne Charland</Authors>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
