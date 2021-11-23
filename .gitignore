@@ -2,6 +2,7 @@ _*
 [Pp]ackages/
 *.dat
 .*/
+!.idea*/
 
 # User-specific files
 *.suo
