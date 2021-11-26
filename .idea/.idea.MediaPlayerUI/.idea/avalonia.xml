@@ -6,6 +6,11 @@
         <entry key="Avalonia.Sample/App.axaml" value="Avalonia.Sample/Avalonia.Sample.csproj" />
         <entry key="Avalonia.Sample/MainWindow.axaml" value="Avalonia.Sample/Avalonia.Sample.csproj" />
         <entry key="Avalonia.Sample/Views/MainWindow.axaml" value="Avalonia.Sample/Avalonia.Sample.csproj" />
+        <entry key="Avalonia/Styles/Colors/MediaPlayer.axaml" value="Avalonia.Sample/Avalonia.Sample.csproj" />
+        <entry key="Avalonia/Styles/Default/MediaPlayer.axaml" value="Avalonia.Sample/Avalonia.Sample.csproj" />
+        <entry key="Avalonia/Styles/Default/Theme.axaml" value="Avalonia.Sample/Avalonia.Sample.csproj" />
+        <entry key="Avalonia/Themes/Generic.axaml" value="Avalonia.Sample/Avalonia.Sample.csproj" />
+        <entry key="Avalonia/Themes/Generic.xaml" value="Avalonia.Sample/Avalonia.Sample.csproj" />
       </map>
     </option>
   </component>

@@ -1,8 +1,11 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:HanumanInstitute.MediaPlayer.Avalonia.Sample"
+             xmlns:mp="clr-namespace:HanumanInstitute.MediaPlayer.Avalonia;assembly=MediaPlayer.Avalonia"
              x:Class="HanumanInstitute.MediaPlayer.Avalonia.Sample.App">
     <Application.Styles>
         <FluentTheme Mode="Light"/>
+        <StyleInclude Source="avares://MediaPlayer.Avalonia/Styles/Colors/Gray.axaml" />
+        <StyleInclude Source="avares://MediaPlayer.Avalonia/Styles/Default/Theme.axaml" />
     </Application.Styles>
 </Application>

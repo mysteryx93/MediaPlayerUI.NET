@@ -1,7 +1,7 @@
 ﻿using System;
 using Avalonia.Markup.Xaml;
 
-namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers
+namespace HanumanInstitute.MediaPlayer.Avalonia
 {
     /// <summary>
     /// Allows binding int value for command parameters using syntax {ui:Int32 5}

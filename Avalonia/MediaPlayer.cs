@@ -11,6 +11,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
+using Avalonia.VisualTree;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers.Mvvm;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 
@@ -66,31 +67,33 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
 
             UIPart = e.NameScope.Find<Border>(UIPartName);
             SeekBarPart = e.NameScope.Find<Slider>(SeekBarPartName);
-            SeekBarTrackPart = e.NameScope.Find<Track>(SeekBarTrackPartName);
+
             if (UIPart == null)
             {
                 throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
                     Properties.Resources.TemplateElementNotFound, UIPartName, nameof(Border)));
             }
-
+            
             if (SeekBarPart == null)
             {
                 throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
                     Properties.Resources.TemplateElementNotFound, SeekBarPartName, nameof(Slider)));
             }
-
+            
             PointerPressed += UserControl_PointerPressed;
             SeekBarPart.AddHandler(Slider.PointerPressedEvent,
                 OnSeekBarPreviewMouseLeftButtonDown);
+            
             // Thumb doesn't yet exist.
-            SeekBarPart.TemplateApplied += (_, _) =>
+            SeekBarPart.TemplateApplied += (_, t) =>
             {
+                SeekBarTrackPart = t.NameScope.Find<Track>(SeekBarTrackPartName);                
                 if (SeekBarThumbPart == null)
                 {
                     throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
                         Properties.Resources.TemplateElementNotFound, SeekBarTrackPartName, nameof(Track)));
                 }
-
+            
                 SeekBarThumbPart.DragStarted += OnSeekBarDragStarted;
                 SeekBarThumbPart.DragCompleted += OnSeekBarDragCompleted;
             };

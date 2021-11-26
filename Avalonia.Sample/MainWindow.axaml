@@ -2,10 +2,27 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="clr-namespace:HanumanInstitute.MediaPlayer.Avalonia;assembly=MediaPlayer.Avalonia"
+        xmlns:bass="clr-namespace:HanumanInstitute.MediaPlayer.Avalonia.Bass;assembly=MediaPlayer.Avalonia.Bass"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="HanumanInstitute.MediaPlayer.Avalonia.Sample.MainWindow"
         Title="MyApp">
 
-    <TextBlock Text="This is some text" FontSize="16" FontFamily="Segoe UI" HorizontalAlignment="Center" VerticalAlignment="Center" KeyDown="InputElement_OnKeyDown"/>
-
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Space" Command="{Binding PlayPauseCommand, ElementName=Player}" />
+        <KeyBinding Gesture="Right" Command="{Binding SeekCommand, ElementName=Player}" CommandParameter="1" />
+        <!-- <KeyBinding Gesture="Ctrl+Right" Command="{Binding SeekCommand, ElementName=Player}" CommandParameter="{ui:Int32 10}" /> -->
+        <KeyBinding Gesture="Left" Command="{Binding SeekCommand, ElementName=Player}" CommandParameter="-1" />
+        <!-- <KeyBinding Gesture="Ctrl+Left" Command="{Binding SeekCommand, ElementName=Player}" CommandParameter="{ui:Int32 -10}" /> -->
+        <!-- <KeyBinding Gesture="Up" Command="{Binding ChangeVolumeCommand, ElementName=Player}" CommandParameter="{ui:Int32 5}" /> -->
+        <!-- <KeyBinding Gesture="Down" Command="{Binding ChangeVolumeCommand, ElementName=Player}" CommandParameter="{ui:Int32 -5}" /> -->
+        <!-- <KeyBinding Gesture="Alt+Enter" Command="{Binding ToggleFullScreenCommand, ElementName=Player}" /> -->
+    </Window.KeyBindings>
+    <Grid>
+        <ui:MediaPlayer x:Name="Player">
+            <!-- <bass:BassPlayerHost x:Name="PlayerHost" Source="E:\NaturalGrounding\AOA\Like a Cat.mp4" AutoPlay="true" /> -->
+            <bass:BassPlayerHost x:Name="PlayerHost" Pitch="0.9818181818181818181818" AutoPlay="true" />
+            <!-- Source="E:\Music\INNA\Body And The Sun\CD1\07 Fool Me.mp3" -->
+        </ui:MediaPlayer>
+    </Grid>
 </Window>

@@ -10,6 +10,12 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
     <None Remove=".gitignore" />
+    <None Update="bass.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="bass_fx.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.10" />
@@ -25,5 +31,9 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Assets\avalonia-logo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Avalonia.Bass\Avalonia.Bass.csproj" />
+    <ProjectReference Include="..\Avalonia\Avalonia.csproj" />
   </ItemGroup>
 </Project>

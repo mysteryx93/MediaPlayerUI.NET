@@ -3,7 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.LogicalTree;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 using ManagedBass;
 using ManagedBass.Fx;
@@ -14,16 +16,6 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
 {
     public class BassPlayerHost : PlayerHostBase, IDisposable
     {
-        public BassPlayerHost()
-        {
-            if (!Design.IsDesignMode)
-            {
-                Initialized += UserControl_Loaded;
-                this.FindAncestor<TopLevel>()!.Closed += (_, _) => Dispose();
-                // Dispatcher.ShutdownStarted += (s2, e2) => UserControl_Unloaded(s2, null);
-            }
-        }
-
         // BASS audio stream handle.
         private int _chan;
         // BASS audio stream effect handle.
@@ -39,19 +31,26 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
         public event EventHandler? MediaError;
         public event EventHandler? MediaFinished;
 
-        private void UserControl_Loaded(object? sender, EventArgs e)
+        protected override void OnInitialized()
         {
-            ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped);
-            // ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.Position, 0, Player_PositionChanged);
+            base.OnInitialized();
 
-            _posTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(PositionRefreshMilliseconds),
-                DispatcherPriority.Render, Timer_PositionChanged) { IsEnabled = false };
-
-            // _mediaOut.Volume = (float)base.Volume / 100;
-
-            if (!string.IsNullOrEmpty(Source) && !_initLoaded)
+            if (!Design.IsDesignMode)
             {
-                LoadMedia();
+                this.FindLogicalAncestorOfType<TopLevel>()!.Closed += (_, _) => Dispose();
+
+                ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped);
+                // ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.Position, 0, Player_PositionChanged);
+
+                _posTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(PositionRefreshMilliseconds),
+                    DispatcherPriority.Render, Timer_PositionChanged) { IsEnabled = false };
+
+                // _mediaOut.Volume = (float)base.Volume / 100;
+
+                if (!string.IsNullOrEmpty(Source) && !_initLoaded)
+                {
+                    LoadMedia();
+                }
             }
         }
 
@@ -361,15 +360,18 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
 
         private void ReleaseChannel()
         {
-            ManagedBass.Bass.SampleFree(_chan).Valid();
-            _chan = 0;
-            _fx = 0;
+            if (BassActive)
+            {
+                ManagedBass.Bass.SampleFree(_chan).Valid();
+                _chan = 0;
+                _fx = 0;
+            }
         }
 
 
         private bool _disposedValue;
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!_disposedValue)
             {

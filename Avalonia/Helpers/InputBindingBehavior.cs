@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 
 namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers
 {
@@ -40,7 +41,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers
             var frameworkElement = (Control)sender!;
             frameworkElement.Initialized -= FrameworkElement_Initialized;
 
-            var window = frameworkElement.FindAncestor<TopLevel>();
+            var window = frameworkElement.FindAncestorOfType<TopLevel>();
             if (window != null)
             {
                 // Move input bindings from the FrameworkElement to the window.

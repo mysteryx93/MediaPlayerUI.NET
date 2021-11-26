@@ -19,13 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Icons\loop.png" />
-    <Resource Include="Icons\pause.png" />
-    <Resource Include="Icons\play.png" />
-    <Resource Include="Icons\stop.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -53,6 +46,13 @@
 
   <ItemGroup>
     <AvaloniaXaml Remove="FullScreenUI.axaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Styles\Default\Icons\loop.png" />
+    <AvaloniaResource Include="Styles\Default\Icons\pause.png" />
+    <AvaloniaResource Include="Styles\Default\Icons\play.png" />
+    <AvaloniaResource Include="Styles\Default\Icons\stop.png" />
   </ItemGroup>
 
 </Project>
