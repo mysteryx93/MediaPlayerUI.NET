@@ -5,8 +5,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.LogicalTree;
 using Avalonia.Threading;
-using Avalonia.VisualTree;
-using HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 using ManagedBass;
 using ManagedBass.Fx;
 
@@ -18,8 +16,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
     {
         // BASS audio stream handle.
         private int _chan;
-        // BASS audio stream effect handle.
-        private int _fx;
+        private ChannelInfo _chanInfo;
         // Timer to get position.
         private DispatcherTimer? _posTimer;
         /// <summary>
@@ -37,13 +34,17 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
 
             if (!Design.IsDesignMode)
             {
+                if (!ManagedBass.Bass.Init(-1, 48000))
+                {
+                    throw new InvalidOperationException("Failed to initialize BASS audio output.");
+                }
+                
                 this.FindLogicalAncestorOfType<TopLevel>()!.Closed += (_, _) => Dispose();
 
-                ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped);
+                // ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped).Valid();
                 // ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.Position, 0, Player_PositionChanged);
 
-                _posTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(PositionRefreshMilliseconds),
-                    DispatcherPriority.Render, Timer_PositionChanged) { IsEnabled = false };
+                _posTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(PositionRefreshMilliseconds), DispatcherPriority.Render, Timer_PositionChanged);
 
                 // _mediaOut.Volume = (float)base.Volume / 100;
 
@@ -69,6 +70,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
             set
             {
                 _source = value;
+                if (!IsInitialized) { return; }
 
                 if (!string.IsNullOrEmpty(value))
                 {
@@ -125,6 +127,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
                 if (_posTimer != null)
                 {
                     _posTimer.Interval = TimeSpan.FromMilliseconds(_positionRefreshMilliseconds);
+                    // _posTimer.Interval = TimeSpan.FromMilliseconds(_positionRefreshMilliseconds);
                 }
             }
         }
@@ -139,28 +142,21 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
             set
             {
                 _rate = CoerceDouble(value);
-                if (BassActive)
-                {
-                    // _mediaProvider.Rate = (double)e.NewValue;
-                }
+                AdjustTempo();
             }
         }
 
         // Pitch
         public static readonly DirectProperty<BassPlayerHost, double> PitchProperty =
             AvaloniaProperty.RegisterDirect<BassPlayerHost, double>(nameof(Pitch), o => o.Pitch);
-        private double _pitch;
+        private double _pitch = 1;
         public double Pitch
         {
             get => _pitch;
             set
             {
                 _pitch = CoerceDouble(value);
-                if (BassActive)
-                {
-                    ManagedBass.Bass.FXSetParameters(_fx,
-                        new PitchShiftParameters() { fPitchShift = 432f / 440, lOsamp = 8 }).Valid();
-                }
+                AdjustTempo();
             }
         }
 
@@ -235,6 +231,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
             {
                 PlaybackStatus.Loading => Properties.Resources.Loading,
                 PlaybackStatus.Playing => Title ?? System.IO.Path.GetFileName(Source),
+                PlaybackStatus.Error => Properties.Resources.MediaError,
                 _ => string.Empty
             } ?? string.Empty;
         }
@@ -283,10 +280,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
         protected override void SpeedChanged(double value)
         {
             base.SpeedChanged(value);
-            if (BassActive)
-            {
-                // _mediaProvider.Tempo = value;
-            }
+            AdjustTempo();
         }
 
         protected override void LoopChanged(bool value)
@@ -326,19 +320,35 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
                 {
                     try
                     {
-                        _chan = ManagedBass.Bass.CreateStream(fileName, Flags: BassFlags.AutoFree | BassFlags.Decode).Valid();
+                        _chan = ManagedBass.Bass.CreateStream(fileName, Flags: useEffects ? BassFlags.Decode : 0).Valid();
+                        _chanInfo = ManagedBass.Bass.ChannelGetInfo(_chan);
+                        ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped).Valid();
 
                         if (useEffects)
                         {
-                            _fx = ManagedBass.Bass.ChannelSetFX(_chan, EffectType.PitchShift, 10).Valid();
-                            ManagedBass.Bass.FXSetParameters(_fx,
-                                new PitchShiftParameters() { fPitchShift = 432f / 440, lOsamp = 8 }).Valid();
+                            _chan = BassFx.TempoCreate(_chan, BassFlags.FxFreeSource).Valid();
+                            ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoUseAAFilter, 1);
+                            ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoAAFilterLength, 32);
+                            AdjustTempo(speed, rate, pitch);
+                            
+                            // // speed 1=0, 2=100, 3=200, 4=300, .5=-100, .25=-300
+                            // speed /= pitch;
+                            // var tempo = speed >= 1 ? -100.0 / speed + 100 : 100.0 * speed - 100;
+                            // var freq = _chanInfo.Frequency * rate * pitch;
+                            //
+                            //
+                            // ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.Tempo, 444.0 / 432);
+                            // ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoFrequency, _chanInfo.Frequency / 440.0 * 432);
+                            //
+                            // //_fx = ManagedBass.Bass.ChannelSetFX(_chan, EffectType.PitchShift, 10).Valid();
+                            // // ManagedBass.Bass.FXSetParameters(_fx,
+                            // //     new PitchShiftParameters() { fPitchShift = 432f / 440, lOsamp = 8 }).Valid();
                         }
 
                         if (autoPlay)
                         {
-                            ManagedBass.Bass.ChannelPlay(_chan);
-                            _posTimer?.Start();
+                            ManagedBass.Bass.ChannelPlay(_chan).Valid();
+                            Dispatcher.UIThread.InvokeAsync(() => _posTimer?.Start());
                         }
 
                         Player_MediaLoaded();
@@ -346,9 +356,32 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
                     catch
                     {
                         ReleaseChannel();
+                        Status = PlaybackStatus.Error;
                         MediaError?.Invoke(this, EventArgs.Empty);
                     }
                 }).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Calculates and sets BASS Tempo and TempoFrequency parameters based on Speed, Rate and Pitch. 
+        /// </summary>
+        private void AdjustTempo() => AdjustTempo(GetSpeed(), Rate, Pitch);
+
+        /// <summary>
+        /// Calculates and sets BASS Tempo and TempoFrequency parameters based on Speed, Rate and Pitch. 
+        /// </summary>
+        private void AdjustTempo(double speed, double rate, double pitch)
+        {
+            if (BassActive)
+            {
+                // In BASS, 2x speed is 100 (+100%), whereas our Speed property is 2. Need to convert.
+                // speed 1=0, 2=100, 3=200, 4=300, .5=-100, .25=-300
+                speed /= pitch;
+                var tempo = speed >= 1 ? -100.0 / speed + 100 : 100.0 * speed - 100;
+                var freq = _chanInfo.Frequency * rate * pitch;
+                ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.Tempo, tempo);
+                ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoFrequency, freq);
             }
         }
 
@@ -356,15 +389,16 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
         {
             base.Stop();
             Source = string.Empty;
+            Player_PlaybackStopped(_chan, _chan, 0, IntPtr.Zero);
         }
 
         private void ReleaseChannel()
         {
             if (BassActive)
             {
-                ManagedBass.Bass.SampleFree(_chan).Valid();
+                ManagedBass.Bass.ChannelStop(_chan).Valid();
+                ManagedBass.Bass.StreamFree(_chan).Valid();
                 _chan = 0;
-                _fx = 0;
             }
         }
 

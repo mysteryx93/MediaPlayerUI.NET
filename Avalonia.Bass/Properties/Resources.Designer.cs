@@ -68,5 +68,14 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass.Properties {
                 return ResourceManager.GetString("Loading", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading media.
+        /// </summary>
+        internal static string MediaError {
+            get {
+                return ResourceManager.GetString("MediaError", resourceCulture);
+            }
+        }
     }
 }

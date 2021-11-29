@@ -46,77 +46,76 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
 
         // Position
         public static readonly DirectProperty<PlayerHostBase, TimeSpan> PositionProperty =
-            AvaloniaProperty.RegisterDirect<PlayerHostBase, TimeSpan>(nameof(Position), o => o.Position);
-
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, TimeSpan>(nameof(Position), 
+                o => o.Position, (o, v) => o.Position = v);
         private TimeSpan _position;
-
         public TimeSpan Position
         {
             get => _position;
             set
             {
-                _position = TimeSpan.FromTicks(Math.Max(0, Math.Min(Duration.Ticks, value.Ticks)));
-                PositionChanged(_position, !_isSettingPosition);
+                if (SetAndRaise(PositionProperty, ref _position, TimeSpan.FromTicks(Math.Max(0, Math.Min(Duration.Ticks, value.Ticks)))))
+                {
+                    PositionChanged(_position, !_isSettingPosition);
+                }
             }
         }
-
         protected virtual void PositionChanged(TimeSpan value, bool isSeeking) { }
 
         // Duration
         public static readonly DirectProperty<PlayerHostBase, TimeSpan> DurationProperty =
-            AvaloniaProperty.RegisterDirect<PlayerHostBase, TimeSpan>(nameof(Duration), o => o.Duration);
-
-        private TimeSpan _duration = TimeSpan.FromSeconds((1));
-
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, TimeSpan>(nameof(Duration), 
+                o => o.Duration, (o, v) => o.Duration = v);
+        private TimeSpan _duration = TimeSpan.FromSeconds(1);
         public TimeSpan Duration
         {
             get => _duration;
             protected set
             {
-                _duration = value;
-                DurationChanged(value);
+                if (SetAndRaise(DurationProperty, ref _duration, value))
+                {
+                    DurationChanged(value);
+                }
             }
         }
-
         protected virtual void DurationChanged(TimeSpan value) { }
 
         // IsPlaying
         public static readonly DirectProperty<PlayerHostBase, bool> IsPlayingProperty =
-            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsPlaying), o => o.IsPlaying);
-
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsPlaying), 
+                o => o.IsPlaying, (o, v) => o.IsPlaying = v);
         private bool _isPlaying;
-
         public bool IsPlaying
         {
             get => _isPlaying;
             set
             {
-                _isPlaying = CoerceIsPlaying(value);
-                IsPlayingChanged(_isPlaying);
+                if (SetAndRaise(IsPlayingProperty, ref _isPlaying, CoerceIsPlaying(value)))
+                {
+                    IsPlayingChanged(_isPlaying);
+                }
             }
         }
-
         protected virtual void IsPlayingChanged(bool value) { }
         protected virtual bool CoerceIsPlaying(bool value) => value;
 
         // Volume
         public static readonly DirectProperty<PlayerHostBase, int> VolumeProperty =
-            AvaloniaProperty.RegisterDirect<PlayerHostBase, int>(nameof(Volume), o => o.Volume);
-
-        private int _volume;
-
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, int>(nameof(Volume), 
+                o => o.Volume, (o, v) => o.Volume = v);
+        private int _volume = 100;
         public int Volume
         {
             get => _volume;
             set
             {
-                _volume = CoerceVolume(value);
-                VolumeChanged(_volume);
+                if (SetAndRaise(VolumeProperty, ref _volume, CoerceVolume(value)))
+                {
+                    VolumeChanged(_volume);
+                }
             }
         }
-
         protected virtual void VolumeChanged(int value) { }
-
         protected virtual int CoerceVolume(int value)
         {
             return Math.Max(0, (Math.Min(100, value)));
@@ -124,112 +123,127 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
 
         // SpeedFloat
         public static readonly DirectProperty<PlayerHostBase, double> SpeedFloatProperty =
-            AvaloniaProperty.RegisterDirect<PlayerHostBase, double>(nameof(SpeedFloat), o => o.SpeedFloat);
-
-        private double _speedFloat;
-
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, double>(nameof(SpeedFloat), 
+                o => o.SpeedFloat, (o, v) => o.SpeedFloat = v);
+        private double _speedFloat = 1;
         public double SpeedFloat
         {
             get => _speedFloat;
             set
             {
-                _speedFloat = CoerceDouble(value);
-                SpeedChanged(GetSpeed());
+                if (SetAndRaise(SpeedFloatProperty, ref _speedFloat, CoerceDouble(value)))
+                {
+                    SpeedChanged(GetSpeed());
+                }
             }
         }
-
         protected virtual void SpeedChanged(double value) { }
 
         // SpeedInt
         public static readonly DirectProperty<PlayerHostBase, int> SpeedIntProperty =
-            AvaloniaProperty.RegisterDirect<PlayerHostBase, int>(nameof(SpeedInt), o => o.SpeedInt);
-
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, int>(nameof(SpeedInt), 
+                o => o.SpeedInt, (o, v) => o.SpeedInt = v);
         private int _speedInt;
-
         public int SpeedInt
         {
             get => _speedInt;
             set
             {
-                _speedInt = CoerceSpeedInt(value);
-                SpeedChanged(GetSpeed());
+                if (SetAndRaise(SpeedIntProperty, ref _speedInt, CoerceSpeedInt(value)))
+                {
+                    SpeedChanged(GetSpeed());
+                }
             }
         }
-
         protected virtual int CoerceSpeedInt(int value) => value;
 
         // Loop
         public static readonly DirectProperty<PlayerHostBase, bool> LoopProperty =
-            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(Loop), o => o.Loop);
-
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(Loop), 
+                o => o.Loop, (o, v) => o.Loop = v);
         private bool _loop;
-
         public bool Loop
         {
             get => _loop;
             set
             {
-                _loop = CoerceLoop(value);
-                LoopChanged(_loop);
+                if (SetAndRaise(LoopProperty, ref _loop, CoerceLoop(value)))
+                {
+                    LoopChanged(_loop);
+                }
             }
         }
-
         protected virtual void LoopChanged(bool value) { }
         protected virtual bool CoerceLoop(bool value) => value;
 
         // AutoPlay
         public static readonly DirectProperty<PlayerHostBase, bool> AutoPlayProperty =
-            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(AutoPlay), o => o.AutoPlay);
-
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(AutoPlay), 
+                o => o.AutoPlay, (o, v) => o.AutoPlay = v);
         private bool _autoPlay;
-
         public bool AutoPlay
         {
             get => _autoPlay;
             set
             {
-                _autoPlay = CoerceAutoPlay(value);
-                AutoPlayChanged(_autoPlay);
+                if (SetAndRaise(AutoPlayProperty, ref _autoPlay, CoerceAutoPlay(value)))
+                {
+                    AutoPlayChanged(_autoPlay);
+                }
             }
         }
-
         protected virtual void AutoPlayChanged(bool value)
         {
             // AutoPlay can be set AFTER Script, we need to reset IsPlaying in that case.
             // Default value needs to be false otherwise it can cause video to start loading and immediately stop which can cause issues.
             IsPlaying = value;
         }
-
         protected virtual bool CoerceAutoPlay(bool value) => value;
 
         // Text
         public static readonly DirectProperty<PlayerHostBase, string> TextProperty =
-            AvaloniaProperty.RegisterDirect<PlayerHostBase, string>(nameof(Text), o => o.Text);
-
-        public string Text { get; protected set; } = string.Empty;
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, string>(nameof(Text), 
+                o => o.Text, (o, v) => o.Text = v);
+        private string _text = string.Empty;
+        public string Text
+        {
+            get => _text;
+            protected set
+            {
+                SetAndRaise(TextProperty, ref _text, value);
+            }
+        }
 
         // IsMediaLoaded
         public static readonly DirectProperty<PlayerHostBase, bool> IsMediaLoadedProperty =
-            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsMediaLoaded), o => o.IsMediaLoaded);
-
-        public bool IsMediaLoaded { get; private set; }
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsMediaLoaded), 
+                o => o.IsMediaLoaded, (o, v) => o.IsMediaLoaded = v);
+        private bool _isMediaLoaded;
+        public bool IsMediaLoaded
+        {
+            get => _isMediaLoaded;
+            private set
+            {
+                SetAndRaise(IsMediaLoadedProperty, ref _isMediaLoaded, value);
+            }
+        }
 
         // IsVideoVisible
         public static readonly DirectProperty<PlayerHostBase, bool> IsVideoVisibleProperty =
-            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsVideoVisible), o => o.IsVideoVisible);
-
+            AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsVideoVisible), 
+                o => o.IsVideoVisible, (o, v) => o.IsVideoVisible = v);
         private bool _isVideoVisible;
-
         public bool IsVideoVisible
         {
             get => _isVideoVisible;
             set
             {
-                _isVideoVisible = CoerceIsVideoVisible(value);
-                IsVideoVisibleChanged(_isVideoVisible);
+                if (SetAndRaise(IsVideoVisibleProperty, ref _isVideoVisible, CoerceIsVideoVisible(value)))
+                {
+                    IsVideoVisibleChanged(_isVideoVisible);
+                }
             }
         }
-
         protected virtual void IsVideoVisibleChanged(bool value)
         {
             if (HostContainer != null)
@@ -237,7 +251,6 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
                 HostContainer.IsVisible = value;
             }
         }
-
         protected virtual bool CoerceIsVideoVisible(bool value) => value;
 
         protected static double CoerceDouble(double value)

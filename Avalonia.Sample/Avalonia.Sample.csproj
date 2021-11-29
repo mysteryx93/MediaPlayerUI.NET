@@ -7,6 +7,9 @@
     <RootNamespace>HanumanInstitute.MediaPlayer.Avalonia.Sample</RootNamespace>
     <LangVersion>10</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Prefer32bit>false</Prefer32bit>
+  </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
     <None Remove=".gitignore" />

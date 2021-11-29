@@ -14,12 +14,12 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
         {
             if (handle == 0)
             {
-                throw new InvalidOperationException("BASS handle is null");
+                ThrowBassError();
             }
 
             return handle;
         }
-        
+
         /// <summary>
         /// Checks whether specified is true and throws an exception if false.
         /// </summary>
@@ -29,8 +29,16 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
         {
             if (!value)
             {
-                throw new InvalidOperationException("BASS returned false");
+                ThrowBassError();
             }
+        }
+
+        private static void ThrowBassError()
+        {
+            var err = ManagedBass.Bass.LastError.ToString();
+            var msg = $"BASS threw an error of type {err}. " + 
+                      "You can view details about that error at https://managedbass.github.io/api/ManagedBass.Errors.html";
+            throw new InvalidOperationException(msg);
         }
     }
 }

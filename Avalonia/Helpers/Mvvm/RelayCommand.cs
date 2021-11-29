@@ -106,15 +106,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers.Mvvm
             Justification = "This cannot be an event")]
         public void RaiseCanExecuteChanged()
         {
-#if SILVERLIGHT
-            var handler = CanExecuteChanged;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
-#else
-            // CommandManager.InvalidateRequerySuggested();
-#endif
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

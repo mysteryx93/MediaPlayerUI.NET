@@ -11,7 +11,6 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
-using Avalonia.VisualTree;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers.Mvvm;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 
@@ -58,6 +57,12 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
         public const string SeekBarTrackPartName = "PART_Track";
         public Track? SeekBarTrackPart { get; private set; }
 
+        public const string SeekBarDecreaseName = "PART_DecreaseButton";
+        public RepeatButton? SeekBarDecreasePart { get; private set; }
+        
+        public const string SeekBarIncreaseName = "PART_IncreaseButton";
+        public RepeatButton? SeekBarIncreasePart { get; private set; }
+
         public Thumb? SeekBarThumbPart => SeekBarTrackPart?.Thumb;
 
         protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -73,27 +78,32 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
                 throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
                     Properties.Resources.TemplateElementNotFound, UIPartName, nameof(Border)));
             }
-            
+
             if (SeekBarPart == null)
             {
                 throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
                     Properties.Resources.TemplateElementNotFound, SeekBarPartName, nameof(Slider)));
             }
-            
+
             PointerPressed += UserControl_PointerPressed;
-            SeekBarPart.AddHandler(Slider.PointerPressedEvent,
-                OnSeekBarPreviewMouseLeftButtonDown);
-            
+            // SeekBarPart.AddHandler(Slider.PointerPressedEvent,
+            //     OnSeekBarPreviewMouseLeftButtonDown);
+
             // Thumb doesn't yet exist.
             SeekBarPart.TemplateApplied += (_, t) =>
             {
-                SeekBarTrackPart = t.NameScope.Find<Track>(SeekBarTrackPartName);                
+                SeekBarIncreasePart = t.NameScope.Find<RepeatButton>(SeekBarIncreaseName);
+                SeekBarDecreasePart = t.NameScope.Find<RepeatButton>(SeekBarDecreaseName);
+                SeekBarIncreasePart.Click += (_, _) => SeekBar_Click();
+                SeekBarDecreasePart.Click += (_, _) => SeekBar_Click();
+                
+                SeekBarTrackPart = t.NameScope.Find<Track>(SeekBarTrackPartName);
                 if (SeekBarThumbPart == null)
                 {
                     throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
                         Properties.Resources.TemplateElementNotFound, SeekBarTrackPartName, nameof(Track)));
                 }
-            
+
                 SeekBarThumbPart.DragStarted += OnSeekBarDragStarted;
                 SeekBarThumbPart.DragCompleted += OnSeekBarDragCompleted;
             };
@@ -367,6 +377,23 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
             set => SetValue(IsSeekBarVisibleProperty, value);
         }
 
+        // Expose IsPlaying from PlayerHost so that it can be bound to styles.
+        public static readonly DirectProperty<MediaPlayer, bool> IsPlayingProperty =
+            AvaloniaProperty.RegisterDirect<MediaPlayer, bool>(nameof(IsPlaying), o => o.IsPlaying);
+        public bool IsPlaying
+        {
+            get => PlayerHost?.IsPlaying ?? false;
+        }
+
+        public void SeekBar_Click()
+        {
+            if (PlayerHost == null) { return; }
+
+            // Immediate seek when clicking elsewhere.
+            IsSeekBarPressed = true;
+            PlayerHost.Position = PositionBar;
+            IsSeekBarPressed = false;
+        }
 
         public void OnSeekBarPreviewMouseLeftButtonDown(object? sender, PointerPressedEventArgs e)
         {

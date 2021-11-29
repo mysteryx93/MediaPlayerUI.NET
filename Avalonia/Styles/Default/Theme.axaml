@@ -22,32 +22,6 @@
 
     <Style Selector="local|MediaPlayer Slider.seekBar">
         <Setter Property="Focusable" Value="False" />
-        <Setter Property="Template">
-            <ControlTemplate>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" /> <!-- MinHeight="{TemplateBinding MinHeight}" -->
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Track Grid.Row="1" x:Name="PART_Track">
-                        <Track.DecreaseButton>
-                            <RepeatButton Name="PART_DecreaseButton" />
-                        </Track.DecreaseButton>
-                        <Track.Thumb>
-                            <Thumb />
-                        </Track.Thumb>
-                        <Track.IncreaseButton>
-                            <RepeatButton Name="PART_IncreaseButton" />
-                        </Track.IncreaseButton>
-                    </Track>
-                </Grid>
-            </ControlTemplate>
-        </Setter>
-    </Style>
-
-    <Style Selector="local|MediaPlayer Slider.seekBar">
-        <Setter Property="Focusable" Value="False" />
     </Style>
 
     <Style Selector="local|MediaPlayer Slider.seekBar RepeatButton#PART_DecreaseButton">
@@ -56,7 +30,7 @@
             <ControlTemplate>
                 <Grid>
                     <Rectangle Height="11" /> <!-- Fill="#01FFFFFF" -->
-                    <Border BorderThickness="1,1,0,1" BorderBrush="{DynamicResource MediaPlayerSeekBarBorderBrush}"
+                    <Border Padding="0" BorderThickness="1,1,0,1" BorderBrush="{DynamicResource MediaPlayerSeekBarBorderBrush}"
                             Background="{DynamicResource MediaPlayerSeekBarDecreaseBrush}" Height="7"
                             IsHitTestVisible="False" />
                 </Grid>
@@ -67,16 +41,14 @@
     <Style Selector="local|MediaPlayer Slider.seekBar RepeatButton#PART_IncreaseButton">
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Grid>
-                        <Rectangle Height="11" /> <!-- Fill="#01FFFFFF" -->
-                        <Border BorderThickness="0,1,1,1" BorderBrush="{DynamicResource MediaPlayerSeekBarBorderColor}"
-                                Background="{DynamicResource MediaPlayerSeekBarIncreaseBrush}" Height="7"
-                                IsHitTestVisible="False" />
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
+            <ControlTemplate>
+                <Grid>
+                    <Rectangle Height="11" /> <!-- Fill="#01FFFFFF" -->
+                    <Border Padding="0" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource MediaPlayerSeekBarBorderColor}"
+                            Background="{DynamicResource MediaPlayerSeekBarIncreaseBrush}" Height="7"
+                            IsHitTestVisible="False" />
+                </Grid>
+            </ControlTemplate>
         </Setter>
     </Style>
 
@@ -84,8 +56,8 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Border BorderThickness="1" Height="11" Width="9"
-                        Background="{DynamicResource MediaPlayerThumbBorderBrush}"
-                        BorderBrush="{DynamicResource MediaPlayerThumbFillBrush}" />
+                        Background="{DynamicResource MediaPlayerThumbFillBrush}"
+                        BorderBrush="{DynamicResource MediaPlayerThumbBorderBrush}" />
             </ControlTemplate>
         </Setter>
     </Style>
@@ -160,9 +132,18 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         Padding="{TemplateBinding Padding}">
-                    <ContentPresenter
-                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      CornerRadius="{TemplateBinding CornerRadius}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Content="{TemplateBinding Content}"
+                                      Padding="{TemplateBinding Padding}"
+                                      RecognizesAccessKey="True"
+                                      TextBlock.Foreground="{TemplateBinding Foreground}"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
                 </Border>
             </ControlTemplate>
         </Setter>
@@ -172,13 +153,9 @@
         <Setter Property="BorderBrush" Value="{DynamicResource MediaPlayerToolbarBorderHoverBrush}" />
     </Style>
 
-    <!-- <Style Selector="[PlayerHost.IsPlaying]=True">
-                <Style.Resources>
-                    <Style Selector="#PlayButton">
-                        <Setter Property="Content" Value="{StaticResource PauseIcon}"></Setter>
-                    </Style>
-                </Style.Resources>
-            </Style> -->
+    <Style Selector="local|MediaPlayer[IsPlaying=true] Button#PlayButton">
+        <!-- <Setter Property="Content" Value="{StaticResource PauseIcon}" /> -->
+    </Style>
 
     <Style Selector="local|MediaPlayer">
         <Setter Property="Template">
@@ -212,25 +189,25 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
                                         <Grid Grid.Row="0" Grid.Column="3" Grid.RowSpan="2">
-                                            <Slider Orientation="Vertical" Minimum="-4" Maximum="4" SmallChange="1"
-                                                    LargeChange="1"
+                                            <Slider Orientation="Vertical" Minimum="-4" Maximum="4" SmallChange="1" LargeChange="1" 
+                                                    IsSnapToTickEnabled="True" TickFrequency="1"
                                                     Value="{Binding PlayerHost.SpeedInt, RelativeSource={RelativeSource TemplatedParent}}"
                                                     Width="20" Margin="0,2,0,2" Focusable="False"
                                                     IsVisible="{Binding IsSpeedVisible, RelativeSource={RelativeSource TemplatedParent}}">
-                                                <!-- <Slider.LayoutTransform> -->
-                                                <!--     <ScaleTransform ScaleY="0.7" ScaleX="0.7" /> -->
-                                                <!-- </Slider.LayoutTransform> -->
+                                                <Slider.RenderTransform>
+                                                    <ScaleTransform ScaleY="0.7" ScaleX="0.7" />
+                                                </Slider.RenderTransform>
                                             </Slider>
                                         </Grid>
                                         <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <Button x:Name="PlayButton" Height="36" VerticalAlignment="Top"
-                                                        Width="36" Classes="toolbar" Focusable="False"
+                                                <Button x:Name="PlayButton" Classes="toolbar" Height="36" VerticalAlignment="Top"
+                                                        Width="36" Focusable="False"
                                                         Command="{Binding PlayPauseCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
                                                         IsVisible="{Binding IsPlayPauseVisible, RelativeSource={RelativeSource TemplatedParent}}"
                                                         Content="{StaticResource PlayIcon}" />
-                                                <Button x:Name="StopButton" Height="36" VerticalAlignment="Top"
-                                                        Width="36" Classes="toolbar" Focusable="False"
+                                                <Button x:Name="StopButton" Classes="toolbar" Height="36" VerticalAlignment="Top"
+                                                        Width="36" Focusable="False"
                                                         Command="{Binding StopCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
                                                         IsVisible="{Binding IsStopVisible, RelativeSource={RelativeSource TemplatedParent}}"
                                                         Content="{StaticResource StopIcon}" />
@@ -249,28 +226,24 @@
                                             </DockPanel>
                                         </Grid>
                                         <Grid Grid.Row="1" Grid.Column="1">
-                                            <Slider x:Name="PART_SeekBar" Width="NaN"
+                                            <Slider x:Name="PART_SeekBar" Classes="seekBar" Width="NaN" Focusable="False"
                                                     HorizontalAlignment="Stretch" Margin="2,6,4,6" VerticalAlignment="Top"
                                                     Maximum="{Binding PlayerHost.Duration, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TimeSpanToDoubleConverter}, Mode=OneWay}"
-                                                    LargeChange="10" SmallChange="1"
+                                                    LargeChange="10" SmallChange="1" 
                                                     Value="{Binding PositionBar, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TimeSpanToDoubleConverter}}"
-                                                    Classes="seekBar" Focusable="False"
                                                     IsVisible="{Binding IsSeekBarVisible, RelativeSource={RelativeSource TemplatedParent}}"
                                                     IsEnabled="{Binding PlayerHost.IsMediaLoaded, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
-                                            <!-- IsMoveToPointEnabled="True" -->
                                         </Grid>
                                         <Grid Grid.Row="1" Grid.Column="2">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
                                                         Margin="0,0,2,0">
-                                                <Slider x:Name="VolumeBar" Margin="4,0,4,0" VerticalAlignment="Top"
+                                                <Slider x:Name="VolumeBar" Classes="volume" Margin="4,0,4,0" VerticalAlignment="Top"
                                                         Maximum="100" LargeChange="20" SmallChange="5"
                                                         Value="{Binding PlayerHost.Volume, RelativeSource={RelativeSource TemplatedParent}}"
-                                                        Classes="volume" Focusable="False" Height="15" Width="55"
+                                                        Focusable="False" Height="15" Width="55"
                                                         IsVisible="{Binding IsVolumeVisible, RelativeSource={RelativeSource TemplatedParent}}" />
-                                                <!-- IsMoveToPointEnabled="True" -->
-                                                <ToggleButton x:Name="LoopButton" Height="24"
-                                                              VerticalAlignment="Top" Width="24"
-                                                              Classes="toolbar" Focusable="False"
+                                                <ToggleButton x:Name="LoopButton" Classes="toolbar" Focusable="False"
+                                                              VerticalAlignment="Top" Height="24" Width="24"
                                                               IsChecked="{Binding PlayerHost.Loop, RelativeSource={RelativeSource TemplatedParent}}"
                                                               IsVisible="{Binding IsLoopVisible, RelativeSource={RelativeSource TemplatedParent}}"
                                                               Content="{StaticResource LoopIcon}" />
