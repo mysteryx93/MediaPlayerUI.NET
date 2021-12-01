@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
+using Avalonia.Threading;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers.Mvvm;
 
@@ -14,6 +17,8 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
     /// </summary>
     public abstract class MediaPlayerBase : ContentControl, IDisposable
     {
+        private readonly TimedAction<TimeSpan> _positionBarTimedUpdate;
+
         public event EventHandler? PlayCommandExecuted;
         public event EventHandler? PauseCommandExecuted;
         public event EventHandler? StopCommandExecuted;
@@ -21,6 +26,20 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
         public event EventHandler<ValueEventArgs<int>>? ChangeVolumeExecuted;
 
         protected bool IsSeekBarPressed { get; set; }
+
+        protected MediaPlayerBase()
+        {
+            _positionBarTimedUpdate = new TimedAction<TimeSpan>(TimeSpan.FromMilliseconds(SeekMinInterval), (v) =>
+            {
+                if (PlayerHost != null)
+                {
+                    var old = IsSeekBarPressed;
+                    IsSeekBarPressed = true;
+                    PlayerHost.Position = v;
+                    IsSeekBarPressed = old;
+                }
+            }, DispatcherPriority.Input);
+        }
 
         public static readonly DirectProperty<MediaPlayerBase, PlayerHostBase?> PlayerHostProperty =
             AvaloniaProperty.RegisterDirect<MediaPlayerBase, PlayerHostBase?>(nameof(PlayerHost), o => o.PlayerHost);
@@ -30,7 +49,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
             get => _playerHost;
             protected set => SetAndRaise(PlayerHostProperty, ref _playerHost, value);
         }
-        
+
         public void ContentHasChanged(AvaloniaPropertyChangedEventArgs e)
         {
             PlayerHost = e.NewValue as PlayerHostBase;
@@ -43,13 +62,21 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
             {
                 newValue.MediaLoaded += Player_MediaLoaded;
                 newValue.MediaUnloaded += Player_MediaUnloaded;
-                PlayerHostBase.PositionProperty.Changed.Subscribe(_ => Player_PositionChanged());
+                newValue.GetObservable(PlayerHostBase.PositionProperty).Subscribe(Player_PositionChanged);
+                newValue.GetObservable(PlayerHostBase.IsPlayingProperty).Subscribe(Player_IsPlayingChanged);
             }
             OnContentChanged(e);
         }
         // Allow derived class to bind to new host.
         protected virtual void OnContentChanged(AvaloniaPropertyChangedEventArgs e) { }
 
+        // Expose IsPlaying from PlayerHost so that it can be bound to styles.
+        public static readonly DirectProperty<MediaPlayer, bool> IsPlayingProperty =
+            AvaloniaProperty.RegisterDirect<MediaPlayer, bool>(nameof(IsPlaying), o => o.IsPlaying);
+        public bool IsPlaying =>  PlayerHost?.IsPlaying ?? false;
+
+        private void Player_IsPlayingChanged(bool value) => RaisePropertyChanged(IsPlayingProperty, !value, value, BindingPriority.LocalValue);
+        
         public RelayCommand PlayPauseCommand => _playPauseCommand ??= new RelayCommand(PlayPause, CanPlayPause);
         private RelayCommand? _playPauseCommand;
         private bool CanPlayPause() => PlayerHost?.IsMediaLoaded ?? false;
@@ -123,7 +150,15 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
         public TimeSpan PositionBar
         {
             get => _positionBar;
-            set => SetAndRaise(PositionBarProperty, ref _positionBar, CoercePositionBar(value));
+            set
+            {
+                SetAndRaise(PositionBarProperty, ref _positionBar, CoercePositionBar(value));
+                if (IsSeekBarPressed && PlayerHost != null)
+                {
+                    // _positionBarTimedUpdate.ExecuteAtInterval(PositionBar);
+                    PlayerHost.Position = PositionBar;
+                }
+            }
         }
         private TimeSpan CoercePositionBar(TimeSpan value)
         {
@@ -135,7 +170,11 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
         public static readonly StyledProperty<TimeDisplayStyle> PositionDisplayProperty =
             AvaloniaProperty.Register<MediaPlayerBase, TimeDisplayStyle>(nameof(PositionDisplay),
                 TimeDisplayStyle.Standard);
-        public TimeDisplayStyle PositionDisplay { get => GetValue(PositionDisplayProperty); set => SetValue(PositionDisplayProperty, value); }
+        public TimeDisplayStyle PositionDisplay
+        {
+            get => GetValue(PositionDisplayProperty);
+            set => SetValue(PositionDisplayProperty, value);
+        }
 
         // PositionText
         public static readonly DirectProperty<MediaPlayerBase, string> PositionTextProperty =
@@ -147,7 +186,22 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
             private set => SetAndRaise(PositionTextProperty, ref _positionText, value);
         }
 
-        private void Player_PositionChanged()
+        // SeekMinInterval
+        public static readonly DirectProperty<MediaPlayerBase, int> SeekMinIntervalProperty =
+            AvaloniaProperty.RegisterDirect<MediaPlayerBase, int>(nameof(SeekMinInterval),
+                o => o.SeekMinInterval);
+        private int _seekMinInterval = 500;
+        public int SeekMinInterval
+        {
+            get => _seekMinInterval;
+            set
+            {
+                _seekMinInterval = value < 1 ? 1 : value;
+                _positionBarTimedUpdate.MinInterval = TimeSpan.FromMilliseconds(_seekMinInterval);
+            }
+        }
+
+        private void Player_PositionChanged(TimeSpan value)
         {
             UpdatePositionText();
             if (!IsSeekBarPressed && PlayerHost != null)
@@ -155,7 +209,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
                 PositionBar = PlayerHost.Position;
             }
         }
-        
+
         private void UpdatePositionText()
         {
             if (PlayerHost?.IsMediaLoaded == true && PositionDisplay != TimeDisplayStyle.None)
@@ -173,7 +227,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
         private void Player_MediaLoaded(object? sender, EventArgs e)
         {
             MediaLoadedChanged();
-            Player_PositionChanged();
+            Player_PositionChanged(TimeSpan.Zero);
         }
 
         private void Player_MediaUnloaded(object? sender, EventArgs e)

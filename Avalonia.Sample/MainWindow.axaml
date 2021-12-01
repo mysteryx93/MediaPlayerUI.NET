@@ -6,7 +6,7 @@
         xmlns:bass="clr-namespace:HanumanInstitute.MediaPlayer.Avalonia.Bass;assembly=MediaPlayer.Avalonia.Bass"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="HanumanInstitute.MediaPlayer.Avalonia.Sample.MainWindow"
-        Title="MyApp">
+        Title="MyApp" UseLayoutRounding="True">
 
     <Window.KeyBindings>
         <KeyBinding Gesture="Space" Command="{Binding PlayPauseCommand, ElementName=Player}" />
@@ -19,9 +19,9 @@
         <KeyBinding Gesture="Alt+Enter" Command="{Binding ToggleFullScreenCommand, ElementName=Player}" />
     </Window.KeyBindings>
     <Grid>
-        <ui:MediaPlayer x:Name="Player">
+        <ui:MediaPlayer x:Name="Player" IsSpeedVisible="False">
             <!-- <bass:BassPlayerHost x:Name="PlayerHost" Source="E:\NaturalGrounding\AOA\Like a Cat.mp4" AutoPlay="true" /> -->
-            <bass:BassPlayerHost x:Name="PlayerHost" AutoPlay="true" Source="E:\Music\INNA\Inna\15 Tell Me.mp3" Pitch="0.9818181818181818181818" />
+            <bass:BassPlayerHost x:Name="PlayerHost" AutoPlay="true" Source="E:\Music\INNA\Inna\15 Tell Me.mp3" Pitch="0.9818181818181818181818" Volume="20" />
             <!-- Source="E:\Music\INNA\Body And The Sun\CD1\07 Fool Me.mp3" Pitch="0.9818181818181818181818" -->
         </ui:MediaPlayer>
     </Grid>

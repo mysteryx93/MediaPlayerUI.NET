@@ -32,8 +32,6 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
             ContentProperty.Changed.Subscribe(ContentChanged);
         }
 
-        Type IStyleable.StyleKey => typeof(MediaPlayer);
-
         private static void ContentChanged(AvaloniaPropertyChangedEventArgs e)
         {
             if (e.Sender is MediaPlayerBase p)
@@ -41,8 +39,6 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
                 p.ContentHasChanged(e);
             }
         }
-
-        // private static object? CoerceContent(IAvaloniaObject d, object baseValue) => baseValue as PlayerHostBase;
 
         public MediaPlayer()
         {
@@ -70,43 +66,43 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
             base.OnApplyTemplate(e);
             if (Design.IsDesignMode) { return; }
 
-            UIPart = e.NameScope.Find<Border>(UIPartName);
-            SeekBarPart = e.NameScope.Find<Slider>(SeekBarPartName);
+            UIPart = e.NameScope.FindOrThrow<Border>(UIPartName);
+            SeekBarPart = e.NameScope.FindOrThrow<Slider>(SeekBarPartName);
 
-            if (UIPart == null)
-            {
-                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
-                    Properties.Resources.TemplateElementNotFound, UIPartName, nameof(Border)));
-            }
-
-            if (SeekBarPart == null)
-            {
-                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
-                    Properties.Resources.TemplateElementNotFound, SeekBarPartName, nameof(Slider)));
-            }
-
-            PointerPressed += UserControl_PointerPressed;
+            // PointerPressed += UserControl_PointerPressed;
+            // PositionBarProperty.Changed.Subscribe()
+            // SeekBarPart.PointerPressed += SeekBar_PointerPressed;
+            // SeekBarPart.PointerReleased += SeekBar_PointerReleased;
             // SeekBarPart.AddHandler(Slider.PointerPressedEvent,
             //     OnSeekBarPreviewMouseLeftButtonDown);
 
             // Thumb doesn't yet exist.
             SeekBarPart.TemplateApplied += (_, t) =>
             {
-                SeekBarIncreasePart = t.NameScope.Find<RepeatButton>(SeekBarIncreaseName);
-                SeekBarDecreasePart = t.NameScope.Find<RepeatButton>(SeekBarDecreaseName);
-                SeekBarIncreasePart.Click += (_, _) => SeekBar_Click();
-                SeekBarDecreasePart.Click += (_, _) => SeekBar_Click();
-                
-                SeekBarTrackPart = t.NameScope.Find<Track>(SeekBarTrackPartName);
-                if (SeekBarThumbPart == null)
-                {
-                    throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
-                        Properties.Resources.TemplateElementNotFound, SeekBarTrackPartName, nameof(Track)));
-                }
+                SeekBarTrackPart = t.NameScope.FindOrThrow<Track>(SeekBarTrackPartName);
+                SeekBarIncreasePart = t.NameScope.FindOrThrow<RepeatButton>(SeekBarIncreaseName);
+                SeekBarDecreasePart = t.NameScope.FindOrThrow<RepeatButton>(SeekBarDecreaseName);
 
-                SeekBarThumbPart.DragStarted += OnSeekBarDragStarted;
-                SeekBarThumbPart.DragCompleted += OnSeekBarDragCompleted;
+                // SeekBarTrackPart.AddHandler(RepeatButton.PointerPressedEvent, SeekBar_PointerPressed, RoutingStrategies.Tunnel);
+                // SeekBarTrackPart.AddHandler(RepeatButton.PointerPressedEvent, SeekBar_PointerPressed, RoutingStrategies.Tunnel);
+                SeekBarIncreasePart.AddHandler(RepeatButton.PointerPressedEvent, SeekBar_PointerPressed, RoutingStrategies.Tunnel);
+                SeekBarDecreasePart.AddHandler(RepeatButton.PointerPressedEvent, SeekBar_PointerPressed, RoutingStrategies.Tunnel);
+                SeekBarIncreasePart.AddHandler(RepeatButton.PointerReleasedEvent, SeekBar_PointerReleased, RoutingStrategies.Tunnel);
+                SeekBarDecreasePart.AddHandler(RepeatButton.PointerReleasedEvent, SeekBar_PointerReleased, RoutingStrategies.Tunnel);
+                
+                SeekBarThumbPart!.DragStarted += (_, _) => IsSeekBarPressed = true;
+                SeekBarThumbPart!.DragCompleted += (_, _) => IsSeekBarPressed = false;
             };
+        }
+
+        private void SeekBar_PointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            IsSeekBarPressed = true;
+        }
+
+        private void SeekBar_PointerReleased(object? sender, PointerReleasedEventArgs e)
+        {
+            IsSeekBarPressed = false;
         }
 
         protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -272,10 +268,10 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
         }
 
         // TitleProperty
-        public static readonly StyledProperty<string> TitleProperty =
-            AvaloniaProperty.Register<MediaPlayer, string>(nameof(Title));
+        public static readonly StyledProperty<string?> TitleProperty =
+            AvaloniaProperty.Register<MediaPlayer, string?>(nameof(Title));
 
-        public string Title
+        public string? Title
         {
             get => GetValue(TitleProperty);
             set => SetValue(TitleProperty, value);
@@ -376,71 +372,6 @@ namespace HanumanInstitute.MediaPlayer.Avalonia
             get => GetValue(IsSeekBarVisibleProperty);
             set => SetValue(IsSeekBarVisibleProperty, value);
         }
-
-        // Expose IsPlaying from PlayerHost so that it can be bound to styles.
-        public static readonly DirectProperty<MediaPlayer, bool> IsPlayingProperty =
-            AvaloniaProperty.RegisterDirect<MediaPlayer, bool>(nameof(IsPlaying), o => o.IsPlaying);
-        public bool IsPlaying
-        {
-            get => PlayerHost?.IsPlaying ?? false;
-        }
-
-        public void SeekBar_Click()
-        {
-            if (PlayerHost == null) { return; }
-
-            // Immediate seek when clicking elsewhere.
-            IsSeekBarPressed = true;
-            PlayerHost.Position = PositionBar;
-            IsSeekBarPressed = false;
-        }
-
-        public void OnSeekBarPreviewMouseLeftButtonDown(object? sender, PointerPressedEventArgs e)
-        {
-            if (PlayerHost == null) { return; }
-
-            e.CheckNotNull(nameof(e));
-
-            // Only process event if click is not on thumb.
-            if (SeekBarThumbPart != null)
-            {
-                var pos = e.GetPosition(SeekBarThumbPart);
-                if (pos.X < 0 || pos.Y < 0 || pos.X > SeekBarThumbPart.Width ||
-                    pos.Y > SeekBarThumbPart.Height)
-                {
-                    // Immediate seek when clicking elsewhere.
-                    IsSeekBarPressed = true;
-                    PlayerHost.Position = PositionBar;
-                    IsSeekBarPressed = false;
-                }
-            }
-        }
-
-        public void OnSeekBarDragStarted(object? sender, VectorEventArgs e)
-        {
-            if (PlayerHost == null) { return; }
-
-            IsSeekBarPressed = true;
-        }
-
-        private DateTime _lastDragCompleted = DateTime.MinValue;
-
-        public void OnSeekBarDragCompleted(object? sender, VectorEventArgs e)
-        {
-            if (PlayerHost == null) { return; }
-
-            // DragCompleted can trigger multiple times after switching to/from fullscreen. Ignore multiple events within a second.
-            if ((DateTime.Now - _lastDragCompleted).TotalSeconds < 1)
-            {
-                return;
-            }
-
-            _lastDragCompleted = DateTime.Now;
-
-            PlayerHost.Position = PositionBar;
-            IsSeekBarPressed = false;
-        }
-
 
         // public FullScreenUI? FullScreenUI
         // {

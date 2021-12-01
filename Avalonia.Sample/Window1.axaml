@@ -1,0 +1,46 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="HanumanInstitute.MediaPlayer.Avalonia.Sample.Window1"
+        Title="Window1" Width="400" Height="200">
+    <Window.Styles>
+        <Style Selector="Slider.seekBar RepeatButton#PART_DecreaseButton">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Background" Value="Gray" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid>
+                        <Border Padding="0" BorderThickness="3,3,0,3" BorderBrush="Blue"
+                                Background="Blue" Height="7"
+                                IsHitTestVisible="False" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="Slider.seekBar RepeatButton#PART_IncreaseButton">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Background" Value="LightGray" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid>
+                        <Border Padding="0" BorderThickness="3,3,0,3" BorderBrush="Blue"
+                                Background="Blue" Height="7"
+                                IsHitTestVisible="False" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="Slider.seekBar Thumb">
+            <Setter Property="Width" Value="10" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="Gray" Width="10" Height="20" />
+                </ControlTemplate>
+            </Setter>
+        </Style>
+    </Window.Styles>
+    <Slider Classes="seekBar" VerticalAlignment="Center" />
+</Window>

@@ -1,6 +1,7 @@
 <Styles
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=netstandard">
     <Styles.Resources>
         <Color x:Key="MediaPlayerBackgroundStartColor">#FFE6E6E6</Color>
         <Color x:Key="MediaPlayerBackgroundEndColor">#FFA4A4A4</Color>
@@ -12,10 +13,11 @@
         <Color x:Key="MediaPlayerVolumeBackgroundColor">Transparent</Color>
         <Color x:Key="MediaPlayerVolumeBorderColor">Black</Color>
         <Color x:Key="MediaPlayerVolumeDecreaseColor">LimeGreen</Color>
-        <Color x:Key="MediaPlayerToolbarBorderHoverColor">Orange</Color>
-        <LinearGradientBrush x:Key="MediaPlayerBackgroundBrush" EndPoint="0.5,1" StartPoint="0.5,0">
+        <Color x:Key="MediaPlayerToolbarAccentColor">#5390ce</Color>
+        <sys:Double x:Key="MediaPlayerDisabledOpacity">0.6</sys:Double>
+        <LinearGradientBrush x:Key="MediaPlayerBackgroundBrush" EndPoint="50%,100%" StartPoint="50%,100%">
             <GradientStop Color="{DynamicResource MediaPlayerBackgroundStartColor}" Offset="0" />
-            <GradientStop Color="{DynamicResource MediaPlayerBackgroundEndColor}" Offset="1" />
+            <!-- <GradientStop Color="{DynamicResource MediaPlayerBackgroundEndColor}" Offset="1" /> -->
         </LinearGradientBrush>
         <SolidColorBrush x:Key="MediaPlayerSeekBarBorderBrush" Color="{DynamicResource MediaPlayerSeekBarBorderColor}" />
         <SolidColorBrush x:Key="MediaPlayerSeekBarDecreaseBrush" Color="{DynamicResource MediaPlayerSeekBarDecreaseColor}" />
@@ -25,6 +27,9 @@
         <SolidColorBrush x:Key="MediaPlayerVolumeBackgroundBrush" Color="{DynamicResource MediaPlayerVolumeBackgroundColor}" />
         <SolidColorBrush x:Key="MediaPlayerVolumeDecreaseBrush" Color="{DynamicResource MediaPlayerVolumeDecreaseColor}" />
         <SolidColorBrush x:Key="MediaPlayerVolumeBorderBrush" Color="{DynamicResource MediaPlayerVolumeBorderColor}" />
-        <SolidColorBrush x:Key="MediaPlayerToolbarBorderHoverBrush" Color="{DynamicResource MediaPlayerToolbarBorderHoverColor}" />
+        <SolidColorBrush x:Key="MediaPlayerToolbarHoverBorderBrush" Color="{DynamicResource MediaPlayerToolbarAccentColor}" />
+        <SolidColorBrush x:Key="MediaPlayerToolbarCheckedHoverBrush" Color="{DynamicResource MediaPlayerToolbarAccentColor}" Opacity=".5" />
+        <SolidColorBrush x:Key="MediaPlayerToolbarHoverBrush" Color="{DynamicResource MediaPlayerToolbarAccentColor}" Opacity=".35" />
+        <SolidColorBrush x:Key="MediaPlayerToolbarPressedBrush" Color="{DynamicResource MediaPlayerToolbarAccentColor}" Opacity=".6" />
     </Styles.Resources>
 </Styles>

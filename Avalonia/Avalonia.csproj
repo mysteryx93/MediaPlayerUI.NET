@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.10" />
+    <PackageReference Include="Avalonia" Version="0.10.11-rc.1" />
     <PackageReference Include="Avalonia.Desktop" Version="0.10.10" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
   </ItemGroup>

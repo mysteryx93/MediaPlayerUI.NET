@@ -86,15 +86,15 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
         }
 
         // Title
-        public static readonly DirectProperty<BassPlayerHost, string> TitleProperty =
-            AvaloniaProperty.RegisterDirect<BassPlayerHost, string>(nameof(Title), o => o.Title);
-        private string _title = string.Empty;
-        public string Title
+        public static readonly DirectProperty<BassPlayerHost, string?> TitleProperty =
+            AvaloniaProperty.RegisterDirect<BassPlayerHost, string?>(nameof(Title), o => o.Title);
+        private string? _title;
+        public string? Title
         {
             get => _title;
             set
             {
-                _title = value ?? string.Empty;
+                _title = value;
                 SetDisplayText();
             }
         }
@@ -197,6 +197,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
                 }
 
                 base.OnMediaUnloaded();
+                ReleaseChannel();
             });
         }
 
@@ -273,7 +274,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
             base.VolumeChanged(value);
             if (BassActive)
             {
-                ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.Volume, (float)(VolumeBoost * value / 100));
+                AdjustVolume(value);
             }
         }
 
@@ -311,6 +312,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
                 _initLoaded = true;
                 // Store locally because properties can't be accessed from new thread.
                 var fileName = Source;
+                var volume = Volume;
                 var speed = GetSpeed();
                 var rate = Rate;
                 var pitch = Pitch;
@@ -329,20 +331,8 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
                             _chan = BassFx.TempoCreate(_chan, BassFlags.FxFreeSource).Valid();
                             ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoUseAAFilter, 1);
                             ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoAAFilterLength, 32);
+                            AdjustVolume(volume);
                             AdjustTempo(speed, rate, pitch);
-                            
-                            // // speed 1=0, 2=100, 3=200, 4=300, .5=-100, .25=-300
-                            // speed /= pitch;
-                            // var tempo = speed >= 1 ? -100.0 / speed + 100 : 100.0 * speed - 100;
-                            // var freq = _chanInfo.Frequency * rate * pitch;
-                            //
-                            //
-                            // ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.Tempo, 444.0 / 432);
-                            // ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoFrequency, _chanInfo.Frequency / 440.0 * 432);
-                            //
-                            // //_fx = ManagedBass.Bass.ChannelSetFX(_chan, EffectType.PitchShift, 10).Valid();
-                            // // ManagedBass.Bass.FXSetParameters(_fx,
-                            // //     new PitchShiftParameters() { fPitchShift = 432f / 440, lOsamp = 8 }).Valid();
                         }
 
                         if (autoPlay)
@@ -363,6 +353,15 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass
             }
         }
 
+        /// <summary>
+        /// Sets the volume on the playback channel. 
+        /// </summary>
+        /// <param name="volume">The volume to set, between 0 and 100.</param>
+        private void AdjustVolume(double volume)
+        {
+            ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.Volume, VolumeBoost * volume / 100);
+        }
+        
         /// <summary>
         /// Calculates and sets BASS Tempo and TempoFrequency parameters based on Speed, Rate and Pitch. 
         /// </summary>
