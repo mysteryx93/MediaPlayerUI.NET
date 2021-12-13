@@ -1,19 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
-    <RootNamespace>HanumanInstitute.MediaPlayer.WPF.NAudio</RootNamespace>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>HanumanInstitute.MediaPlayer.WPF.Mpv</RootNamespace>
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>
-    <AssemblyName>MediaPlayer.WPF.NAudio</AssemblyName>
+    <AssemblyName>MediaPlayer.WPF.Mpv</AssemblyName>
     <Authors>Etienne Charland</Authors>
     <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NAudio" Version="1.10.0" />
-    <PackageReference Include="SoundTouch.Net.NAudioSupport" Version="2.3.2" />
+    <PackageReference Include="Mpv.NET" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WPF\WPF.csproj" />
+    <ProjectReference Include="..\WPF\MediaPlayer.WPF.csproj" />
   </ItemGroup>
 
 </Project>

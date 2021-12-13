@@ -31,9 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WPF.Mpv\WPF.Mpv.csproj" />
-    <ProjectReference Include="..\WPF.NAudio\WPF.NAudio.csproj" />
-    <ProjectReference Include="..\WPF\WPF.csproj" />
+    <ProjectReference Include="..\WPF.Mpv\MediaPlayer.WPF.Mpv.csproj" />
+    <ProjectReference Include="..\WPF.NAudio\MediaPlayer.WPF.NAudio.csproj" />
+    <ProjectReference Include="..\WPF\MediaPlayer.WPF.csproj" />
   </ItemGroup>
 
 </Project>

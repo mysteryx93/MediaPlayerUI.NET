@@ -8,19 +8,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia", "Avalonia\Avalonia.csproj", "{42405681-89F9-4219-A5E7-E4C88758925D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Avalonia", "Avalonia\MediaPlayer.Avalonia.csproj", "{42405681-89F9-4219-A5E7-E4C88758925D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF", "WPF\WPF.csproj", "{9807E9F7-F5A7-413E-9E16-FE419A3E4D79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.WPF", "WPF\MediaPlayer.WPF.csproj", "{9807E9F7-F5A7-413E-9E16-FE419A3E4D79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF.Mpv", "WPF.Mpv\WPF.Mpv.csproj", "{5B73F02F-6056-4496-BF18-CFF672F5F1E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.WPF.Mpv", "WPF.Mpv\MediaPlayer.WPF.Mpv.csproj", "{5B73F02F-6056-4496-BF18-CFF672F5F1E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF.NAudio", "WPF.NAudio\WPF.NAudio.csproj", "{EADB4F15-FE28-4365-8967-0BEB5B3420C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.WPF.NAudio", "WPF.NAudio\MediaPlayer.WPF.NAudio.csproj", "{EADB4F15-FE28-4365-8967-0BEB5B3420C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF.Sample", "WPF.Sample\WPF.Sample.csproj", "{6343D072-6A03-45DD-99EF-ECD428F9F568}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.WPF.Sample", "WPF.Sample\MediaPlayer.WPF.Sample.csproj", "{6343D072-6A03-45DD-99EF-ECD428F9F568}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.Bass", "Avalonia.Bass\Avalonia.Bass.csproj", "{25BE1274-CF06-4473-9D88-6B7562EE166C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Avalonia.Bass", "Avalonia.Bass\MediaPlayer.Avalonia.Bass.csproj", "{25BE1274-CF06-4473-9D88-6B7562EE166C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.Sample", "Avalonia.Sample\Avalonia.Sample.csproj", "{DA252FDF-588A-4A47-BC7C-A6634D4F8624}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Avalonia.Sample", "Avalonia.Sample\MediaPlayer.Avalonia.Sample.csproj", "{DA252FDF-588A-4A47-BC7C-A6634D4F8624}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

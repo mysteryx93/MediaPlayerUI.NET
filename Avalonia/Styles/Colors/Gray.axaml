@@ -15,9 +15,9 @@
         <Color x:Key="MediaPlayerVolumeDecreaseColor">LimeGreen</Color>
         <Color x:Key="MediaPlayerToolbarAccentColor">#5390ce</Color>
         <sys:Double x:Key="MediaPlayerDisabledOpacity">0.6</sys:Double>
-        <LinearGradientBrush x:Key="MediaPlayerBackgroundBrush" EndPoint="50%,100%" StartPoint="50%,100%">
+        <LinearGradientBrush x:Key="MediaPlayerBackgroundBrush" EndPoint="50%,100%" StartPoint="50%,0%">
             <GradientStop Color="{DynamicResource MediaPlayerBackgroundStartColor}" Offset="0" />
-            <!-- <GradientStop Color="{DynamicResource MediaPlayerBackgroundEndColor}" Offset="1" /> -->
+            <GradientStop Color="{DynamicResource MediaPlayerBackgroundEndColor}" Offset="1" />
         </LinearGradientBrush>
         <SolidColorBrush x:Key="MediaPlayerSeekBarBorderBrush" Color="{DynamicResource MediaPlayerSeekBarBorderColor}" />
         <SolidColorBrush x:Key="MediaPlayerSeekBarDecreaseBrush" Color="{DynamicResource MediaPlayerSeekBarDecreaseColor}" />

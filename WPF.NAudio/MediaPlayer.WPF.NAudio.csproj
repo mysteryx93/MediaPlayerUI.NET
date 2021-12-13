@@ -1,15 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>HanumanInstitute.MediaPlayer.Avalonia.Bass</RootNamespace>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>HanumanInstitute.MediaPlayer.WPF.NAudio</RootNamespace>
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>
-    <AssemblyName>MediaPlayer.Avalonia.Bass</AssemblyName>
-    <PackageId>MediaPlayer.Avalonia.Bass</PackageId>
+    <AssemblyName>MediaPlayer.WPF.NAudio</AssemblyName>
     <Authors>Etienne Charland</Authors>
     <LangVersion>10</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="1.10.0" />
+    <PackageReference Include="SoundTouch.Net.NAudioSupport" Version="2.3.2" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -27,12 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Avalonia\Avalonia.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="ManagedBass" Version="3.1.0" />
-    <PackageReference Include="ManagedBass.Fx" Version="3.1.0" />
+    <ProjectReference Include="..\WPF\MediaPlayer.WPF.csproj" />
   </ItemGroup>
 
 </Project>

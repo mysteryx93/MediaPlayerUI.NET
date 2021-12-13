@@ -36,7 +36,7 @@
     <UpToDateCheckInput Remove="Assets\avalonia-logo.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Avalonia.Bass\Avalonia.Bass.csproj" />
-    <ProjectReference Include="..\Avalonia\Avalonia.csproj" />
+    <ProjectReference Include="..\Avalonia.Bass\MediaPlayer.Avalonia.Bass.csproj" />
+    <ProjectReference Include="..\Avalonia\MediaPlayer.Avalonia.csproj" />
   </ItemGroup>
 </Project>

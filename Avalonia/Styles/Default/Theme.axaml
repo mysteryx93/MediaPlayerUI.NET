@@ -28,44 +28,57 @@
         </PathGeometry>
     </Styles.Resources>
 
-    <Style Selector="local|MediaPlayer Slider.seekBar">
+    <Style Selector="local|MediaPlayer Slider.seekBar:horizontal">
         <Setter Property="Focusable" Value="False" />
-    </Style>
-    
-    <Style Selector="local|MediaPlayer Slider.seekBar RepeatButton#PART_DecreaseButton">
-        <Setter Property="Focusable" Value="False" />
-        <Setter Property="Background" Value="Green" />
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid>
-                    <Rectangle Height="11" /> <!-- Fill="#01FFFFFF" -->
-                    <Border Padding="0" BorderThickness="1,1,0,1" BorderBrush="{DynamicResource MediaPlayerSeekBarBorderBrush}"
-                            Background="{DynamicResource MediaPlayerSeekBarDecreaseBrush}" Height="7"
-                            IsHitTestVisible="False" />
+                <Grid Name="grid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" MinHeight="20" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Border Name="TrackBackground" Grid.Row="1" Height="4" Margin="6,0" VerticalAlignment="Center" />
+                    <Track Name="PART_Track" Grid.Row="1" IsDirectionReversed="{TemplateBinding IsDirectionReversed}"
+                           Orientation="Horizontal">
+                        <Track.DecreaseButton>
+                            <RepeatButton Name="PART_DecreaseButton" Focusable="False" Background="Green" HorizontalAlignment="Stretch">
+                                <RepeatButton.Template>
+                                    <ControlTemplate>
+                                        <Grid>
+                                            <Rectangle Height="11" /> <!-- Fill="#01FFFFFF" -->
+                                            <Border Padding="0" BorderThickness="1,1,0,1"
+                                                    BorderBrush="{DynamicResource MediaPlayerSeekBarBorderBrush}"
+                                                    Background="{DynamicResource MediaPlayerSeekBarDecreaseBrush}" Height="7" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </RepeatButton.Template>
+                            </RepeatButton>
+                        </Track.DecreaseButton>
+                        <Track.IncreaseButton>
+                            <RepeatButton Name="PART_IncreaseButton" Focusable="False" HorizontalAlignment="Stretch">
+                                <RepeatButton.Template>
+                                    <ControlTemplate>
+                                        <Grid>
+                                            <Border Padding="0" BorderThickness="0,1,1,1"
+                                                    BorderBrush="{DynamicResource MediaPlayerSeekBarBorderColor}"
+                                                    Background="{DynamicResource MediaPlayerSeekBarIncreaseBrush}" Height="7" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </RepeatButton.Template>
+                            </RepeatButton>
+                        </Track.IncreaseButton>
+                        <Thumb Name="thumb">
+                            <Thumb.Template>
+                                <ControlTemplate>
+                                    <Border BorderThickness="1" Height="11" Width="9"
+                                            Background="{DynamicResource MediaPlayerThumbFillBrush}"
+                                            BorderBrush="{DynamicResource MediaPlayerThumbBorderBrush}" />
+                                </ControlTemplate>
+                            </Thumb.Template>
+                        </Thumb>
+                    </Track>
                 </Grid>
-            </ControlTemplate>
-        </Setter>
-    </Style>
-
-    <Style Selector="local|MediaPlayer Slider.seekBar RepeatButton#PART_IncreaseButton">
-        <Setter Property="Focusable" Value="False" />
-        <Setter Property="Template">
-            <ControlTemplate>
-                <Grid>
-                    <Border Padding="0" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource MediaPlayerSeekBarBorderColor}"
-                            Background="{DynamicResource MediaPlayerSeekBarIncreaseBrush}" Height="7"
-                            IsHitTestVisible="False" />
-                </Grid>
-            </ControlTemplate>
-        </Setter>
-    </Style>
-
-    <Style Selector="local|MediaPlayer Slider.seekBar Thumb">
-        <Setter Property="Template">
-            <ControlTemplate>
-                <Border BorderThickness="1" Height="11" Width="9"
-                        Background="{DynamicResource MediaPlayerThumbFillBrush}"
-                        BorderBrush="{DynamicResource MediaPlayerThumbBorderBrush}" />
             </ControlTemplate>
         </Setter>
     </Style>
@@ -77,13 +90,13 @@
             <ControlTemplate>
                 <Grid>
                     <Grid>
-                        <!-- <Grid.OpacityMask>
-                                    <DrawingBrush>
-                                        <DrawingBrush.Drawing>
-                                            <GeometryDrawing Brush="Black" Geometry="{StaticResource Triangle}" />
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Grid.OpacityMask> -->
+                        <Grid.OpacityMask>
+                            <!-- <DrawingBrush> -->
+                            <!--     <DrawingBrush.Drawing> -->
+                            <!--         <GeometryDrawing Brush="Black" Geometry="{StaticResource Triangle}" /> -->
+                            <!--     </DrawingBrush.Drawing> -->
+                            <!-- </DrawingBrush> -->
+                        </Grid.OpacityMask>
                         <Track Name="PART_Track" Value="{TemplateBinding Value}" Orientation="Horizontal">
                             <Track.Thumb>
                                 <Thumb Width="5" Height="15" Background="{TemplateBinding Background}">
@@ -96,12 +109,12 @@
                                 </Thumb>
                             </Track.Thumb>
                             <Track.DecreaseButton>
-                                <RepeatButton Name="PART_DecreaseButton" 
+                                <RepeatButton Name="PART_DecreaseButton"
                                               Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Padding="0"
                                               Background="{DynamicResource MediaPlayerVolumeDecreaseBrush}" />
                             </Track.DecreaseButton>
                             <Track.IncreaseButton>
-                                <RepeatButton Name="PART_IncreaseButton" 
+                                <RepeatButton Name="PART_IncreaseButton"
                                               Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Padding="0"
                                               Background="LightGray" />
                             </Track.IncreaseButton>
@@ -163,28 +176,27 @@
     </Style>
 
     <Style Selector="Button.toolbar:pointerover /template/ ContentPresenter, ToggleButton.toolbar:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource MediaPlayerToolbarHoverBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource MediaPlayerToolbarHoverBrush}" />
     </Style>
-    
+
     <Style Selector="ToggleButton.toolbar:checked /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource MediaPlayerToolbarHoverBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource MediaPlayerToolbarHoverBrush}" />
     </Style>
 
     <Style Selector="ToggleButton.toolbar:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource MediaPlayerToolbarCheckedHoverBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource MediaPlayerToolbarCheckedHoverBrush}" />
     </Style>
 
     <Style Selector="Button.toolbar:pressed /template/ ContentPresenter, ToggleButton.toolbar:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource MediaPlayerToolbarPressedBrush}"/>
-    </Style>
-    
-    <Style Selector="Button.toolbar:disabled /template/ ContentPresenter, ToggleButton.toolbar:disabled /template/ ContentPresenter">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Opacity" Value="{DynamicResource MediaPlayerDisabledOpacity}"/>
+        <Setter Property="Background" Value="{DynamicResource MediaPlayerToolbarPressedBrush}" />
     </Style>
 
-    <Style Selector="local|MediaPlayer[IsPlaying=False] Button#PlayButton /template/ ContentPresenter">
-        <!-- <Setter Property="Content" Value="{StaticResource PauseIcon}" /> -->
+    <Style Selector="Button.toolbar:disabled /template/ ContentPresenter, ToggleButton.toolbar:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Opacity" Value="{DynamicResource MediaPlayerDisabledOpacity}" />
+    </Style>
+
+    <Style Selector="local|MediaPlayer[IsPlaying=True] Button#PlayButton /template/ ContentPresenter">
         <Setter Property="Content">
             <Template>
                 <Image Source="/Styles/Default/Icons/pause.png" />
@@ -224,10 +236,10 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
                                         <Grid Grid.Row="0" Grid.Column="3" Grid.RowSpan="2">
-                                            <Slider Orientation="Vertical" Minimum="-4" Maximum="4" SmallChange="1" LargeChange="1" 
+                                            <Slider Orientation="Vertical" Minimum="-4" Maximum="4" SmallChange="1" LargeChange="1"
                                                     IsSnapToTickEnabled="True" TickFrequency="1"
                                                     Value="{Binding PlayerHost.SpeedInt, RelativeSource={RelativeSource TemplatedParent}}"
-                                                    Width="20" Margin="0,2,0,2" 
+                                                    Width="20" Margin="0,2,0,2"
                                                     IsVisible="{Binding IsSpeedVisible, RelativeSource={RelativeSource TemplatedParent}}">
                                                 <Slider.RenderTransform>
                                                     <ScaleTransform ScaleY="0.7" ScaleX="0.7" />
@@ -236,13 +248,13 @@
                                         </Grid>
                                         <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <Button x:Name="PlayButton" Classes="toolbar" Width="36" Height="36" 
-                                                        VerticalAlignment="Top" 
+                                                <Button x:Name="PlayButton" Classes="toolbar" Width="36" Height="36"
+                                                        VerticalAlignment="Top"
                                                         Command="{Binding PlayPauseCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
                                                         IsVisible="{Binding IsPlayPauseVisible, RelativeSource={RelativeSource TemplatedParent}}"
                                                         Content="{StaticResource PlayIcon}" />
-                                                <Button x:Name="StopButton" Classes="toolbar" Width="36" Height="36" 
-                                                        VerticalAlignment="Top" 
+                                                <Button x:Name="StopButton" Classes="toolbar" Width="36" Height="36"
+                                                        VerticalAlignment="Top"
                                                         Command="{Binding StopCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
                                                         IsVisible="{Binding IsStopVisible, RelativeSource={RelativeSource TemplatedParent}}"
                                                         Content="{StaticResource StopIcon}" />
@@ -251,20 +263,21 @@
                                         <Grid Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
                                             <DockPanel>
                                                 <Label DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                                       Margin="0,3,10,0" FontSize="12" 
+                                                       Margin="0,3,10,0" FontSize="12"
                                                        Height="15" Padding="0" HorizontalContentAlignment="Right"
                                                        Content="{Binding PositionText, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
-                                                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" 
-                                                           FontSize="12" Margin="4,4,0,0" 
+                                                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                           FontSize="12" Margin="4,4,0,0"
                                                            Text="{Binding PlayerHost.Text, RelativeSource={RelativeSource TemplatedParent}}"
                                                            ToolTip.Tip="{Binding PlayerHost.Text, RelativeSource={RelativeSource TemplatedParent}}" />
                                             </DockPanel>
                                         </Grid>
                                         <Grid Grid.Row="1" Grid.Column="1">
-                                            <Slider x:Name="PART_SeekBar" Classes="seekBar" Width="NaN" Height="32" Focusable="False" BorderThickness="0"
-                                                    HorizontalAlignment="Stretch" Margin="2,0,4,6" VerticalAlignment="Top"
+                                            <Slider x:Name="PART_SeekBar" Classes="seekBar" Width="NaN" Height="16" Focusable="False"
+                                                    BorderThickness="0"
+                                                    HorizontalAlignment="Stretch" Margin="2,2,4,6" VerticalAlignment="Top"
                                                     Maximum="{Binding PlayerHost.Duration, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TimeSpanToDoubleConverter}, Mode=OneWay}"
-                                                    LargeChange="10" SmallChange="1" 
+                                                    LargeChange="10" SmallChange="1"
                                                     Value="{Binding PositionBar, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TimeSpanToDoubleConverter}}"
                                                     IsVisible="{Binding IsSeekBarVisible, RelativeSource={RelativeSource TemplatedParent}}"
                                                     IsEnabled="{Binding PlayerHost.IsMediaLoaded, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
@@ -277,8 +290,8 @@
                                                         Value="{Binding PlayerHost.Volume, RelativeSource={RelativeSource TemplatedParent}}"
                                                         Focusable="False" Height="15" Width="55"
                                                         IsVisible="{Binding IsVolumeVisible, RelativeSource={RelativeSource TemplatedParent}}" />
-                                                <ToggleButton x:Name="LoopButton" Classes="toolbar" Width="24" Height="24" 
-                                                              VerticalAlignment="Top"  
+                                                <ToggleButton x:Name="LoopButton" Classes="toolbar" Width="24" Height="24"
+                                                              VerticalAlignment="Top"
                                                               IsChecked="{Binding PlayerHost.Loop, RelativeSource={RelativeSource TemplatedParent}}"
                                                               IsVisible="{Binding IsLoopVisible, RelativeSource={RelativeSource TemplatedParent}}"
                                                               Content="{StaticResource LoopIcon}" />
