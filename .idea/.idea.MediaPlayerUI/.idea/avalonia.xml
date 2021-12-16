@@ -3,7 +3,7 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
-        <entry key="Avalonia.Sample/App.axaml" value="Avalonia.Sample/Avalonia.Sample.csproj" />
+        <entry key="Avalonia.Sample/App.axaml" value="Avalonia.Sample/MediaPlayer.Avalonia.Sample.csproj" />
         <entry key="Avalonia.Sample/MainWindow.axaml" value="Avalonia.Sample/MediaPlayer.Avalonia.Sample.csproj" />
         <entry key="Avalonia.Sample/Views/MainWindow.axaml" value="Avalonia.Sample/Avalonia.Sample.csproj" />
         <entry key="Avalonia.Sample/Window1.axaml" value="Avalonia.Sample/MediaPlayer.Avalonia.Sample.csproj" />
