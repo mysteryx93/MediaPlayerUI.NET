@@ -17,6 +17,7 @@
     <PackageLicenseUrl>https://github.com/mysteryx93/MediaPlayerUI.NET/blob/master/LICENSE.md</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</RepositoryUrl>
     <PackageVersion>2.0.0</PackageVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

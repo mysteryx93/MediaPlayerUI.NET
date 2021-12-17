@@ -9,6 +9,13 @@
     <PackageId>MediaPlayer.Avalonia.Bass</PackageId>
     <Authors>Etienne Charland</Authors>
     <LangVersion>10</LangVersion>
+    <Title>MediaPlayer.Avalonia.Bass</Title>
+    <Description>BASS media player for Avalonia</Description>
+    <Copyright>Copyright © 2021-2022 Etienne Charland</Copyright>
+    <PackageProjectUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/mysteryx93/MediaPlayerUI.NET/blob/master/LICENSE.md</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</RepositoryUrl>
+    <PackageVersion>2.0.0</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

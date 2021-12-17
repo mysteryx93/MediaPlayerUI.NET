@@ -10,7 +10,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 
 public class InputBindingBehavior : AvaloniaObject
 {
-    public InputBindingBehavior()
+    static InputBindingBehavior()
     {
         PropagateInputBindingsToWindowProperty.Changed.Subscribe(OnPropagateInputBindingsToWindowChanged);
     }
