@@ -2,7 +2,7 @@
 
 A .NET media player UI to use with any media player, for WPF and Avalonia
 
-Currently supports MPV and Naudio for WPF, and BASS for Avalonia
+Currently supports MPV and NAudio for WPF, and BASS for Avalonia
 
 ## Features
 
@@ -10,12 +10,15 @@ Currently supports MPV and Naudio for WPF, and BASS for Avalonia
 * Fullscreen support with UI displaying on hover (WPF)
 * Supports mouse and keyboard shortcuts
 * Can be customized to work with any media player
+* Designed with MVVM and databinding in mind
 
 ## TODO
 
 - Integrate MPV video player in Avalonia (OpenGL integration, full-screen UI support)
 - Avalonia style isn't completed (volume bar / speed bar)
 - Contributions are welcomed to add new styles and color themes for both WPF and Avalonia!
+
+![Screenshot](https://github.com/mysteryx93/MediaPlayerUI.NET/blob/master/Screenshot.png)
 
 ## Using MPV Player in WPF (MediaPlayer.Wpf.Mpv)
 
