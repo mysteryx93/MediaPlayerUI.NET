@@ -10,13 +10,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Avalonia", "Avalonia\MediaPlayer.Avalonia.csproj", "{42405681-89F9-4219-A5E7-E4C88758925D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Wpf", "WPF\MediaPlayer.Wpf.csproj", "{9807E9F7-F5A7-413E-9E16-FE419A3E4D79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Wpf", "Wpf\MediaPlayer.Wpf.csproj", "{9807E9F7-F5A7-413E-9E16-FE419A3E4D79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Wpf.Mpv", "WPF.Mpv\MediaPlayer.Wpf.Mpv.csproj", "{5B73F02F-6056-4496-BF18-CFF672F5F1E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Wpf.Mpv", "Wpf.Mpv\MediaPlayer.Wpf.Mpv.csproj", "{5B73F02F-6056-4496-BF18-CFF672F5F1E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Wpf.NAudio", "WPF.NAudio\MediaPlayer.Wpf.NAudio.csproj", "{EADB4F15-FE28-4365-8967-0BEB5B3420C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Wpf.NAudio", "Wpf.NAudio\MediaPlayer.Wpf.NAudio.csproj", "{EADB4F15-FE28-4365-8967-0BEB5B3420C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Wpf.Sample", "WPF.Sample\MediaPlayer.Wpf.Sample.csproj", "{6343D072-6A03-45DD-99EF-ECD428F9F568}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Wpf.Sample", "Wpf.Sample\MediaPlayer.Wpf.Sample.csproj", "{6343D072-6A03-45DD-99EF-ECD428F9F568}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPlayer.Avalonia.Bass", "Avalonia.Bass\MediaPlayer.Avalonia.Bass.csproj", "{25BE1274-CF06-4473-9D88-6B7562EE166C}"
 EndProject
