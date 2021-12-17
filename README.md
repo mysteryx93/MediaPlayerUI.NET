@@ -33,7 +33,7 @@ xmlns:media="https://github.com/mysteryx93/MediaPlayerUI.NET"
 </media:MediaPlayer>
 ```
 
-3. [Download the latest version of libmpv from here.](https://mpv.io/installation/)
+3. [Download the latest version of libmpv from here.](https://mpv.io/installation/) MPV will require a different DLL for x64 and x86.
 
 Copy the DLL into the project folder and add this to your project file
 
@@ -46,8 +46,6 @@ Copy the DLL into the project folder and add this to your project file
 ```
 
 Optionally, set DllPath on MpvPlayerHost to help find the DLL.
-
-**Important: MPV will require a different DLL for x64 and x86**
 
 4. To add keyboard shortcuts, add this code to your window
 
@@ -108,7 +106,7 @@ xmlns:media="https://github.com/mysteryx93/MediaPlayerUI.NET"
 
 3. [Download the latest version of BASS and BASS FX from here.](https://www.un4seen.com/)
 
-Copy `bass.dll` and `bass_fx.dll` into the project folder and add this to your project file
+Copy `bass.dll` and `bass_fx.dll` into the project folder and add this to your project file. BASS will require different DLLs for x64 and x86.
 
 ```xml
 <ItemGroup>
@@ -120,8 +118,6 @@ Copy `bass.dll` and `bass_fx.dll` into the project folder and add this to your p
     </None>
 </ItemGroup>
 ```
-
-**Important: BASS will require different DLLs for x64 and x86**
 
 ## Usage with other media players
 
