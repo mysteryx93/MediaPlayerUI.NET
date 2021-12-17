@@ -130,3 +130,5 @@ Look at [MediaPlayer.Wpf.Mpv](https://github.com/mysteryx93/MediaPlayerUI.NET/tr
 ## Licensing
 
 [See here](https://github.com/hudec117/Mpv.NET#licensing)
+
+Author: Etienne Charland
