@@ -7,6 +7,7 @@ using HanumanInstitute.MediaPlayer;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using SoundTouch.Net.NAudioSupport;
+// ReSharper disable CompareOfFloatsByEqualityOperator
 
 namespace HanumanInstitute.MediaPlayer.Wpf.NAudio;
 
@@ -153,10 +154,10 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         p.VolumeChanged(p.Volume);
     }
 
-    // UseSoundTouch
-    public static readonly DependencyProperty UseSoundTouchProperty = DependencyProperty.Register("UseSoundTouch", typeof(bool), typeof(NAudioPlayerHost),
+    // UseEffects
+    public static readonly DependencyProperty UseEffectsProperty = DependencyProperty.Register("UseEffects", typeof(bool), typeof(NAudioPlayerHost),
         new PropertyMetadata(false));
-    public bool UseSoundTouch { get => (bool)GetValue(UseSoundTouchProperty); set => SetValue(UseSoundTouchProperty, value); }
+    public bool UseEffects { get => (bool)GetValue(UseEffectsProperty); set => SetValue(UseEffectsProperty, value); }
 
 
     private void Player_PlaybackStopped(object? sender, StoppedEventArgs e)
@@ -167,7 +168,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         {
             if (_mediaFile != null && (_mediaFile.TotalTime - _mediaFile.CurrentTime).TotalSeconds < 1.0)
             {
-                MediaFinished?.Invoke(this, new EventArgs());
+                MediaFinished?.Invoke(this, EventArgs.Empty);
             }
             base.OnMediaUnloaded();
         });
@@ -292,7 +293,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
             var rate = Rate;
             var pitch = Pitch;
             var autoPlay = AutoPlay;
-            var useSoundTouch = UseSoundTouch || speed != 1 || rate != 1 || pitch != 1;
+            var useEffects = UseEffects || speed != 1 || rate != 1 || pitch != 1;
             _ = Task.Run(() =>
             {
                 try
@@ -300,7 +301,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
                     _mediaFile = new MediaFoundationReader(fileName, 
                         new MediaFoundationReader.MediaFoundationReaderSettings() { RequestFloatOutput = true });
 
-                    if (useSoundTouch)
+                    if (useEffects)
                     {
                         // Resample to 48000hz and then use SoundTouch to provide best quality.
                         var resampler = new WdlResamplingSampleProvider(_mediaFile.ToSampleProvider(), 48000);

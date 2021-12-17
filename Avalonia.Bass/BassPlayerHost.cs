@@ -63,9 +63,9 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     }
 
     // DllPath
-    public static readonly DirectProperty<BassPlayerHost, string?> DllPathProperty =
-        AvaloniaProperty.RegisterDirect<BassPlayerHost, string?>(nameof(DllPath), o => o.DllPath);
-    public string? DllPath { get; set; }
+    // public static readonly DirectProperty<BassPlayerHost, string?> DllPathProperty =
+    //     AvaloniaProperty.RegisterDirect<BassPlayerHost, string?>(nameof(DllPath), o => o.DllPath);
+    // public string? DllPath { get; set; }
 
     // Source
     public static readonly DirectProperty<BassPlayerHost, string?> SourceProperty =

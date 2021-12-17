@@ -15,7 +15,7 @@
     <PackageProjectUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/mysteryx93/MediaPlayerUI.NET/blob/master/LICENSE.md</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</RepositoryUrl>
-    <PackageVersion>2.0.0</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
     <PackageId>MediaPlayer.Wpf.Mpv</PackageId>
   </PropertyGroup>
 
@@ -40,6 +40,19 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WPF\MediaPlayer.Wpf.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Reference Include="MediaPlayer.Wpf">
+      <HintPath>Debug\MediaPlayer.Wpf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Reference Include="MediaPlayer.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>
