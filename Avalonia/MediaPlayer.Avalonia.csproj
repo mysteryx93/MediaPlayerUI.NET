@@ -13,7 +13,7 @@
     <Description>A .NET/Avalonia generic media player UI to use with any media player</Description>
     <Copyright>Copyright © 2021-2022 Etienne Charland</Copyright>
     <PackageProjectUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</PackageProjectUrl>
-    <PackageLicenseUrl>MIT</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</RepositoryUrl>
     <PackageVersion>0.9.0</PackageVersion>
   </PropertyGroup>

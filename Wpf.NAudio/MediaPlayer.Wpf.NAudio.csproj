@@ -12,7 +12,7 @@
     <Description>NAudio media player for WPF</Description>
     <Copyright>Copyright © 2021-2022 Etienne Charland</Copyright>
     <PackageProjectUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</PackageProjectUrl>
-    <PackageLicenseUrl>MIT</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</RepositoryUrl>
     <PackageVersion>1.0.0</PackageVersion>
     <PackageId>MediaPlayer.Wpf.NAudio</PackageId>
