@@ -2,42 +2,41 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace HanumanInstitute.MediaPlayer.WPF
+namespace HanumanInstitute.MediaPlayer.Wpf;
+
+/// <summary>
+/// Interaction logic for FullScreenUI.xaml
+/// </summary>
+public partial class FullScreenUI : Window
 {
-    /// <summary>
-    /// Interaction logic for FullScreenUI.xaml
-    /// </summary>
-    public partial class FullScreenUI : Window
+    public bool IsClosing { get; private set; }
+
+    public FullScreenUI()
     {
-        public bool IsClosing { get; private set; }
+        InitializeComponent();
+    }
 
-        public FullScreenUI()
-        {
-            InitializeComponent();
-        }
+    public Grid ContentGrid => MainGrid;
 
-        public Grid ContentGrid => MainGrid;
-
-        public void CloseOnce()
-        {
-            if (!IsClosing)
-            {
-                IsClosing = true;
-                Close();
-            }
-        }
-
-        private void UI_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    public void CloseOnce()
+    {
+        if (!IsClosing)
         {
             IsClosing = true;
+            Close();
         }
+    }
 
-        private void Window_Deactivated(object sender, EventArgs e)
+    private void UI_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        IsClosing = true;
+    }
+
+    private void Window_Deactivated(object sender, EventArgs e)
+    {
+        if (IsLoaded)
         {
-            if (IsLoaded)
-            {
-                CloseOnce();
-            }
+            CloseOnce();
         }
     }
 }

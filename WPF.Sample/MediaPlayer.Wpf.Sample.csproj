@@ -4,13 +4,13 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
-    <RootNamespace>HanumanInstitute.MediaPlayer.WPF.Sample</RootNamespace>
+    <RootNamespace>HanumanInstitute.MediaPlayer.Wpf.Sample</RootNamespace>
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>
-    <AssemblyName>MediaPlayer.WPF.Sample</AssemblyName>
     <IsPackable>false</IsPackable>
     <Authors>Etienne Charland</Authors>
     <LangVersion>10</LangVersion>
+    <PackageId>MediaPlayer.Wpf.Sample</PackageId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -31,9 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WPF.Mpv\MediaPlayer.WPF.Mpv.csproj" />
-    <ProjectReference Include="..\WPF.NAudio\MediaPlayer.WPF.NAudio.csproj" />
-    <ProjectReference Include="..\WPF\MediaPlayer.WPF.csproj" />
+    <ProjectReference Include="..\WPF.Mpv\MediaPlayer.Wpf.Mpv.csproj" />
+    <ProjectReference Include="..\WPF.NAudio\MediaPlayer.Wpf.NAudio.csproj" />
+    <ProjectReference Include="..\WPF\MediaPlayer.Wpf.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,13 +1,13 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:HanumanInstitute.MediaPlayer.WPF">
+        xmlns:local="clr-namespace:HanumanInstitute.MediaPlayer.Wpf">
 
     <local:TimeSpanToDoubleConverter x:Key="TimeSpanToDoubleConverter" />
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    <Image x:Key="PlayIcon" x:Shared="false" Source="pack://application:,,,/MediaPlayer.WPF;component/Icons/play.png" />
-    <Image x:Key="PauseIcon" x:Shared="false" Source="pack://application:,,,/MediaPlayer.WPF;component/Icons/pause.png" />
-    <Image x:Key="StopIcon" x:Shared="false" Source="pack://application:,,,/MediaPlayer.WPF;component/Icons/stop.png" />
-    <Image x:Key="LoopIcon" x:Shared="false" Source="pack://application:,,,/MediaPlayer.WPF;component/Icons/loop.png" />
+    <Image x:Key="PlayIcon" x:Shared="false" Source="pack://application:,,,/MediaPlayer.Wpf;component/Icons/play.png" />
+    <Image x:Key="PauseIcon" x:Shared="false" Source="pack://application:,,,/MediaPlayer.Wpf;component/Icons/pause.png" />
+    <Image x:Key="StopIcon" x:Shared="false" Source="pack://application:,,,/MediaPlayer.Wpf;component/Icons/stop.png" />
+    <Image x:Key="LoopIcon" x:Shared="false" Source="pack://application:,,,/MediaPlayer.Wpf;component/Icons/loop.png" />
 
     <Style x:Key="SeekBarSlider" TargetType="Slider">
         <Setter Property="Focusable" Value="False" />

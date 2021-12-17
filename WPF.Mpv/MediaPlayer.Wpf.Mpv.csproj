@@ -4,12 +4,19 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <RootNamespace>HanumanInstitute.MediaPlayer.WPF.Mpv</RootNamespace>
+    <RootNamespace>HanumanInstitute.MediaPlayer.Wpf.Mpv</RootNamespace>
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>
-    <AssemblyName>MediaPlayer.WPF.Mpv</AssemblyName>
     <Authors>Etienne Charland</Authors>
     <LangVersion>10</LangVersion>
+    <Title>MediaPlayer.Wpf.Mpv</Title>
+    <Description>MPV media player for WPF</Description>
+    <Copyright>Copyright © 2021-2022 Etienne Charland</Copyright>
+    <PackageProjectUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/mysteryx93/MediaPlayerUI.NET/blob/master/LICENSE.md</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</RepositoryUrl>
+    <PackageVersion>2.0.0</PackageVersion>
+    <PackageId>MediaPlayer.Wpf.Mpv</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WPF\MediaPlayer.WPF.csproj" />
+    <ProjectReference Include="..\WPF\MediaPlayer.Wpf.csproj" />
   </ItemGroup>
 
 </Project>

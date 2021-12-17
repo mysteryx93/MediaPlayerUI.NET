@@ -8,111 +8,110 @@ using System.Windows.Data;
 // https://agsmith.wordpress.com/2008/04/07/propertydescriptor-addvaluechanged-alternative/
 // License: public domain
 
-namespace HanumanInstitute.MediaPlayer.WPF
+namespace HanumanInstitute.MediaPlayer.Wpf;
+
+/// <summary>
+/// Tracks changes to a dependency property while avoiding memory leaks.
+/// </summary>
+public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
 {
-    /// <summary>
-    /// Tracks changes to a dependency property while avoiding memory leaks.
-    /// </summary>
-    public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
-    {
 
-        private readonly WeakReference _propertySource;
+    private readonly WeakReference _propertySource;
 
-        public PropertyChangeNotifier(DependencyObject propertySource, string path)
+    public PropertyChangeNotifier(DependencyObject propertySource, string path)
         : this(propertySource, new PropertyPath(path))
-        { }
+    { }
 
-        public PropertyChangeNotifier(DependencyObject propertySource, DependencyProperty property)
+    public PropertyChangeNotifier(DependencyObject propertySource, DependencyProperty property)
         : this(propertySource, new PropertyPath(property))
-        { }
+    { }
 
-        public PropertyChangeNotifier(DependencyObject propertySource, PropertyPath property)
+    public PropertyChangeNotifier(DependencyObject propertySource, PropertyPath property)
+    {
+        propertySource.CheckNotNull(nameof(propertySource));
+        property.CheckNotNull(nameof(property));
+
+        _propertySource = new WeakReference(propertySource);
+        var binding = new Binding
         {
-            propertySource.CheckNotNull(nameof(propertySource));
-            property.CheckNotNull(nameof(property));
+            Path = property,
+            Mode = BindingMode.OneWay,
+            Source = propertySource
+        };
+        BindingOperations.SetBinding(this, ValueProperty, binding);
+    }
 
-            _propertySource = new WeakReference(propertySource);
-            var binding = new Binding
-            {
-                Path = property,
-                Mode = BindingMode.OneWay,
-                Source = propertySource
-            };
-            BindingOperations.SetBinding(this, ValueProperty, binding);
-        }
-
-        public DependencyObject? PropertySource
+    public DependencyObject? PropertySource
+    {
+        get
         {
-            get
+            try
             {
-                try
-                {
-                    // note, it is possible that accessing the target property
-                    // will result in an exception so i’ve wrapped this check
-                    // in a try catch
-                    return _propertySource.IsAlive
+                // note, it is possible that accessing the target property
+                // will result in an exception so i’ve wrapped this check
+                // in a try catch
+                return _propertySource.IsAlive
                     ? _propertySource.Target as DependencyObject
                     : null;
-                }
-                catch
-                {
-                    return null;
-                }
+            }
+            catch
+            {
+                return null;
             }
         }
+    }
 
-        /// <summary>
-        /// Identifies the <see cref="Value"/> dependency property
-        /// </summary>
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value",
+    /// <summary>
+    /// Identifies the <see cref="Value"/> dependency property
+    /// </summary>
+    public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value",
         typeof(object), typeof(PropertyChangeNotifier), new FrameworkPropertyMetadata(null, new PropertyChangedCallback(OnPropertyChanged)));
 
-        private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var notifier = (PropertyChangeNotifier)d.CheckNotNull(nameof(d));
-            notifier.ValueChanged?.Invoke(notifier.PropertySource, EventArgs.Empty);
-        }
+    private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var notifier = (PropertyChangeNotifier)d.CheckNotNull(nameof(d));
+        notifier.ValueChanged?.Invoke(notifier.PropertySource, EventArgs.Empty);
+    }
 
-        /// <summary>
-        /// Returns/sets the value of the property
-        /// </summary>
-        /// <seealso cref="ValueProperty"/>
-        [Description("Returns / sets the value of the property")]
-        [Category("Behavior")]
-        [Bindable(true)]
-        [SuppressMessage("Naming", "CA1721:Property names should not match get methods", Justification = "Reviewed")]
-        public object Value
+    /// <summary>
+    /// Returns/sets the value of the property
+    /// </summary>
+    /// <seealso cref="ValueProperty"/>
+    [Description("Returns / sets the value of the property")]
+    [Category("Behavior")]
+    [Bindable(true)]
+    [SuppressMessage("Naming", "CA1721:Property names should not match get methods", Justification = "Reviewed")]
+    public object Value
+    {
+        get
         {
-            get
+            return (object)GetValue(PropertyChangeNotifier.ValueProperty);
+        }
+        set
+        {
+            SetValue(PropertyChangeNotifier.ValueProperty, value);
+        }
+    }
+
+    public event EventHandler? ValueChanged;
+
+    private bool _disposedValue;
+
+    void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
             {
-                return (object)GetValue(PropertyChangeNotifier.ValueProperty);
+                BindingOperations.ClearBinding(this, ValueProperty);
             }
-            set
-            {
-                SetValue(PropertyChangeNotifier.ValueProperty, value);
-            }
+            _disposedValue = true;
         }
+    }
 
-        public event EventHandler? ValueChanged;
-
-        private bool _disposedValue;
-
-        void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    BindingOperations.ClearBinding(this, ValueProperty);
-                }
-                _disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

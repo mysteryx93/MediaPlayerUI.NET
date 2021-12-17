@@ -3,26 +3,25 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 
-namespace HanumanInstitute.MediaPlayer.Avalonia.Sample
+namespace HanumanInstitute.MediaPlayer.Avalonia.Sample;
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
+        InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+        this.AttachDevTools();
 #endif
-        }
+    }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
 
-        private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
-        {
-            throw new System.NotImplementedException();
-        }
+    private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        throw new System.NotImplementedException();
     }
 }

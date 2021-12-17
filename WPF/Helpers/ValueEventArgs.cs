@@ -1,21 +1,20 @@
 ﻿using System;
 
-namespace HanumanInstitute.MediaPlayer.WPF
+namespace HanumanInstitute.MediaPlayer.Wpf;
+
+/// <summary>
+/// Holds a typed value as an event argument.
+/// </summary>
+/// <typeparam name="T">The type of value to store.</typeparam>
+public class ValueEventArgs<T> : EventArgs
 {
-    /// <summary>
-    /// Holds a typed value as an event argument.
-    /// </summary>
-    /// <typeparam name="T">The type of value to store.</typeparam>
-    public class ValueEventArgs<T> : EventArgs
+    public T Value { get; set; }
+
+    //public ValueEventArgs()
+    //{ }
+
+    public ValueEventArgs(T value)
     {
-        public T Value { get; set; }
-
-        //public ValueEventArgs()
-        //{ }
-
-        public ValueEventArgs(T value)
-        {
-            Value = value;
-        }
+        Value = value;
     }
 }

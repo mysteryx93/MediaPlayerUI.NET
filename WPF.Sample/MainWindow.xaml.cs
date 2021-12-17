@@ -15,44 +15,43 @@ using System.Windows.Shapes;
 using NAudio.Wave;
 using SoundTouch.Net.NAudioSupport;
 
-namespace HanumanInstitute.MediaPlayer.WPF.Sample
+namespace HanumanInstitute.MediaPlayer.Wpf.Sample;
+
+/// <summary>
+/// Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
+        InitializeComponent();
 
-            // 1. Make sure mpv-1.dll is in the project's folder.
+        // 1. Make sure mpv-1.dll is in the project's folder.
 
-            // 2. Point to a valid media file.
+        // 2. Point to a valid media file.
 
-            // 3. Run.
+        // 3. Run.
 
-            // PlayerHost.MediaPlayerInitialized += (o, e) => {
-            //     PlayerHost.Source = @"E:\NaturalGrounding\AOA\Like a Cat.mp4";
-            // };
-        }
-
-        // private WaveOutEvent _mediaOut = new WaveOutEvent();
-        // private SoundTouchWaveStream? _mediaFile;
-        //
-        // private void Button_Click(object sender, RoutedEventArgs e)
-        // {
-        //     var Source = @"E:\Music\INNA\Body And The Sun\07 Fool Me.mp3";
-        //     _mediaOut.Stop();
-        //     using var reader = new MediaFoundationReader(Source, new MediaFoundationReader.MediaFoundationReaderSettings() { RequestFloatOutput = true });
-        //     _mediaFile = new SoundTouchWaveStream(reader);
-        //     _mediaOut.Init(reader);
-        //     _mediaOut.Play();
-        // }
-        //
-        // private void PlayerHost_MediaUnloaded(object sender, EventArgs e)
-        // {
-        //
-        // }
+        // PlayerHost.MediaPlayerInitialized += (o, e) => {
+        //     PlayerHost.Source = @"E:\NaturalGrounding\AOA\Like a Cat.mp4";
+        // };
     }
+
+    // private WaveOutEvent _mediaOut = new WaveOutEvent();
+    // private SoundTouchWaveStream? _mediaFile;
+    //
+    // private void Button_Click(object sender, RoutedEventArgs e)
+    // {
+    //     var Source = @"E:\Music\INNA\Body And The Sun\07 Fool Me.mp3";
+    //     _mediaOut.Stop();
+    //     using var reader = new MediaFoundationReader(Source, new MediaFoundationReader.MediaFoundationReaderSettings() { RequestFloatOutput = true });
+    //     _mediaFile = new SoundTouchWaveStream(reader);
+    //     _mediaOut.Init(reader);
+    //     _mediaOut.Play();
+    // }
+    //
+    // private void PlayerHost_MediaUnloaded(object sender, EventArgs e)
+    // {
+    //
+    // }
 }

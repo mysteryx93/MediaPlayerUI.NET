@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HanumanInstitute.MediaPlayer.WPF.Mpv.Properties {
+namespace HanumanInstitute.MediaPlayer.Wpf.Mpv.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace HanumanInstitute.MediaPlayer.WPF.Mpv.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HanumanInstitute.MediaPlayer.WPF.Mpv.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HanumanInstitute.MediaPlayer.Wpf.Mpv.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

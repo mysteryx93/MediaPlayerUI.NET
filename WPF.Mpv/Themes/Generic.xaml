@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-        xmlns:local="clr-namespace:HanumanInstitute.MediaPlayer.WPF.Mpv"
-		xmlns:ui="clr-namespace:HanumanInstitute.MediaPlayer.WPF;assembly=MediaPlayer.WPF"
+        xmlns:local="clr-namespace:HanumanInstitute.MediaPlayer.Wpf.Mpv"
+		xmlns:ui="clr-namespace:HanumanInstitute.MediaPlayer.Wpf;assembly=MediaPlayer.Wpf"
 		xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms">
 
     <Style TargetType="{x:Type local:MpvPlayerHost}">
