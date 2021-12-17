@@ -180,7 +180,7 @@ public abstract class PlayerHostBase : Control
     public static readonly DirectProperty<PlayerHostBase, bool> AutoPlayProperty =
         AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(AutoPlay), 
             o => o.AutoPlay, (o, v) => o.AutoPlay = v);
-    private bool _autoPlay;
+    private bool _autoPlay = true;
     public bool AutoPlay
     {
         get => _autoPlay;

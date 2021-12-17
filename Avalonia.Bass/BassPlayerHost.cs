@@ -14,10 +14,21 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass;
 
 public class BassPlayerHost : PlayerHostBase, IDisposable
 {
-    // BASS audio stream handle.
+    /// <summary>
+    /// BASS audio stream handle.
+    /// </summary>
     private int _chan;
+    /// <summary>
+    /// Channel information from when the channel was initialized. 
+    /// </summary>
     private ChannelInfo _chanInfo;
-    // Timer to get position.
+    /// <summary>
+    /// True when Source is currently being set to Empty.
+    /// </summary>
+    private bool _isStopping;
+    /// <summary>
+    /// Timer to get position.
+    /// </summary>
     private DispatcherTimer? _posTimer;
     /// <summary>
     /// Whether LoadMedia has ever been called.
@@ -38,15 +49,11 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             {
                 throw new InvalidOperationException("Failed to initialize BASS audio output.");
             }
-                
+
             this.FindLogicalAncestorOfType<TopLevel>()!.Closed += (_, _) => Dispose();
 
-            // ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped).Valid();
-            // ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.Position, 0, Player_PositionChanged);
-
-            _posTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(PositionRefreshMilliseconds), DispatcherPriority.Render, Timer_PositionChanged);
-
-            // _mediaOut.Volume = (float)base.Volume / 100;
+            _posTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(PositionRefreshMilliseconds),
+                DispatcherPriority.Render, Timer_PositionChanged);
 
             if (!string.IsNullOrEmpty(Source) && !_initLoaded)
             {
@@ -80,7 +87,9 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             else
             {
                 Status = PlaybackStatus.Stopped;
+                _isStopping = true;
                 ReleaseChannel();
+                _isStopping = false;
             }
         }
     }
@@ -101,7 +110,8 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
 
     // Status
     public static readonly DirectProperty<BassPlayerHost, PlaybackStatus> StatusProperty =
-        AvaloniaProperty.RegisterDirect<BassPlayerHost, PlaybackStatus>(nameof(Status), o => o.Status, (o, v) => o.Status = v);
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, PlaybackStatus>(nameof(Status), o => o.Status,
+            (o, v) => o.Status = v);
     private PlaybackStatus _status = PlaybackStatus.Stopped;
     public PlaybackStatus Status
     {
@@ -162,7 +172,8 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
 
     // VolumeBoost
     public static readonly DirectProperty<BassPlayerHost, double> VolumeBoostProperty =
-        AvaloniaProperty.RegisterDirect<BassPlayerHost, double>(nameof(VolumeBoost), o => o.VolumeBoost, (o, v) => o.VolumeBoost = v);
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, double>(nameof(VolumeBoost), o => o.VolumeBoost,
+            (o, v) => o.VolumeBoost = v);
     private double _volumeBoost = 1;
     public double VolumeBoost
     {
@@ -176,7 +187,8 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
 
     // UseEffects
     public static readonly DirectProperty<BassPlayerHost, bool> UseEffectsProperty =
-        AvaloniaProperty.RegisterDirect<BassPlayerHost, bool>(nameof(UseEffects), o => o.UseEffects, (o, v) => o.UseEffects = v);
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, bool>(nameof(UseEffects), o => o.UseEffects,
+            (o, v) => o.UseEffects = v);
     public bool UseEffects { get; set; }
 
     private bool BassActive => _chan != 0;
@@ -189,15 +201,14 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
 
     private void Player_PlaybackStopped(int handle, int channel, int data, IntPtr user)
     {
+        // This event should only occur when media ends on its own. Discard when pressing Stop.
+        if (_isStopping) { return; }
+
         Dispatcher.UIThread.InvokeAsync(() =>
         {
-            if (BassActive && (base.Duration - BassPosition).TotalSeconds < 1.0)
-            {
-                MediaFinished?.Invoke(this, EventArgs.Empty);
-            }
-
-            base.OnMediaUnloaded();
             ReleaseChannel();
+            base.OnMediaUnloaded();
+            MediaFinished?.Invoke(this, EventArgs.Empty);
         });
     }
 
@@ -246,7 +257,8 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             {
                 if (BassActive && isSeeking)
                 {
-                    ManagedBass.Bass.ChannelSetPosition(_chan, ManagedBass.Bass.ChannelSeconds2Bytes(_chan, value.TotalSeconds));
+                    ManagedBass.Bass.ChannelSetPosition(_chan,
+                        ManagedBass.Bass.ChannelSeconds2Bytes(_chan, value.TotalSeconds));
                 }
             }
         }
@@ -324,7 +336,8 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
                 {
                     _chan = ManagedBass.Bass.CreateStream(fileName, Flags: useEffects ? BassFlags.Decode : 0).Valid();
                     _chanInfo = ManagedBass.Bass.ChannelGetInfo(_chan);
-                    ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped).Valid();
+                    ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped)
+                        .Valid();
 
                     if (useEffects)
                     {
@@ -346,8 +359,11 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
                 catch
                 {
                     ReleaseChannel();
-                    Status = PlaybackStatus.Error;
-                    MediaError?.Invoke(this, EventArgs.Empty);
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        Status = PlaybackStatus.Error;
+                        MediaError?.Invoke(this, EventArgs.Empty);
+                    });
                 }
             }).ConfigureAwait(false);
         }
@@ -361,7 +377,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     {
         ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.Volume, VolumeBoost * volume / 100);
     }
-        
+
     /// <summary>
     /// Calculates and sets BASS Tempo and TempoFrequency parameters based on Speed, Rate and Pitch. 
     /// </summary>
@@ -388,7 +404,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     {
         base.Stop();
         Source = string.Empty;
-        Player_PlaybackStopped(_chan, _chan, 0, IntPtr.Zero);
+        // Player_PlaybackStopped(_chan, _chan, 0, IntPtr.Zero);
     }
 
     private void ReleaseChannel()
