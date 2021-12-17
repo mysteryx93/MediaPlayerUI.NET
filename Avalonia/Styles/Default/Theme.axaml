@@ -280,7 +280,8 @@
                                                     LargeChange="10" SmallChange="1"
                                                     Value="{Binding PositionBar, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TimeSpanToDoubleConverter}}"
                                                     IsVisible="{Binding IsSeekBarVisible, RelativeSource={RelativeSource TemplatedParent}}"
-                                                    IsEnabled="{Binding PlayerHost.IsMediaLoaded, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
+                                                    IsEnabled="{Binding PlayerHost.IsMediaLoaded, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" 
+                                                    local:SliderExtensions.ReleaseOnClick="True" />
                                         </Grid>
                                         <Grid Grid.Row="1" Grid.Column="2">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
