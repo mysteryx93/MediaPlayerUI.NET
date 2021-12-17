@@ -83,6 +83,8 @@ Audio-only. Supports altering Pitch, Rate and Speed. Set UseEffects="True" or se
 
 > BASS is free for non-commercial use. If you are a non-commercial entity (eg. an individual) and you are not making any money from your product (through sales, advertising, etc) then you can use BASS in it for free. Otherwise, [a license will be required.](https://www.un4seen.com/)
 
+Pitch-shifting audio quality is better with BASS than with NAudio/SpeedTouch.
+
 1. Add [MediaPlayer.Avalonia.Bass](https://www.nuget.org/packages/MediaPlayer.Avalonia.Bass/) to your project.
 
 2. Add styles to App.axaml
