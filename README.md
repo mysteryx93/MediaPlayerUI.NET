@@ -2,7 +2,7 @@
 
 A .NET media player UI to use with any media player, for WPF and Avalonia
 
-Currently supports MPV and Naudio for WPF, and BASS for Avalonia
+Currently supports MPV and NAudio for WPF, and BASS for Avalonia
 
 ## Features
 
@@ -10,12 +10,15 @@ Currently supports MPV and Naudio for WPF, and BASS for Avalonia
 * Fullscreen support with UI displaying on hover (WPF)
 * Supports mouse and keyboard shortcuts
 * Can be customized to work with any media player
+* Designed with MVVM and databinding in mind
 
 ## TODO
 
 - Integrate MPV video player in Avalonia (OpenGL integration, full-screen UI support)
 - Avalonia style isn't completed (volume bar / speed bar)
 - Contributions are welcomed to add new styles and color themes for both WPF and Avalonia!
+
+![Screenshot](https://github.com/mysteryx93/MediaPlayerUI.NET/blob/master/Screenshot.png)
 
 ## Using MPV Player in WPF (MediaPlayer.Wpf.Mpv)
 
@@ -30,7 +33,7 @@ xmlns:media="https://github.com/mysteryx93/MediaPlayerUI.NET"
 </media:MediaPlayer>
 ```
 
-3. [Download the latest version of libmpv from here.](https://mpv.io/installation/)
+3. [Download the latest version of libmpv from here.](https://mpv.io/installation/) MPV will require a different DLL for x64 and x86.
 
 Copy the DLL into the project folder and add this to your project file
 
@@ -43,8 +46,6 @@ Copy the DLL into the project folder and add this to your project file
 ```
 
 Optionally, set DllPath on MpvPlayerHost to help find the DLL.
-
-**Important: MPV will require a different DLL for x64 and x86**
 
 4. To add keyboard shortcuts, add this code to your window
 
@@ -105,7 +106,7 @@ xmlns:media="https://github.com/mysteryx93/MediaPlayerUI.NET"
 
 3. [Download the latest version of BASS and BASS FX from here.](https://www.un4seen.com/)
 
-Copy `bass.dll` and `bass_fx.dll` into the project folder and add this to your project file
+Copy `bass.dll` and `bass_fx.dll` into the project folder and add this to your project file. BASS will require different DLLs for x64 and x86.
 
 ```xml
 <ItemGroup>
@@ -118,8 +119,6 @@ Copy `bass.dll` and `bass_fx.dll` into the project folder and add this to your p
 </ItemGroup>
 ```
 
-**Important: BASS will require different DLLs for x64 and x86**
-
 ## Usage with other media players
 
 Look at [MediaPlayer.Wpf.Mpv](https://github.com/mysteryx93/MediaPlayerUI.NET/tree/master/Wpf.Mpv) or [MediaPlayer.Avalonia.Bass](https://github.com/mysteryx93/MediaPlayerUI.NET/tree/master/Avalonia.Bass). Integrating a new player is quite straightforward.
@@ -127,3 +126,5 @@ Look at [MediaPlayer.Wpf.Mpv](https://github.com/mysteryx93/MediaPlayerUI.NET/tr
 ## Licensing
 
 [See here](https://github.com/hudec117/Mpv.NET#licensing)
+
+Author: Etienne Charland
