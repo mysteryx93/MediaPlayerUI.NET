@@ -3,7 +3,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 
 namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers;
