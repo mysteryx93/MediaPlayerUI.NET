@@ -7,6 +7,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using HanumanInstitute.MediaPlayer.Wpf.Mvvm;
+// ReSharper disable InconsistentNaming
 
 namespace HanumanInstitute.MediaPlayer.Wpf;
 
@@ -30,9 +31,6 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
     private static void ContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => MediaPlayerBase.OnContentChanged(d, e);
 
     private static object? CoerceContent(DependencyObject d, object baseValue) => baseValue as PlayerHostBase;
-
-    public MediaPlayer()
-    { }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -58,21 +56,21 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
 
         if (UIPart == null)
         {
-            throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, UIPartName, typeof(Border).Name));
+            throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, UIPartName, nameof(Border)));
         }
         if (SeekBarPart == null)
         {
-            throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, SeekBarPartName, typeof(Slider).Name));
+            throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, SeekBarPartName, nameof(Slider)));
         }
 
         MouseDown += UserControl_MouseDown;
         SeekBarPart.AddHandler(Slider.PreviewMouseDownEvent, new MouseButtonEventHandler(OnSeekBarPreviewMouseLeftButtonDown), true);
         // Thumb doesn't yet exist.
-        SeekBarPart.Loaded += (s, e) =>
+        SeekBarPart.Loaded += (_, _) =>
         {
             if (SeekBarThumbPart == null)
             {
-                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, SeekBarTrackPartName, typeof(Track).Name));
+                throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.TemplateElementNotFound, SeekBarTrackPartName, nameof(Track)));
             }
 
             SeekBarThumbPart.DragStarted += OnSeekBarDragStarted;
@@ -216,21 +214,9 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
     /// <summary>
     /// Returns the container of this control the first time it is called and maintain reference to that container.
     /// </summary>
-    private Panel UIParentCache
-    {
-        get
-        {
-            if (_uiParentCache == null)
-            {
-                _uiParentCache = UIPart?.Parent as Panel;
-            }
-            if (_uiParentCache == null)
-            {
-                throw new NullReferenceException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.ParentMustBePanel, UIPartName, UIPart?.Parent?.GetType()));
-            }
-            return _uiParentCache;
-        }
-    }
+    private Panel UIParentCache =>
+        _uiParentCache ??= UIPart?.Parent as Panel ??
+            throw new NullReferenceException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.ParentMustBePanel, UIPartName, UIPart?.Parent?.GetType()));
 
     // TitleProperty
     public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(bool), typeof(MediaPlayer));
@@ -355,7 +341,7 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
                     FullScreenUI.Closed += FullScreenUI_Closed;
                     FullScreenUI.MouseDown += Host_MouseDown;
                     // Transfer key bindings.
-                    InputBindingBehavior.TransferBindingsToWindow(Window.GetWindow(this), FullScreenUI, false);
+                    InputBindingBehavior.TransferBindingsToWindow(Window.GetWindow(this)!, FullScreenUI, false);
                     // Transfer player.
                     TransferElement(PlayerHost.GetInnerControlParent(), FullScreenUI.ContentGrid, PlayerHost.HostContainer);
                     TransferElement(UIParentCache, FullScreenUI.AirspaceGrid, UIPart);
@@ -373,7 +359,7 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
                     FullScreenUI = null;
                     f.CloseOnce();
                     // Activate.
-                    Window.GetWindow(this).Activate();
+                    Window.GetWindow(this)?.Activate();
                     Focus();
                 }
             }

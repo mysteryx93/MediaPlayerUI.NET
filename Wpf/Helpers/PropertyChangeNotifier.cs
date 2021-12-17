@@ -65,7 +65,7 @@ public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
     /// Identifies the <see cref="Value"/> dependency property
     /// </summary>
     public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value",
-        typeof(object), typeof(PropertyChangeNotifier), new FrameworkPropertyMetadata(null, new PropertyChangedCallback(OnPropertyChanged)));
+        typeof(object), typeof(PropertyChangeNotifier), new FrameworkPropertyMetadata(null, OnPropertyChanged));
 
     private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -85,7 +85,7 @@ public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
     {
         get
         {
-            return (object)GetValue(PropertyChangeNotifier.ValueProperty);
+            return GetValue(PropertyChangeNotifier.ValueProperty);
         }
         set
         {

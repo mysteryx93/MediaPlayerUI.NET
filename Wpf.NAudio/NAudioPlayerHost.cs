@@ -3,11 +3,11 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using HanumanInstitute.MediaPlayer;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using SoundTouch.Net.NAudioSupport;
 // ReSharper disable CompareOfFloatsByEqualityOperator
+// ReSharper disable InconsistentNaming
 
 namespace HanumanInstitute.MediaPlayer.Wpf.NAudio;
 
@@ -24,7 +24,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         {
             Loaded += UserControl_Loaded;
             Unloaded += UserControl_Unloaded;
-            Dispatcher.ShutdownStarted += (s2, e2) => UserControl_Unloaded(s2, null);
+            Dispatcher.ShutdownStarted += (s2, _) => UserControl_Unloaded(s2, null);
         }
     }
 
@@ -32,7 +32,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
     private WaveStream? _mediaFile;
     private SoundTouchWaveProvider? _mediaProvider;
     private DispatcherTimer? _posTimer;
-    private bool _initLoaded = false;
+    private bool _initLoaded;
     private readonly object _lock = new object();
 
     public event EventHandler? MediaError;
@@ -62,7 +62,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
     // Source
     public static readonly DependencyProperty SourceProperty = DependencyProperty.Register("Source", typeof(string), typeof(NAudioPlayerHost),
         new PropertyMetadata(null, SourceChanged));
-    public string Source { get => (string)GetValue(SourceProperty); set => SetValue(SourceProperty, value); }
+    public string? Source { get => (string)GetValue(SourceProperty); set => SetValue(SourceProperty, value); }
     private static void SourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var p = (NAudioPlayerHost)d;
@@ -83,7 +83,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
     // Title
     public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(NAudioPlayerHost),
         new PropertyMetadata(null, TitleChanged));
-    public string Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
+    public string? Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
     private static void TitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var p = (NAudioPlayerHost)d;
@@ -341,7 +341,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
     }
 
 
-    private bool _disposedValue = false;
+    private bool _disposedValue;
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)

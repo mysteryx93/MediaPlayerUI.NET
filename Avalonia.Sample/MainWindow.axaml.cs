@@ -19,9 +19,4 @@ public partial class MainWindow : Window
     {
         AvaloniaXamlLoader.Load(this);
     }
-
-    private void InputElement_OnKeyDown(object? sender, KeyEventArgs e)
-    {
-        throw new System.NotImplementedException();
-    }
 }

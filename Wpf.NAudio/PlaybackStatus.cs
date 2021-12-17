@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace HanumanInstitute.MediaPlayer.Wpf.NAudio;
 
 /// <summary>

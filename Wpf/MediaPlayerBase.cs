@@ -2,9 +2,9 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using HanumanInstitute.MediaPlayer.Wpf.Mvvm;
+// ReSharper disable InconsistentNaming
 
 namespace HanumanInstitute.MediaPlayer.Wpf;
 
@@ -14,9 +14,6 @@ namespace HanumanInstitute.MediaPlayer.Wpf;
 /// </summary>
 public abstract class MediaPlayerBase : ContentControl, IDisposable
 {
-    public MediaPlayerBase()
-    { }
-
     public event EventHandler? PlayCommandExecuted;
     public event EventHandler? PauseCommandExecuted;
     public event EventHandler? StopCommandExecuted;
@@ -63,11 +60,11 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         PlayerHost.IsPlaying = !PlayerHost.IsPlaying;
         if (PlayerHost.IsPlaying)
         {
-            PlayCommandExecuted?.Invoke(this, new EventArgs());
+            PlayCommandExecuted?.Invoke(this, EventArgs.Empty);
         }
         else
         {
-            PauseCommandExecuted?.Invoke(this, new EventArgs());
+            PauseCommandExecuted?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -79,10 +76,10 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         if (PlayerHost == null) { return; }
 
         PlayerHost.Stop();
-        StopCommandExecuted?.Invoke(this, new EventArgs());
+        StopCommandExecuted?.Invoke(this, EventArgs.Empty);
     }
 
-    public ICommand SeekCommand => CommandHelper.InitCommand<int>(ref _seekCommand, Seek, CanSeek);
+    public ICommand SeekCommand => CommandHelper.InitCommand(ref _seekCommand, Seek, CanSeek);
     private RelayCommand<int>? _seekCommand;
     private bool CanSeek(int seconds) => PlayerHost?.IsMediaLoaded ?? false;
     private void Seek(int seconds)
@@ -107,7 +104,7 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         SeekCommandExecuted?.Invoke(this, new ValueEventArgs<int>(seconds));
     }
 
-    public ICommand ChangeVolumeCommand => CommandHelper.InitCommand<int>(ref _changeVolumeCommand, ChangeVolume, CanChangeVolume);
+    public ICommand ChangeVolumeCommand => CommandHelper.InitCommand(ref _changeVolumeCommand, ChangeVolume, CanChangeVolume);
     private RelayCommand<int>? _changeVolumeCommand;
     private bool CanChangeVolume(int value) => true;
     private void ChangeVolume(int value)

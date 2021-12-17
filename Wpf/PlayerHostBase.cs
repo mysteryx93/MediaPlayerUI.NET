@@ -3,11 +3,12 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+// ReSharper disable InconsistentNaming
 
 namespace HanumanInstitute.MediaPlayer.Wpf;
 
 /// <summary>
-/// Represents the base class for Host controls. Each player implementation inherits from this class to manage commmon properties of a player.
+/// Represents the base class for Host controls. Each player implementation inherits from this class to manage common properties of a player.
 /// </summary>
 public abstract class PlayerHostBase : Control
 {
@@ -15,9 +16,6 @@ public abstract class PlayerHostBase : Control
     {
         FocusableProperty.OverrideMetadata(typeof(PlayerHostBase), new FrameworkPropertyMetadata(false));
     }
-
-    public PlayerHostBase()
-    { }
 
     private bool _isSettingPosition;
     private Panel? _innerControlParentCache;
@@ -38,7 +36,7 @@ public abstract class PlayerHostBase : Control
     public override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
-        _stopTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, (s, e) =>
+        _stopTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, (_, _) =>
         {
             _stopTimer?.Stop();
             _isStopping = false;
@@ -47,7 +45,8 @@ public abstract class PlayerHostBase : Control
 
 
     // Position
-    public static readonly DependencyProperty PositionProperty = DependencyProperty.Register("Position", typeof(TimeSpan), typeof(PlayerHostBase),
+    public static readonly DependencyProperty PositionProperty = DependencyProperty.Register("Position", typeof(TimeSpan),
+        typeof(PlayerHostBase),
         new PropertyMetadata(TimeSpan.Zero, PositionChanged, CoercePosition));
     public TimeSpan Position { get => (TimeSpan)GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
     private static void PositionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -78,7 +77,8 @@ public abstract class PlayerHostBase : Control
     }
 
     // Duration
-    public static readonly DependencyPropertyKey DurationPropertyKey = DependencyProperty.RegisterReadOnly("Duration", typeof(TimeSpan), typeof(PlayerHostBase),
+    public static readonly DependencyPropertyKey DurationPropertyKey = DependencyProperty.RegisterReadOnly("Duration", typeof(TimeSpan),
+        typeof(PlayerHostBase),
         new PropertyMetadata(TimeSpan.FromSeconds(1), DurationChanged));
     private static readonly DependencyProperty s_durationProperty = DurationPropertyKey.DependencyProperty;
     public TimeSpan Duration { get => (TimeSpan)GetValue(s_durationProperty); protected set => SetValue(DurationPropertyKey, value); }
@@ -90,7 +90,8 @@ public abstract class PlayerHostBase : Control
     protected virtual void DurationChanged(TimeSpan value) { }
 
     // IsPlaying
-    public static readonly DependencyProperty IsPlayingProperty = DependencyProperty.Register("IsPlaying", typeof(bool), typeof(PlayerHostBase),
+    public static readonly DependencyProperty IsPlayingProperty = DependencyProperty.Register("IsPlaying", typeof(bool),
+        typeof(PlayerHostBase),
         new PropertyMetadata(false, IsPlayingChanged, CoerceIsPlaying));
     public bool IsPlaying { get => (bool)GetValue(IsPlayingProperty); set => SetValue(IsPlayingProperty, value); }
     private static void IsPlayingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -127,7 +128,8 @@ public abstract class PlayerHostBase : Control
     }
 
     // SpeedFloat
-    public static readonly DependencyProperty SpeedFloatProperty = DependencyProperty.Register("SpeedFloat", typeof(double), typeof(PlayerHostBase),
+    public static readonly DependencyProperty SpeedFloatProperty = DependencyProperty.Register("SpeedFloat", typeof(double),
+        typeof(PlayerHostBase),
         new PropertyMetadata(1.0, SpeedChanged, CoerceDouble));
     public double SpeedFloat { get => (double)GetValue(SpeedFloatProperty); set => SetValue(SpeedFloatProperty, value); }
     private static void SpeedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -138,7 +140,8 @@ public abstract class PlayerHostBase : Control
     protected virtual void SpeedChanged(double value) { }
 
     // SpeedInt
-    public static readonly DependencyProperty SpeedIntProperty = DependencyProperty.Register("SpeedInt", typeof(int), typeof(PlayerHostBase),
+    public static readonly DependencyProperty SpeedIntProperty = DependencyProperty.Register("SpeedInt", typeof(int),
+        typeof(PlayerHostBase),
         new PropertyMetadata(0, SpeedChanged, CoerceSpeedInt));
     private static object CoerceSpeedInt(DependencyObject d, object baseValue)
     {
@@ -166,8 +169,8 @@ public abstract class PlayerHostBase : Control
     protected virtual bool CoerceLoop(bool value) => value;
 
     // AutoPlay
-    public static readonly DependencyProperty AutoPlayProperty = DependencyProperty.Register("AutoPlay", typeof(bool), typeof(PlayerHostBase),
-        new PropertyMetadata(true, AutoPlayChanged, CoerceAutoPlay));
+    public static readonly DependencyProperty AutoPlayProperty = DependencyProperty.Register("AutoPlay", typeof(bool),
+        typeof(PlayerHostBase), new PropertyMetadata(true, AutoPlayChanged, CoerceAutoPlay));
     public bool AutoPlay { get => (bool)GetValue(AutoPlayProperty); set => SetValue(AutoPlayProperty, value); }
     private static void AutoPlayChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -188,17 +191,20 @@ public abstract class PlayerHostBase : Control
     protected virtual bool CoerceAutoPlay(bool value) => value;
 
     // Text
-    public static readonly DependencyPropertyKey TextProperty = DependencyProperty.RegisterReadOnly("Text", typeof(string), typeof(PlayerHostBase), null);
-    public string Text { get => (string)GetValue(TextProperty.DependencyProperty); protected set => SetValue(TextProperty, value); }
+    public static readonly DependencyPropertyKey TextProperty =
+        DependencyProperty.RegisterReadOnly("Text", typeof(string), typeof(PlayerHostBase), null);
+    public string? Text { get => (string)GetValue(TextProperty.DependencyProperty); protected set => SetValue(TextProperty, value); }
 
     // IsMediaLoaded
-    public static readonly DependencyPropertyKey IsMediaLoadedPropertyKey = DependencyProperty.RegisterReadOnly("IsMediaLoaded", typeof(bool), typeof(PlayerHostBase),
+    public static readonly DependencyPropertyKey IsMediaLoadedPropertyKey = DependencyProperty.RegisterReadOnly("IsMediaLoaded",
+        typeof(bool), typeof(PlayerHostBase),
         new PropertyMetadata(false));
     private static readonly DependencyProperty s_isMediaLoadedProperty = IsMediaLoadedPropertyKey.DependencyProperty;
     public bool IsMediaLoaded { get => (bool)GetValue(s_isMediaLoadedProperty); private set => SetValue(IsMediaLoadedPropertyKey, value); }
 
     // IsVideoVisible
-    public static readonly DependencyProperty IsVideoVisibleProperty = DependencyProperty.Register("IsVideoVisible", typeof(bool), typeof(PlayerHostBase),
+    public static readonly DependencyProperty IsVideoVisibleProperty = DependencyProperty.Register("IsVideoVisible", typeof(bool),
+        typeof(PlayerHostBase),
         new PropertyMetadata(false, IsVideoVisibleChanged, CoerceIsVideoVisible));
     public bool IsVideoVisible { get => (bool)GetValue(IsVideoVisibleProperty); set => SetValue(IsVideoVisibleProperty, value); }
     private static void IsVideoVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -240,14 +246,15 @@ public abstract class PlayerHostBase : Control
     /// <summary>
     /// Returns the media player control UI. This object will be transferred during full-screen mode.
     /// </summary>
+    // ReSharper disable once UnassignedGetOnlyAutoProperty
     public virtual FrameworkElement? HostContainer { get; }
-
 
 
     /// <summary>
     /// Stops playback and unloads media file.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "Reviewed: It's the right name.")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords",
+        Justification = "Reviewed: It's the right name.")]
     public virtual void Stop()
     {
         _isStopping = true;
@@ -270,7 +277,7 @@ public abstract class PlayerHostBase : Control
         SetPositionNoSeek(TimeSpan.Zero);
         IsMediaLoaded = true;
         IsPlaying = AutoPlay;
-        MediaLoaded?.Invoke(this, new EventArgs());
+        MediaLoaded?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -286,7 +293,7 @@ public abstract class PlayerHostBase : Control
         {
             IsMediaLoaded = false;
             Duration = TimeSpan.FromSeconds(1);
-            MediaUnloaded?.Invoke(this, new EventArgs());
+            MediaUnloaded?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -310,16 +317,8 @@ public abstract class PlayerHostBase : Control
     /// <summary>
     /// Returns the container of InnerControl the first time it is called and maintain reference to that container.
     /// </summary>
-    public Panel GetInnerControlParent()
-    {
-        if (_innerControlParentCache == null)
-        {
-            _innerControlParentCache = HostContainer?.Parent as Panel;
-        }
-        if (_innerControlParentCache == null)
-        {
-            throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.ParentMustBePanel, "PlayerHostBase", HostContainer?.Parent?.GetType()));
-        }
-        return _innerControlParentCache;
-    }
+    public Panel GetInnerControlParent() =>
+        _innerControlParentCache ??= HostContainer?.Parent as Panel ??
+                                     throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
+                                         Properties.Resources.ParentMustBePanel, "PlayerHostBase", HostContainer?.Parent?.GetType()));
 }

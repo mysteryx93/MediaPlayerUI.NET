@@ -1,11 +1,10 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows;
 
 namespace HanumanInstitute.MediaPlayer.Wpf;
 
 public static class InputBindingBehavior
 {
+    // ReSharper disable once InconsistentNaming
     public static readonly DependencyProperty PropagateInputBindingsToWindowProperty =
         DependencyProperty.RegisterAttached("PropagateInputBindingsToWindow", typeof(bool), typeof(InputBindingBehavior),
             new PropertyMetadata(false, OnPropagateInputBindingsToWindowChanged));
@@ -14,7 +13,7 @@ public static class InputBindingBehavior
 
     private static void OnPropagateInputBindingsToWindowChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if ((bool)e.OldValue == false && (bool)e.NewValue == true)
+        if ((bool)e.OldValue == false && (bool)e.NewValue)
         {
             if (d is FrameworkElement elem)
             {
@@ -43,7 +42,7 @@ public static class InputBindingBehavior
 
         for (var i = src.InputBindings.Count - 1; i >= 0; i--)
         {
-            var inputBinding = (InputBinding)src.InputBindings[i];
+            var inputBinding = src.InputBindings[i];
             dst.InputBindings.Add(inputBinding);
             if (remove)
             {

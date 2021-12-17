@@ -46,7 +46,7 @@ public class ExtendedWindowsFormsHost : WindowsFormsHost
             return;
         }
 
-        // Double-clicks aren't propogating.
+        // Double-clicks aren't propagating.
         //if (e.Clicks == 2) {
         //    RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, (int)DateTime.Now.Ticks, wpfButton.Value) {
         //        RoutedEvent = System.Windows.Controls.Control.MouseDoubleClickEvent,
@@ -61,9 +61,9 @@ public class ExtendedWindowsFormsHost : WindowsFormsHost
         //}
     }
 
-    private static MouseButton? ConvertToWpf(MouseButtons winformButton)
+    private static MouseButton? ConvertToWpf(MouseButtons winFormButton)
     {
-        return winformButton switch
+        return winFormButton switch
         {
             MouseButtons.Left => MouseButton.Left,
             MouseButtons.None => null,
@@ -71,7 +71,7 @@ public class ExtendedWindowsFormsHost : WindowsFormsHost
             MouseButtons.Middle => MouseButton.Middle,
             MouseButtons.XButton1 => MouseButton.XButton1,
             MouseButtons.XButton2 => MouseButton.XButton2,
-            _ => throw new ArgumentOutOfRangeException(nameof(winformButton))
+            _ => throw new ArgumentOutOfRangeException(nameof(winFormButton))
         };
     }
 }

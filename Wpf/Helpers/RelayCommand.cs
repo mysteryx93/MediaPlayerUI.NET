@@ -123,10 +123,8 @@ public class RelayCommand : ICommand
     /// <param name="parameter">This parameter will always be ignored.</param>
     /// <returns>true if this command can be executed; otherwise, false.</returns>
     [DebuggerStepThrough]
-    public bool CanExecute(object parameter)
-    {
-        return _canExecute == null ? true : _canExecute();
-    }
+    public bool CanExecute(object parameter) =>
+        _canExecute == null || _canExecute();
 
     /// <summary>
     /// Defines the method to be called when the command is invoked. 

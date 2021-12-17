@@ -2,11 +2,11 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms.Integration;
-using HanumanInstitute.MediaPlayer;
 using Mpv.NET.Player;
+// ReSharper disable CompareOfFloatsByEqualityOperator
+// ReSharper disable InconsistentNaming
 
 namespace HanumanInstitute.MediaPlayer.Wpf.Mpv;
 
@@ -25,7 +25,7 @@ public class MpvPlayerHost : PlayerHostBase
         {
             Loaded += UserControl_Loaded;
             Unloaded += UserControl_Unloaded;
-            Dispatcher.ShutdownStarted += (s2, e2) => UserControl_Unloaded(s2, null);
+            Dispatcher.ShutdownStarted += (s2, _) => UserControl_Unloaded(s2, null);
         }
     }
 
@@ -73,7 +73,7 @@ public class MpvPlayerHost : PlayerHostBase
         typeof(MpvPlayerHost),
         new PropertyMetadata(null, TitleChanged));
 
-    public string Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
+    public string? Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
 
     private static void TitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -110,6 +110,7 @@ public class MpvPlayerHost : PlayerHostBase
         var p = (MpvPlayerHost)d;
         if (p.Player != null)
         {
+            // ReSharper disable once StringLiteralTypo
             p.Player.API.SetPropertyString("af",
                 string.Format(CultureInfo.InvariantCulture, "rubberband=pitch-scale={0}", e.NewValue));
         }
@@ -120,7 +121,7 @@ public class MpvPlayerHost : PlayerHostBase
         if (Host == null)
         {
             throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture,
-                Properties.Resources.TemplateElementNotFound, HostPartName, typeof(WindowsFormsHost).Name));
+                Properties.Resources.TemplateElementNotFound, HostPartName, nameof(WindowsFormsHost)));
         }
 
         Player = new MpvPlayer(Host.Handle, DllPath);
@@ -138,6 +139,7 @@ public class MpvPlayerHost : PlayerHostBase
         if (Pitch != 1)
         {
             Player.API.SetPropertyString("af",
+                // ReSharper disable once StringLiteralTypo
                 string.Format(CultureInfo.InvariantCulture, "rubberband=pitch-scale={0}", Pitch));
         }
 
@@ -199,22 +201,13 @@ public class MpvPlayerHost : PlayerHostBase
 
     private void SetDisplayText()
     {
-        if (Status == PlaybackStatus.Loading)
+        Text = Status switch
         {
-            Text = Properties.Resources.Loading;
-        }
-        else if (Status == PlaybackStatus.Playing)
-        {
-            Text = Title ?? System.IO.Path.GetFileName(Source);
-        }
-        else if (Status == PlaybackStatus.Error)
-        {
-            Text = Properties.Resources.MediaError;
-        }
-        else
-        {
-            Text = "";
-        }
+            PlaybackStatus.Loading => Properties.Resources.Loading,
+            PlaybackStatus.Playing => Title ?? System.IO.Path.GetFileName(Source),
+            PlaybackStatus.Error => Properties.Resources.MediaError,
+            _ => ""
+        };
     }
 
     protected override void PositionChanged(TimeSpan value, bool isSeeking)
@@ -224,7 +217,7 @@ public class MpvPlayerHost : PlayerHostBase
         {
             lock (Player)
             {
-                if (Player != null && Player.IsMediaLoaded && isSeeking)
+                if (Player is { IsMediaLoaded: true } && isSeeking)
                 {
                     Player.Position = value;
                 }

@@ -7,6 +7,10 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
+// ReSharper disable MemberCanBePrivate.Local
+// ReSharper disable CommentTypo
 
 namespace HanumanInstitute.MediaPlayer.Wpf;
 
@@ -63,30 +67,29 @@ public class AirspacePopup : Popup
     // ParentWindow
     public static readonly DependencyProperty ParentWindowProperty = DependencyProperty.RegisterAttached("ParentWindow", typeof(Window), typeof(AirspacePopup),
         new UIPropertyMetadata(null, ParentWindowPropertyChanged));
-    public Window ParentWindow { get { return (Window)GetValue(ParentWindowProperty); } set { SetValue(ParentWindowProperty, value); } }
+    public Window? ParentWindow { get { return (Window?)GetValue(ParentWindowProperty); } set { SetValue(ParentWindowProperty, value); } }
 
     private void ParentWindowChanged()
     {
         if (ParentWindow != null)
         {
-            ParentWindow.LocationChanged += (s, e) => UpdatePopupPosition();
-            ParentWindow.SizeChanged += (s, e) => UpdatePopupPosition();
+            ParentWindow.LocationChanged += (_, _) => UpdatePopupPosition();
+            ParentWindow.SizeChanged += (_, _) => UpdatePopupPosition();
         }
     }
     private void PlacementTargetChanged(object? sender, EventArgs e)
     {
         if (PlacementTarget is FrameworkElement target)
         {
-            target.SizeChanged += (sender2, e2) => UpdatePopupPosition();
+            target.SizeChanged += (_, _) => UpdatePopupPosition();
         }
     }
 
     private void UpdatePopupPosition()
     {
-        if (AllowOutsideScreenPlacement == true && PlacementTarget is FrameworkElement target && PresentationSource.FromVisual(target) != null)
+        if (AllowOutsideScreenPlacement && PlacementTarget is FrameworkElement target && PresentationSource.FromVisual(target) != null)
         {
-            if (PresentationSource.FromVisual(target) != null &&
-                AllowOutsideScreenPlacement == true)
+            if (PresentationSource.FromVisual(target) != null && AllowOutsideScreenPlacement)
             {
                 var leftOffset = CutLeft(target);
                 var topOffset = CutTop(target);
@@ -102,7 +105,7 @@ public class AirspacePopup : Popup
                 }
             }
         }
-        if (FollowPlacementTarget == true)
+        if (FollowPlacementTarget)
         {
             HorizontalOffset += 0.01;
             HorizontalOffset -= 0.01;
@@ -229,10 +232,10 @@ public class AirspacePopup : Popup
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
+            public readonly int Left;
+            public readonly int Top;
+            public readonly int Right;
+            public readonly int Bottom;
         }
 
         [DllImport("user32.dll")]
@@ -249,14 +252,14 @@ public class AirspacePopup : Popup
 
         public const uint SWP_NOSIZE = 0x0001;
         public const uint SWP_NOMOVE = 0x0002;
-        public const uint SWP_NOZORDER = 0x0004;
+        // public const uint SWP_NOZORDER = 0x0004;
         public const uint SWP_NOREDRAW = 0x0008;
         public const uint SWP_NOACTIVATE = 0x0010;
 
-        public const uint SWP_FRAMECHANGED = 0x0020; /* The frame changed: send WM_NCCALCSIZE */
-        public const uint SWP_SHOWWINDOW = 0x0040;
-        public const uint SWP_HIDEWINDOW = 0x0080;
-        public const uint SWP_NOCOPYBITS = 0x0100;
+        // public const uint SWP_FRAMECHANGED = 0x0020; /* The frame changed: send WM_NCCALCSIZE */
+        // public const uint SWP_SHOWWINDOW = 0x0040;
+        // public const uint SWP_HIDEWINDOW = 0x0080;
+        // public const uint SWP_NOCOPYBITS = 0x0100;
         public const uint SWP_NOOWNERZORDER = 0x0200; /* Don’t do owner Z ordering */
         public const uint SWP_NOSENDCHANGING = 0x0400; /* Don’t send WM_WINDOWPOSCHANGING */
 
