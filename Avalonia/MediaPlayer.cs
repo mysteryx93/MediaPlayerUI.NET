@@ -20,7 +20,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia;
 /// <summary>
 /// A media player graphical interface that can be used with any video host.
 /// </summary>
-public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged, IStyleable
+public class MediaPlayer : MediaPlayerBase
 {
     static MediaPlayer()
     {
@@ -39,10 +39,6 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged, IStyleable
         {
             p.ContentHasChanged(e);
         }
-    }
-
-    public MediaPlayer()
-    {
     }
 
     public const string UIPartName = "PART_UI";
@@ -116,14 +112,14 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged, IStyleable
     /// <summary>
     /// Prevents the Host from receiving mouse events when clicking on controls bar.
     /// </summary>
-    private void UserControl_PointerPressed(object? sender, PointerPressedEventArgs e)
+    private void UserControl_PointerPressed(object? _, PointerPressedEventArgs e)
     {
         e.Handled = true;
     }
 
     protected override void OnContentChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        RaisePropertyChanged<PlayerHostBase?>(PlayerHostProperty, e.OldValue as PlayerHostBase,
+        RaisePropertyChanged(PlayerHostProperty, e.OldValue as PlayerHostBase,
             e.NewValue as PlayerHostBase, BindingPriority.TemplatedParent);
         PlayerHost = e.NewValue as PlayerHostBase;
         if (e.OldValue != null)
@@ -172,7 +168,7 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged, IStyleable
     /// <summary>
     /// Handles mouse click events for both Host and Fullscreen.
     /// </summary>
-    private void HandleMouseAction(object? sender, PointerPressedEventArgs e, int clickCount)
+    private void HandleMouseAction(object? _, PointerPressedEventArgs e, int clickCount)
     {
         var isFullScreen = false; // sender is FullScreenUI;
         if (IsActionFullScreen(e.MouseButton, clickCount))
@@ -217,10 +213,8 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged, IStyleable
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
+        
+        return false;
     }
 
     /// <summary>

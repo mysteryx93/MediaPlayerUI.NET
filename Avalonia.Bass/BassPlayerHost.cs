@@ -339,8 +339,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
                     if (useEffects)
                     {
                         _chan = BassFx.TempoCreate(_chan, BassFlags.FxFreeSource).Valid();
-                        ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoUseAAFilter, 1);
-                        ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoAAFilterLength, 32);
+                        ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoUseAAFilter, 0);
                         AdjustVolume(volume);
                         AdjustTempo(speed, rate, pitch);
                     }

@@ -9,7 +9,7 @@ public static class BassDevice
 {
     static BassDevice()
     {
-        if (!ManagedBass.Bass.Init(-1, 48000))
+        if (!ManagedBass.Bass.Init(-1))
         {
             throw new InvalidOperationException("Failed to initialize BASS audio output.");
         }
