@@ -13,6 +13,7 @@ using Avalonia.Media;
 using Avalonia.Styling;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers.Mvvm;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers;
+#pragma warning disable CS0618
 
 namespace HanumanInstitute.MediaPlayer.Avalonia;
 
@@ -83,8 +84,6 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged, IStyleable
             SeekBarIncreasePart = t.NameScope.FindOrThrow<RepeatButton>(SeekBarIncreaseName);
             SeekBarDecreasePart = t.NameScope.FindOrThrow<RepeatButton>(SeekBarDecreaseName);
 
-            // SeekBarTrackPart.AddHandler(RepeatButton.PointerPressedEvent, SeekBar_PointerPressed, RoutingStrategies.Tunnel);
-            // SeekBarTrackPart.AddHandler(RepeatButton.PointerPressedEvent, SeekBar_PointerPressed, RoutingStrategies.Tunnel);
             SeekBarIncreasePart.AddHandler(RepeatButton.PointerPressedEvent, SeekBar_PointerPressed, RoutingStrategies.Tunnel);
             SeekBarDecreasePart.AddHandler(RepeatButton.PointerPressedEvent, SeekBar_PointerPressed, RoutingStrategies.Tunnel);
             SeekBarIncreasePart.AddHandler(RepeatButton.PointerReleasedEvent, SeekBar_PointerReleased, RoutingStrategies.Tunnel);

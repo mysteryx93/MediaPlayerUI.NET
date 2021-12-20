@@ -45,10 +45,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
 
         if (!Design.IsDesignMode)
         {
-            if (!ManagedBass.Bass.Init(-1, 48000))
-            {
-                throw new InvalidOperationException("Failed to initialize BASS audio output.");
-            }
+            BassDevice.Init();
 
             this.FindLogicalAncestorOfType<TopLevel>()!.Closed += (_, _) => Dispose();
 

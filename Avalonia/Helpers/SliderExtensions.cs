@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 
 namespace HanumanInstitute.MediaPlayer.Avalonia;
@@ -40,7 +41,7 @@ public class SliderExtensions : AvaloniaObject
     {
         var button = nameScope.FindOrThrow<RepeatButton>(name) ??
                      throw new NullReferenceException($"Cannot find Slider RepeatButton with name '{name}'.");
-        button.PointerPressed += RepeatButton_PointerPressed;
+        // button.AddHandler(InputElement.PointerPressedEvent, RepeatButton_PointerPressed, RoutingStrategies.Tunnel);
     }
 
     private static void RepeatButton_PointerPressed(object? sender, PointerPressedEventArgs e) =>
