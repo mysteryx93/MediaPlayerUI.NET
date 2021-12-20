@@ -9,6 +9,7 @@ using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Styling;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers.Mvvm;
@@ -88,6 +89,12 @@ public class MediaPlayer : MediaPlayerBase
             SeekBarThumbPart!.DragStarted += (_, _) => IsSeekBarPressed = true;
             SeekBarThumbPart!.DragCompleted += (_, _) => IsSeekBarPressed = false;
         };
+    }
+
+    protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromLogicalTree(e);
+        PlayerHost?.Stop();
     }
 
     private void SeekBar_PointerPressed(object? sender, PointerPressedEventArgs e)

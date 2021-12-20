@@ -400,7 +400,8 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     {
         base.Stop();
         Source = string.Empty;
-        // Player_PlaybackStopped(_chan, _chan, 0, IntPtr.Zero);
+        ReleaseChannel();
+        base.OnMediaUnloaded();
     }
 
     private void ReleaseChannel()
