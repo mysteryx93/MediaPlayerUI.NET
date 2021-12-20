@@ -5,10 +5,10 @@
     xmlns:drawing="clr-namespace:System.Drawing;assembly=System.Drawing.Primitives">
     <Styles.Resources>
         <local:TimeSpanToDoubleConverter x:Key="TimeSpanToDoubleConverter" />
-        <Image x:Key="PlayIcon" Source="/Styles/Default/Icons/play.png" />
-        <Image x:Key="PauseIcon" Source="/Styles/Default/Icons/pause.png" />
-        <Image x:Key="StopIcon" Source="/Styles/Default/Icons/stop.png" />
-        <Image x:Key="LoopIcon" Source="/Styles/Default/Icons/loop.png" />
+        <ImageBrush x:Key="PlayIcon" Source="Icons/play.png" />
+        <ImageBrush x:Key="PauseIcon" Source="Icons/pause.png" />
+        <ImageBrush x:Key="StopIcon" Source="Icons/stop.png" />
+        <ImageBrush x:Key="LoopIcon" Source="Icons/loop.png" />
         <ImageBrush x:Key="PauseBrush" Source="Icons/pause.png" />
 
         <PathGeometry x:Key="VolumeTriangle">
@@ -251,13 +251,15 @@
                                                 <Button x:Name="PlayButton" Classes="toolbar" Width="36" Height="36"
                                                         VerticalAlignment="Top"
                                                         Command="{Binding PlayPauseCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
-                                                        IsVisible="{Binding IsPlayPauseVisible, RelativeSource={RelativeSource TemplatedParent}}"
-                                                        Content="{StaticResource PlayIcon}" />
+                                                        IsVisible="{Binding IsPlayPauseVisible, RelativeSource={RelativeSource TemplatedParent}}">
+                                                    <Image Source="{Binding Source={StaticResource PlayIcon}, Path=Source}" />
+                                                </Button>
                                                 <Button x:Name="StopButton" Classes="toolbar" Width="36" Height="36"
                                                         VerticalAlignment="Top"
                                                         Command="{Binding StopCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
-                                                        IsVisible="{Binding IsStopVisible, RelativeSource={RelativeSource TemplatedParent}}"
-                                                        Content="{StaticResource StopIcon}" />
+                                                        IsVisible="{Binding IsStopVisible, RelativeSource={RelativeSource TemplatedParent}}">
+                                                    <Image Source="{Binding Source={StaticResource StopIcon}, Path=Source}" />
+                                                </Button>
                                             </StackPanel>
                                         </Grid>
                                         <Grid Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
@@ -294,8 +296,9 @@
                                                 <ToggleButton x:Name="LoopButton" Classes="toolbar" Width="24" Height="24"
                                                               VerticalAlignment="Top"
                                                               IsChecked="{Binding PlayerHost.Loop, RelativeSource={RelativeSource TemplatedParent}}"
-                                                              IsVisible="{Binding IsLoopVisible, RelativeSource={RelativeSource TemplatedParent}}"
-                                                              Content="{StaticResource LoopIcon}" />
+                                                              IsVisible="{Binding IsLoopVisible, RelativeSource={RelativeSource TemplatedParent}}">
+                                                    <Image Source="{Binding Source={StaticResource LoopIcon}, Path=Source}" />
+                                                </ToggleButton>
                                             </StackPanel>
                                         </Grid>
                                     </Grid>

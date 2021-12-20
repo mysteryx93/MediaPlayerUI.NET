@@ -19,12 +19,11 @@
         <KeyBinding Gesture="Alt+Enter" Command="{Binding ToggleFullScreenCommand, ElementName=Player}" />
     </Window.KeyBindings>
     <Grid>
-        <ui:MediaPlayer x:Name="Player" Width="100">
+        <ui:MediaPlayer x:Name="Player">
             <!-- <bass:BassPlayerHost x:Name="PlayerHost" Source="E:\NaturalGrounding\AOA\Like a Cat.mp4" AutoPlay="true" /> -->
             <bass:BassPlayerHost Source="E:\Music\INNA\Inna\15 Tell Me.mp3" Pitch="0.9818181818181818181818" Volume="20" />
             <!-- Source="E:\Music\INNA\Body And The Sun\CD1\07 Fool Me.mp3" Pitch="0.9818181818181818181818" -->
         </ui:MediaPlayer>
-        <ui:MediaPlayer />
-        <ui:MediaPlayer />
+        <ui:MediaPlayer Height="50" />
     </Grid>
 </Window>
