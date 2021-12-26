@@ -203,7 +203,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
 
         Dispatcher.UIThread.InvokeAsync(() =>
         {
-            ReleaseChannel();
+            // ReleaseChannel();
             base.OnMediaUnloaded();
             MediaFinished?.Invoke(this, EventArgs.Empty);
         });
@@ -436,3 +436,4 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         GC.SuppressFinalize(this);
     }
 }
+
