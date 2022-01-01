@@ -101,15 +101,7 @@ internal class RelayCommand<T> : ICommand
         Justification = "This cannot be an event")]
     public void RaiseCanExecuteChanged()
     {
-#if SILVERLIGHT
-            var handler = CanExecuteChanged;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
-#else
-        // CommandManager.InvalidateRequerySuggested();
-#endif
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -120,7 +112,7 @@ internal class RelayCommand<T> : ICommand
     /// <returns>true if this command can be executed; otherwise, false.</returns>
     public bool CanExecute(object parameter)
     {
-        return _canExecute == null ? true : _canExecute((T)parameter);
+        return _canExecute?.Invoke((T)parameter) ?? true;
     }
 
     /// <summary>

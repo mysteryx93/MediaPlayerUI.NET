@@ -9,15 +9,15 @@ namespace HanumanInstitute.MediaPlayer.Avalonia;
 /// </summary>
 public class TimeSpanToDoubleConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         var valueAdd = System.Convert.ToDouble(parameter, CultureInfo.InvariantCulture);
-        return ((TimeSpan)value).TotalSeconds + valueAdd;
+        return ((TimeSpan?) value)?.TotalSeconds + valueAdd ?? 0.0;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         var valueAdd = System.Convert.ToDouble(parameter, CultureInfo.InvariantCulture);
-        return TimeSpan.FromSeconds((double)value - valueAdd);
+        return value != null ? TimeSpan.FromSeconds((double)value - valueAdd) : TimeSpan.Zero;
     }
 }
