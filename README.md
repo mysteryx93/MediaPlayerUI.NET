@@ -121,9 +121,48 @@ Copy `bass.dll` and `bass_fx.dll` into the project folder and add this to your p
 </ItemGroup>
 ```
 
+Alternatively, you can add something like this to your project file
+
+```xml
+<Target Name="CopyCustomContent" AfterTargets="AfterBuild" Condition=" '$(Platform)' != 'x86' ">
+  <ItemGroup>
+    <BassFiles Include="..\DLL\Windows-x64\bass*.dll" />
+    <BassFiles Include="..\DLL\Linux-x64\libbass*.so" />
+    <BassFiles Include="..\DLL\MacOS-x64\libbass*.dylib" />
+  </ItemGroup>
+  <Copy SourceFiles="@(BassFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+</Target>
+<Target Name="CopyCustomContentOnPublish" AfterTargets="Publish" Condition=" '$(Platform)' != 'x86' ">
+  <ItemGroup>
+    <BassFiles Include="..\DLL\Windows-x64\bass*.dll" />
+    <BassFiles Include="..\DLL\Linux-x64\libbass*.so" />
+    <BassFiles Include="..\DLL\MacOS-x64\libbass*.dylib" />
+  </ItemGroup>
+  <Copy SourceFiles="@(BassFiles)" DestinationFolder="$(OutDir)" />
+</Target>
+<Target Name="CopyCustomContent" AfterTargets="AfterBuild" Condition=" '$(Platform)' == 'x86' ">
+  <ItemGroup>
+    <BassFiles Include="..\DLL\Windows-x86\bass*.dll" />
+    <BassFiles Include="..\DLL\Linux-x86\libbass*.so" />
+  </ItemGroup>
+  <Copy SourceFiles="@(BassFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+</Target>
+<Target Name="CopyCustomContentOnPublish" AfterTargets="Publish" Condition=" '$(Platform)' == 'x86' ">
+  <ItemGroup>
+    <BassFiles Include="..\DLL\Windows-x86\bass*.dll" />
+    <BassFiles Include="..\DLL\Linux-x86\libbass*.so" />
+  </ItemGroup>
+  <Copy SourceFiles="@(BassFiles)" DestinationFolder="$(OutDir)" />
+</Target>
+```
+
+You can get information about auto-loaded BASS plugins and supported formats using the [BassDevice](https://github.com/mysteryx93/MediaPlayerUI.NET/blob/master/Avalonia.Bass/BassDevice.cs) class.
+
 ## Usage with other media players
 
 Look at [MediaPlayer.Wpf.Mpv](https://github.com/mysteryx93/MediaPlayerUI.NET/tree/master/Wpf.Mpv) or [MediaPlayer.Avalonia.Bass](https://github.com/mysteryx93/MediaPlayerUI.NET/tree/master/Avalonia.Bass). Integrating a new player is quite straightforward.
+
+[VapourSynthViewer.NET](https://github.com/mysteryx93/VapourSynthViewer.NET) is an example of using the UI for previewing Vapoursynth video scripts.
 
 ## Licensing
 
