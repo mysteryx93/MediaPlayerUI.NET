@@ -151,6 +151,25 @@ Look at [MediaPlayer.Wpf.Mpv](https://github.com/mysteryx93/MediaPlayerUI.NET/tr
 
 ## Licensing
 
-[See here](https://github.com/hudec117/Mpv.NET#licensing)
+This library is licensed under MIT.
 
-Author: Etienne Charland
+### MPV
+
+MPV.NET-lib is licensed under MIT.
+
+The rest of libmpv is licensed under GPLv2 by default, which means that any work utilising this wrapper in conjunction with libmpv is subject to GPLv2, unless libmpv is compiled using LGPL.
+
+In simple terms, once you use the "libmpv" files (DLL) you downloaded, your application must be licensed under GPLv2. [See here for more information.](https://github.com/mpv-player/mpv/blob/master/Copyright)
+
+### NAudio
+
+NAudio is licensed under MIT. SoundTouch is licensed under LGPL v2.1
+
+### BASS
+
+BASS is free for non-commercial use. If you are a non-commercial entity (eg. an individual) and you are not making any money from your product (through sales, advertising, etc) then you can use BASS in it for free. [Otherwise, one of the following licences will be required.](https://www.un4seen.com/)
+
+ManagedBass is licensed under MIT.
+
+
+**Author: Etienne Charland**
