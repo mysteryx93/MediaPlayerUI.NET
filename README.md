@@ -124,34 +124,19 @@ Copy `bass.dll` and `bass_fx.dll` into the project folder and add this to your p
 Alternatively, you can add something like this to your project file
 
 ```xml
-<Target Name="CopyCustomContent" AfterTargets="AfterBuild" Condition=" '$(Platform)' != 'x86' ">
-  <ItemGroup>
-    <BassFiles Include="..\DLL\Windows-x64\bass*.dll" />
-    <BassFiles Include="..\DLL\Linux-x64\libbass*.so" />
-    <BassFiles Include="..\DLL\MacOS-x64\libbass*.dylib" />
-  </ItemGroup>
+<ItemGroup Condition=" '$(Platform)' != 'x86' ">
+  <BassFiles Include="..\DLL\Windows-x64\bass*.dll" />
+  <BassFiles Include="..\DLL\Linux-x64\libbass*.so" />
+  <BassFiles Include="..\DLL\MacOS-x64\libbass*.dylib" />
+</ItemGroup>
+<ItemGroup Condition=" '$(Platform)' == 'x86' ">
+  <BassFiles Include="..\DLL\Windows-x86\bass*.dll" />
+  <BassFiles Include="..\DLL\Linux-x86\libbass*.so" />
+</ItemGroup>  
+<Target Name="CopyCustomContent" AfterTargets="AfterBuild">
   <Copy SourceFiles="@(BassFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
 </Target>
-<Target Name="CopyCustomContentOnPublish" AfterTargets="Publish" Condition=" '$(Platform)' != 'x86' ">
-  <ItemGroup>
-    <BassFiles Include="..\DLL\Windows-x64\bass*.dll" />
-    <BassFiles Include="..\DLL\Linux-x64\libbass*.so" />
-    <BassFiles Include="..\DLL\MacOS-x64\libbass*.dylib" />
-  </ItemGroup>
-  <Copy SourceFiles="@(BassFiles)" DestinationFolder="$(OutDir)" />
-</Target>
-<Target Name="CopyCustomContent" AfterTargets="AfterBuild" Condition=" '$(Platform)' == 'x86' ">
-  <ItemGroup>
-    <BassFiles Include="..\DLL\Windows-x86\bass*.dll" />
-    <BassFiles Include="..\DLL\Linux-x86\libbass*.so" />
-  </ItemGroup>
-  <Copy SourceFiles="@(BassFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
-</Target>
-<Target Name="CopyCustomContentOnPublish" AfterTargets="Publish" Condition=" '$(Platform)' == 'x86' ">
-  <ItemGroup>
-    <BassFiles Include="..\DLL\Windows-x86\bass*.dll" />
-    <BassFiles Include="..\DLL\Linux-x86\libbass*.so" />
-  </ItemGroup>
+<Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
   <Copy SourceFiles="@(BassFiles)" DestinationFolder="$(OutDir)" />
 </Target>
 ```
