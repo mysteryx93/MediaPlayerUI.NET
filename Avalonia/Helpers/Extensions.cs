@@ -4,7 +4,7 @@ using Avalonia.Controls;
 
 namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 
-public static class Extensions
+internal static class Extensions
 {
     /// <summary>
     /// Returns the template element with specified name and type, or throws an exception if not found. 

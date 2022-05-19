@@ -82,6 +82,62 @@
             </ControlTemplate>
         </Setter>
     </Style>
+    
+    <Style Selector="local|MediaPlayer Slider.speed:vertical">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid Name="grid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" MinWidth="20" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Border Name="TrackBackground" Grid.Column="1" Height="4" Margin="6,0" VerticalAlignment="Center" />
+                    <Track Name="PART_Track" Grid.Column="1" IsDirectionReversed="{TemplateBinding IsDirectionReversed}"
+                           Orientation="Vertical">
+                        <Track.DecreaseButton>
+                            <RepeatButton Name="PART_DecreaseButton" Focusable="False" Background="Green" VerticalAlignment="Stretch" HorizontalAlignment="Center">
+                                <RepeatButton.Template>
+                                    <ControlTemplate>
+                                        <Grid>
+                                            <Rectangle Width="8" /> <!-- Fill="#01FFFFFF" -->
+                                            <Border Padding="0" BorderThickness="1,0,1,1"
+                                                    BorderBrush="{DynamicResource MediaPlayerSeekBarBorderBrush}"
+                                                    Background="{DynamicResource MediaPlayerSeekBarIncreaseBrush}" Width="4" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </RepeatButton.Template>
+                            </RepeatButton>
+                        </Track.DecreaseButton>
+                        <Track.IncreaseButton>
+                            <RepeatButton Name="PART_IncreaseButton" Focusable="False" VerticalAlignment="Stretch" HorizontalAlignment="Center">
+                                <RepeatButton.Template>
+                                    <ControlTemplate>
+                                        <Grid>
+                                            <Rectangle Width="8" /> <!-- Fill="#01FFFFFF" -->
+                                            <Border Padding="0" BorderThickness="1,1,1,0"
+                                                    BorderBrush="{DynamicResource MediaPlayerSeekBarBorderColor}"
+                                                    Background="{DynamicResource MediaPlayerSeekBarIncreaseBrush}" Width="4" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </RepeatButton.Template>
+                            </RepeatButton>
+                        </Track.IncreaseButton>
+                        <Thumb Name="thumb">
+                            <Thumb.Template>
+                                <ControlTemplate>
+                                    <Border BorderThickness="1" Height="6" Width="10"
+                                            Background="{DynamicResource MediaPlayerThumbFillBrush}"
+                                            BorderBrush="{DynamicResource MediaPlayerThumbBorderBrush}" />
+                                </ControlTemplate>
+                            </Thumb.Template>
+                        </Thumb>
+                    </Track>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
 
     <Style Selector="local|MediaPlayer Slider.volume">
         <!-- <Setter Property="Background" Value="{DynamicResource MediaPlayerVolumeBackgroundBrush}" /> -->
@@ -236,14 +292,11 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
                                         <Grid Grid.Row="0" Grid.Column="3" Grid.RowSpan="2">
-                                            <Slider Orientation="Vertical" Minimum="-4" Maximum="4" SmallChange="1" LargeChange="1"
+                                            <Slider Classes="speed" Orientation="Vertical" Minimum="-4" Maximum="4" SmallChange="1" LargeChange="1"
                                                     IsSnapToTickEnabled="True" TickFrequency="1"
                                                     Value="{Binding PlayerHost.SpeedInt, RelativeSource={RelativeSource TemplatedParent}}"
                                                     Width="20" Margin="0,2,0,2"
                                                     IsVisible="{Binding IsSpeedVisible, RelativeSource={RelativeSource TemplatedParent}}">
-                                                <Slider.RenderTransform>
-                                                    <ScaleTransform ScaleY="0.7" ScaleX="0.7" />
-                                                </Slider.RenderTransform>
                                             </Slider>
                                         </Grid>
                                         <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">

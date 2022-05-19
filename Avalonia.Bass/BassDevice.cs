@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Runtime.Loader;
+using ManagedBass;
 
 // ReSharper disable StringLiteralTypo
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -49,15 +49,36 @@ public class BassDevice : IBassDevice
     }
 
     /// <inheritdoc />
-    public IReadOnlyList<string> LoadedPlugins => _loadedPlugins;
+    public IReadOnlyList<string> LoadedPlugins
+    {
+        get
+        {
+            Init();
+            return _loadedPlugins;   
+        }
+    }
     private readonly List<string> _loadedPlugins = new();
 
     /// <inheritdoc />
-    public IReadOnlyList<string> FailedPlugins => _failedPlugins;
+    public IReadOnlyList<string> FailedPlugins
+    {
+        get
+        {
+            Init();
+            return _failedPlugins;            
+        }
+    }
     private readonly List<string> _failedPlugins = new();
 
     /// <inheritdoc />
-    public IReadOnlyList<FileExtension> SupportedExtensions => _supportedExtensions;
+    public IReadOnlyList<FileExtension> SupportedExtensions
+    {
+        get
+        {
+            Init();
+            return _supportedExtensions;            
+        }
+    }
     private readonly List<FileExtension> _supportedExtensions = new();
 
     private void LoadPlugins(string path)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Input;
 using Avalonia;
@@ -11,7 +10,6 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
-using Avalonia.Styling;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers.Mvvm;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 #pragma warning disable CS0618

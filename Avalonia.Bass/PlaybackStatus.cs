@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HanumanInstitute.MediaPlayer.Avalonia.Bass;
+﻿namespace HanumanInstitute.MediaPlayer.Avalonia.Bass;
 
 /// <summary>
 /// Represents the status of the player control.
