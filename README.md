@@ -15,7 +15,10 @@ Currently supports MPV and NAudio for WPF, and BASS for Avalonia
 [Todo](#todo)  
 [Overview](#overview)  
 [Using MPV Player in WPF](#using-mpv-player-in-wpf)  
-
+[Using NAudio Player in WPF](#using-naudio-player-in-wpf)
+[Using BASS Player in Avalonia](#using-bass-player-in-avalonia)
+[Using Custom Players](#using-custom-players)
+[Licensing](#licensing)
 
 ## TODO
 
@@ -107,10 +110,6 @@ Gets or sets whether to loop.
 #### Position
 
 Gets or sets the playback position.
-
-#### PositionRefreshMilliseconds
-
-Gets or sets the interval in milliseconds at which the position bar is updated. Default = 200.
 
 #### Source
 
@@ -205,6 +204,10 @@ Gets or sets the playback rate as a double, where 1.0 is normal speed, 0.5 is ha
 
 Gets or sets the playback pitch as a double, rising or lowering the pitch by given factor without altering speed. Default = 1.
 
+#### PositionRefreshMilliseconds
+
+Gets or sets the interval in milliseconds at which the position bar is updated.
+
 #### UseEffects
 
 Gets or sets whether to enable pitch-shifting effects.
@@ -224,7 +227,7 @@ Occurs when the player throws an error.
 
 Occurs when media playback is finished.
 
-## Using BASS Player in Avalonia (MediaPlayer.Avalonia.Bass)
+## Using BASS Player in Avalonia
 
 Audio-only. Supports altering Pitch, Rate and Speed. Set UseEffects="True" or set Pitch/Rate/Speed at design-time.
 
@@ -264,25 +267,6 @@ Simply reference that project and you'll get all the DLLs for each platform.
 
 ### BassPlayerHost Properties
 
-#### VolumeBoost
-
-Gets or sets a value that will be multiplied to the volume. Default = 1.
-
-#### UseEffects
-
-Gets or sets whether to enable pitch-shifting effects.
-By default, effects are enabled if Rate, Pitch or Speed are set before loading a media file.
-If file is loaded at normal speed and you want to allow changing it later, this property forces initializing the effects module.
-This property must be set before playback. Default = False.
-
-#### Rate
-
-Gets or sets the playback rate as a double, where 1.0 is normal speed, 0.5 is half-speed, and 2 is double-speed. Default = 1.
-
-#### Pitch
-
-Gets or sets the playback pitch as a double, rising or lowering the pitch by given factor without altering speed. Default = 1.
-
 #### EffectsQuick
 
 Gets or sets whether to use the quick mode that substantially speeds up the algorithm but may degrade the sound quality by a small amount. Default = False.
@@ -299,12 +283,43 @@ Gets or sets the Anti-Alias filter length. Default = 32.
 
 Gets or sets the sample rate conversion quality... 0 = linear interpolation, 1 = 8 point sinc interpolation, 2 = 16 point sinc interpolation, 3 = 32 point sinc interpolation, 4 = 64 point sinc interpolation. Default = 2, set to 4 for best quality.
 
-#### BassDevice
+#### Pitch
+
+Gets or sets the playback pitch as a double, rising or lowering the pitch by given factor without altering speed. Default = 1.
+
+#### PositionRefreshMilliseconds
+
+Gets or sets the interval in milliseconds at which the position bar is updated.
+
+#### Rate
+
+Gets or sets the playback rate as a double, where 1.0 is normal speed, 0.5 is half-speed, and 2 is double-speed. Default = 1.
+
+#### UseEffects
+
+Gets or sets whether to enable pitch-shifting effects.
+By default, effects are enabled if Rate, Pitch or Speed are set before loading a media file.
+If file is loaded at normal speed and you want to allow changing it later, this property forces initializing the effects module.
+This property must be set before playback. Default = False.
+
+#### VolumeBoost
+
+Gets or sets a value that will be multiplied to the volume. Default = 1.
+
+#### Event: MediaError
+
+Occurs when the player throws an error.
+
+#### Event: MediaFinished
+
+Occurs when media playback is finished.
+
+#### BassDevice class
 
 You can get information about auto-loaded BASS plugins and supported formats using the [BassDevice](https://github.com/mysteryx93/MediaPlayerUI.NET/blob/master/Avalonia.Bass/BassDevice.cs) class.
 
 
-## Usage with other media players
+## Using Custom Players
 
 Look at [MediaPlayer.Wpf.Mpv](https://github.com/mysteryx93/MediaPlayerUI.NET/tree/master/Wpf.Mpv) or [MediaPlayer.Avalonia.Bass](https://github.com/mysteryx93/MediaPlayerUI.NET/tree/master/Avalonia.Bass). Integrating a new player is quite straightforward.
 
@@ -333,4 +348,6 @@ BASS is free for non-commercial use. If you are a non-commercial entity (eg. an 
 ManagedBass is licensed under MIT.
 
 
-**Author: Etienne Charland**
+### Author
+
+Brought to you by [Etienne Charland aka Hanuman](https://www.spiritualselftransformation.com/). Made by a Lightworker in his spare time.
