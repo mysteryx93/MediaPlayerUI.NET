@@ -74,56 +74,22 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     //     AvaloniaProperty.RegisterDirect<BassPlayerHost, string?>(nameof(DllPath), o => o.DllPath);
     // public string? DllPath { get; set; }
 
-    /// <summary>
-    /// Defines the Source property.
-    /// </summary>
-    public static readonly DirectProperty<BassPlayerHost, string?> SourceProperty =
-        AvaloniaProperty.RegisterDirect<BassPlayerHost, string?>(nameof(Source), o => o.Source, (o, v) => o.Source = v);
-    private string? _source;
-    /// <summary>
-    /// Gets or sets the path to the media file to play.
-    /// If resetting the same file path, you may need to first set an empty string before resetting the value to ensure it detects the value change.
-    /// </summary>
-    public string? Source
+    /// <inheritdoc />
+    protected override void SourceChanged(string? value)
     {
-        get => _source;
-        set
-        {
-            _source = value;
-            if (!IsInitialized) { return; }
+        if (!IsInitialized) { return; }
 
-            if (!string.IsNullOrEmpty(value))
-            {
-                Status = PlaybackStatus.Loading;
-                LoadMedia();
-            }
-            else
-            {
-                Status = PlaybackStatus.Stopped;
-                _isStopping = true;
-                ReleaseChannel();
-                _isStopping = false;
-            }
+        if (!string.IsNullOrEmpty(value))
+        {
+            Status = PlaybackStatus.Loading;
+            LoadMedia();
         }
-    }
-
-    /// <summary>
-    /// Defines the Title property.
-    /// </summary>
-    public static readonly DirectProperty<BassPlayerHost, string?> TitleProperty =
-        AvaloniaProperty.RegisterDirect<BassPlayerHost, string?>(nameof(Title), o => o.Title, (o, v) => o.Title = v);
-    private string? _title;
-    /// <summary>
-    /// Gets or sets the display title of the media file.
-    /// A title is set by default and you can override it using this property.
-    /// </summary>
-    public string? Title
-    {
-        get => _title;
-        set
+        else
         {
-            _title = value;
-            SetDisplayText();
+            Status = PlaybackStatus.Stopped;
+            _isStopping = true;
+            ReleaseChannel();
+            _isStopping = false;
         }
     }
 
@@ -302,6 +268,27 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             AdjustEffects();
         }
     }
+    
+    /// <summary>
+    /// Defines the EffectsSampleRateConversion property. 
+    /// </summary>
+    public static readonly DirectProperty<BassPlayerHost, int> EffectsSampleRateConversionProperty =
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, int>(nameof(EffectsSampleRateConversion), o => o.EffectsSampleRateConversion,
+            (o, v) => o.EffectsSampleRateConversion = v);
+    private int _effectsSampleRateConversion = 2;
+    /// <summary>
+    /// Gets or sets the sample rate conversion quality... 0 = linear interpolation, 1 = 8 point sinc interpolation, 2 = 16 point sinc interpolation, 3 = 32 point sinc interpolation, 4 = 64 point sinc interpolation. 
+    /// </summary>
+    public int EffectsSampleRateConversion
+    {
+        get => _effectsSampleRateConversion;
+        set
+        {
+            value = Math.Max(0, Math.Min(4, value));
+            _effectsSampleRateConversion = value;
+            AdjustEffects();
+        }
+    }
 
     private bool BassActive => _chan != 0;
 
@@ -349,7 +336,8 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
-    private void SetDisplayText()
+    /// <inheritdoc />
+    protected override void SetDisplayText()
     {
         Text = Status switch
         {
@@ -359,7 +347,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             _ => string.Empty
         } ?? string.Empty;
     }
-
+    
     /// <inheritdoc />
     protected override void PositionChanged(TimeSpan value, bool isSeeking)
     {
@@ -464,7 +452,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
                         AdjustVolume(volume);
                         AdjustTempo(speed, rate, pitch);
                     }
-
+                    
                     if (autoPlay)
                     {
                         ManagedBass.Bass.ChannelPlay(_chan).Valid();
@@ -496,6 +484,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoUseQuickAlgorithm, EffectsQuick ? 1 : 0);
             ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoUseAAFilter, EffectsAntiAlias ? 1 : 0);
             ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoAAFilterLength, EffectsAntiAliasLength);
+            ManagedBass.Bass.Configure(Configuration.SRCQuality, EffectsSampleRateConversion);
         }
     }
 
@@ -551,8 +540,11 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
 
 
     private bool _disposedValue;
-
-    private void Dispose(bool disposing)
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    /// <param name="disposing">The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.</param>
+    protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)
         {
@@ -565,9 +557,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
-    /// <summary>
-    /// Releases unmanaged resources. 
-    /// </summary>
+    /// <inheritdoc />
     public void Dispose()
     {
         Dispose(true);

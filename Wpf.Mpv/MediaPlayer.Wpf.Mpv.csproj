@@ -18,6 +18,7 @@
     <PackageVersion>1.0.0</PackageVersion>
     <PackageId>MediaPlayer.Wpf.Mpv</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

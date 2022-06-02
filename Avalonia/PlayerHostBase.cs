@@ -3,6 +3,8 @@ using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable MemberCanBeProtected.Global
 
 namespace HanumanInstitute.MediaPlayer.Avalonia;
 
@@ -33,6 +35,7 @@ public abstract class PlayerHostBase : Control
     /// </summary>
     public event EventHandler? MediaUnloaded;
 
+    /// <inheritdoc />
     public override void ApplyTemplate()
     {
         base.ApplyTemplate();
@@ -43,12 +46,43 @@ public abstract class PlayerHostBase : Control
         });
     }
 
+    /// <summary>
+    /// Defines the Source property.
+    /// </summary>
+    public static readonly DirectProperty<PlayerHostBase, string?> SourceProperty =
+        AvaloniaProperty.RegisterDirect<PlayerHostBase, string?>(nameof(Source), o => o.Source, (o, v) => o.Source = v);
+    private string? _source;
+    /// <summary>
+    /// Gets or sets the path to the media file to play.
+    /// If resetting the same file path, you may need to first set an empty string before resetting the value to ensure it detects the value change.
+    /// </summary>
+    public string? Source
+    {
+        get => _source;
+        set
+        {
+            if (SetAndRaise(SourceProperty, ref _source, value))
+            {
+                SourceChanged(value);
+            }
+        }
+    }
+    /// <summary>
+    /// Occurs when the Source property is changed. 
+    /// </summary>
+    /// <param name="value">The new source.</param>
+    protected virtual void SourceChanged(string? value) { }
 
-    // Position
+    /// <summary>
+    /// Defines the Position property.
+    /// </summary>
     public static readonly DirectProperty<PlayerHostBase, TimeSpan> PositionProperty =
         AvaloniaProperty.RegisterDirect<PlayerHostBase, TimeSpan>(nameof(Position), 
             o => o.Position, (o, v) => o.Position = v);
     private TimeSpan _position;
+    /// <summary>
+    /// Gets or sets the playback position.
+    /// </summary>
     public TimeSpan Position
     {
         get => _position;
@@ -60,13 +94,23 @@ public abstract class PlayerHostBase : Control
             }
         }
     }
+    /// <summary>
+    /// Occurs when the Position property is changed.
+    /// </summary>
+    /// <param name="value">The new position.</param>
+    /// <param name="isSeeking">True if position is set by seeking, False if set by playback.</param>
     protected virtual void PositionChanged(TimeSpan value, bool isSeeking) { }
 
-    // Duration
+    /// <summary>
+    /// Defines the Duration property.
+    /// </summary>
     public static readonly DirectProperty<PlayerHostBase, TimeSpan> DurationProperty =
         AvaloniaProperty.RegisterDirect<PlayerHostBase, TimeSpan>(nameof(Duration), 
             o => o.Duration, (o, v) => o.Duration = v);
     private TimeSpan _duration = TimeSpan.FromSeconds(1);
+    /// <summary>
+    /// Gets the duration of the media file.
+    /// </summary>
     public TimeSpan Duration
     {
         get => _duration;
@@ -78,13 +122,22 @@ public abstract class PlayerHostBase : Control
             }
         }
     }
+    /// <summary>
+    /// Occurs when the Duration property is changed.
+    /// </summary>
+    /// <param name="value">The new duration.</param>
     protected virtual void DurationChanged(TimeSpan value) { }
 
-    // IsPlaying
+    /// <summary>
+    /// Defines the IsPlaying property.
+    /// </summary>
     public static readonly DirectProperty<PlayerHostBase, bool> IsPlayingProperty =
         AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsPlaying), 
             o => o.IsPlaying, (o, v) => o.IsPlaying = v);
     private bool _isPlaying;
+    /// <summary>
+    /// Gets or sets whether the media file is playing or paused.
+    /// </summary>
     public bool IsPlaying
     {
         get => _isPlaying;
@@ -96,14 +149,28 @@ public abstract class PlayerHostBase : Control
             }
         }
     }
+    /// <summary>
+    /// Occurs when IsPlaying property is changed.
+    /// </summary>
+    /// <param name="value">The new playing status.</param>
     protected virtual void IsPlayingChanged(bool value) { }
+    /// <summary>
+    /// Validates the IsPlaying property value.
+    /// </summary>
+    /// <param name="value">The new IsPlaying value.</param>
+    /// <returns>The value after validation.</returns>
     protected virtual bool CoerceIsPlaying(bool value) => value;
 
-    // Volume
+    /// <summary>
+    /// Defines the Volume property.
+    /// </summary>
     public static readonly DirectProperty<PlayerHostBase, int> VolumeProperty =
         AvaloniaProperty.RegisterDirect<PlayerHostBase, int>(nameof(Volume), 
             o => o.Volume, (o, v) => o.Volume = v);
     private int _volume = 100;
+    /// <summary>
+    /// Gets or sets the volume.
+    /// </summary>
     public int Volume
     {
         get => _volume;
@@ -115,17 +182,31 @@ public abstract class PlayerHostBase : Control
             }
         }
     }
+    /// <summary>
+    /// Occurs when the Volume property is changed.
+    /// </summary>
+    /// <param name="value">The new volume.</param>
     protected virtual void VolumeChanged(int value) { }
+    /// <summary>
+    /// Validates the Volume property value.
+    /// </summary>
+    /// <param name="value">The new volume.</param>
+    /// <returns>The volume after validation.</returns>
     protected virtual int CoerceVolume(int value)
     {
         return Math.Max(0, (Math.Min(100, value)));
     }
 
-    // SpeedFloat
+    /// <summary>
+    /// Defines the SpeedFloat property.
+    /// </summary>
     public static readonly DirectProperty<PlayerHostBase, double> SpeedFloatProperty =
         AvaloniaProperty.RegisterDirect<PlayerHostBase, double>(nameof(SpeedFloat), 
             o => o.SpeedFloat, (o, v) => o.SpeedFloat = v);
     private double _speedFloat = 1;
+    /// <summary>
+    /// Gets or sets the speed multiplier.
+    /// </summary>
     public double SpeedFloat
     {
         get => _speedFloat;
@@ -137,13 +218,22 @@ public abstract class PlayerHostBase : Control
             }
         }
     }
+    /// <summary>
+    /// Occurs when the Speed property is changed.
+    /// </summary>
+    /// <param name="value">The new speed value.</param>
     protected virtual void SpeedChanged(double value) { }
 
-    // SpeedInt
+    /// <summary>
+    /// Defines the SpeedInt property.
+    /// </summary>
     public static readonly DirectProperty<PlayerHostBase, int> SpeedIntProperty =
         AvaloniaProperty.RegisterDirect<PlayerHostBase, int>(nameof(SpeedInt), 
             o => o.SpeedInt, (o, v) => o.SpeedInt = v);
     private int _speedInt;
+    /// <summary>
+    /// Gets or sets the speed as an integer, where normal playback is 0. Useful for binding to a slider.
+    /// </summary>
     public int SpeedInt
     {
         get => _speedInt;
@@ -155,13 +245,23 @@ public abstract class PlayerHostBase : Control
             }
         }
     }
+    /// <summary>
+    /// Occurs when the SpeedInt property is changed.
+    /// </summary>
+    /// <param name="value">The new speed value.</param>
+    /// <returns>The speed value after validation.</returns>
     protected virtual int CoerceSpeedInt(int value) => value;
 
-    // Loop
+    /// <summary>
+    /// Defines the Loop property.
+    /// </summary>
     public static readonly DirectProperty<PlayerHostBase, bool> LoopProperty =
         AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(Loop), 
             o => o.Loop, (o, v) => o.Loop = v);
     private bool _loop;
+    /// <summary>
+    /// Gets or sets whether to loop.
+    /// </summary>
     public bool Loop
     {
         get => _loop;
@@ -173,14 +273,28 @@ public abstract class PlayerHostBase : Control
             }
         }
     }
+    /// <summary>
+    /// Occurs when the Loop property is changed.
+    /// </summary>
+    /// <param name="value">The new Loop value.</param>
     protected virtual void LoopChanged(bool value) { }
+    /// <summary>
+    /// Validates the Loop value.
+    /// </summary>
+    /// <param name="value">The new loop value.</param>
+    /// <returns>The loop value after validation.</returns>
     protected virtual bool CoerceLoop(bool value) => value;
-
-    // AutoPlay
+    
+    /// <summary>
+    /// Defines the AutoPlay property.
+    /// </summary>
     public static readonly DirectProperty<PlayerHostBase, bool> AutoPlayProperty =
         AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(AutoPlay), 
             o => o.AutoPlay, (o, v) => o.AutoPlay = v);
     private bool _autoPlay = true;
+    /// <summary>
+    /// Gets or sets whether to auto-play the file when setting the source.
+    /// </summary>
     public bool AutoPlay
     {
         get => _autoPlay;
@@ -192,19 +306,53 @@ public abstract class PlayerHostBase : Control
             }
         }
     }
+    /// <summary>
+    /// Occurs when the AutoPlay property is changed.
+    /// </summary>
+    /// <param name="value">The new AutoPlay value.</param>
     protected virtual void AutoPlayChanged(bool value)
     {
         // AutoPlay can be set AFTER Script, we need to reset IsPlaying in that case.
         // Default value needs to be false otherwise it can cause video to start loading and immediately stop which can cause issues.
         IsPlaying = value;
     }
+    /// <summary>
+    /// Validates the AutoPlay value.
+    /// </summary>
+    /// <param name="value">The new auto play value.</param>
+    /// <returns>The value after validation.</returns>
     protected virtual bool CoerceAutoPlay(bool value) => value;
-
-    // Text
+    
+    /// <summary>
+    /// Defines the Title property.
+    /// </summary>
+    public static readonly DirectProperty<PlayerHostBase, string?> TitleProperty =
+        AvaloniaProperty.RegisterDirect<PlayerHostBase, string?>(nameof(Title), o => o.Title, (o, v) => o.Title = v);
+    private string? _title;
+    /// <summary>
+    /// Gets or sets the display title of the media file.
+    /// A title is set by default and you can override it using this property.
+    /// </summary>
+    public string? Title
+    {
+        get => _title;
+        set
+        {
+            _title = value;
+            SetDisplayText();
+        }
+    }
+    
+    /// <summary>
+    /// Defines the Text property.
+    /// </summary>
     public static readonly DirectProperty<PlayerHostBase, string> TextProperty =
         AvaloniaProperty.RegisterDirect<PlayerHostBase, string>(nameof(Text), 
             o => o.Text, (o, v) => o.Text = v);
     private string _text = string.Empty;
+    /// <summary>
+    /// Gets the text being displayed, which may include the title and/or loading status.
+    /// </summary>
     public string Text
     {
         get => _text;
@@ -214,11 +362,16 @@ public abstract class PlayerHostBase : Control
         }
     }
 
-    // IsMediaLoaded
+    /// <summary>
+    /// Defines the IsMediaLoaded property.
+    /// </summary>
     public static readonly DirectProperty<PlayerHostBase, bool> IsMediaLoadedProperty =
         AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsMediaLoaded), 
             o => o.IsMediaLoaded, (o, v) => o.IsMediaLoaded = v);
     private bool _isMediaLoaded;
+    /// <summary>
+    /// Gets whether a media file is loaded.
+    /// </summary>
     public bool IsMediaLoaded
     {
         get => _isMediaLoaded;
@@ -228,11 +381,16 @@ public abstract class PlayerHostBase : Control
         }
     }
 
-    // IsVideoVisible
+    /// <summary>
+    /// Defines the IsVideoVisible property.
+    /// </summary>
     public static readonly DirectProperty<PlayerHostBase, bool> IsVideoVisibleProperty =
         AvaloniaProperty.RegisterDirect<PlayerHostBase, bool>(nameof(IsVideoVisible), 
             o => o.IsVideoVisible, (o, v) => o.IsVideoVisible = v);
     private bool _isVideoVisible;
+    /// <summary>
+    /// Gets or sets whether to show the video.
+    /// </summary>
     public bool IsVideoVisible
     {
         get => _isVideoVisible;
@@ -244,6 +402,10 @@ public abstract class PlayerHostBase : Control
             }
         }
     }
+    /// <summary>
+    /// Occurs when the IsVideoVisible property is changed.
+    /// </summary>
+    /// <param name="value">The new visibility value.</param>
     protected virtual void IsVideoVisibleChanged(bool value)
     {
         if (HostContainer != null)
@@ -251,12 +413,27 @@ public abstract class PlayerHostBase : Control
             HostContainer.IsVisible = value;
         }
     }
+    /// <summary>
+    /// Validates the IsVideoVisible value.
+    /// </summary>
+    /// <param name="value">The new visibility value.</param>
+    /// <returns>The value after validation.</returns>
     protected virtual bool CoerceIsVideoVisible(bool value) => value;
 
+    /// <summary>
+    /// Ensures that a double is above 0. 
+    /// </summary>
+    /// <param name="value">A double value.</param>
+    /// <returns>The value after validation.</returns>
     protected static double CoerceDouble(double value)
     {
         return !(value > 0) ? 1 : value;
     }
+
+    /// <summary>
+    /// Sets the Text property.
+    /// </summary>
+    protected abstract void SetDisplayText();
 
     /// <summary>
     /// Sets the position without raising PositionChanged.

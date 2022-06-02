@@ -17,6 +17,7 @@
     <PackageVersion>1.0.0</PackageVersion>
     <PackageId>MediaPlayer.Wpf.NAudio</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

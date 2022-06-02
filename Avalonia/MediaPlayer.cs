@@ -12,6 +12,7 @@ using Avalonia.LogicalTree;
 using Avalonia.Media;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers.Mvvm;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers;
+// ReSharper disable MemberCanBePrivate.Global
 #pragma warning disable CS0618
 
 namespace HanumanInstitute.MediaPlayer.Avalonia;
@@ -40,23 +41,57 @@ public class MediaPlayer : MediaPlayerBase
         }
     }
 
+    /// <summary>
+    /// Gets the name of the control containing the video.
+    /// </summary>
     public const string UIPartName = "PART_UI";
+    /// <summary>
+    /// Gets the control containing the video. This control will be transferred into a new container in full-screen mode.
+    /// </summary>
     public Border? UIPart { get; private set; }
 
+    /// <summary>
+    /// Gets the name of the seek bar.
+    /// </summary>
     public const string SeekBarPartName = "PART_SeekBar";
+    /// <summary>
+    /// Gets the seek bar slider control.
+    /// </summary>
     public Slider? SeekBarPart { get; private set; }
 
+    /// <summary>
+    /// Gets the name of the track within the seek bar.
+    /// </summary>
     public const string SeekBarTrackPartName = "PART_Track";
+    /// <summary>
+    /// Gets the track within the seek bar.
+    /// </summary>
     public Track? SeekBarTrackPart { get; private set; }
 
+    /// <summary>
+    /// The name of the seek bar decrease button.
+    /// </summary>
     public const string SeekBarDecreaseName = "PART_DecreaseButton";
+    /// <summary>
+    /// Gets the seek bar decrease button. 
+    /// </summary>
     public RepeatButton? SeekBarDecreasePart { get; private set; }
         
+    /// <summary>
+    /// The name of the seek bar increase button.
+    /// </summary>
     public const string SeekBarIncreaseName = "PART_IncreaseButton";
+    /// <summary>
+    /// Gets the seek bar increase button.
+    /// </summary>
     public RepeatButton? SeekBarIncreasePart { get; private set; }
 
+    /// <summary>
+    /// Gets the thumb within the seek bar. 
+    /// </summary>
     public Thumb? SeekBarThumbPart => SeekBarTrackPart?.Thumb;
 
+    /// <inheritdoc />
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -89,6 +124,7 @@ public class MediaPlayer : MediaPlayerBase
         };
     }
 
+    /// <inheritdoc />
     protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromLogicalTree(e);
@@ -105,6 +141,7 @@ public class MediaPlayer : MediaPlayerBase
         IsSeekBarPressed = false;
     }
 
+    /// <inheritdoc />
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
@@ -122,6 +159,7 @@ public class MediaPlayer : MediaPlayerBase
         e.Handled = true;
     }
 
+    /// <inheritdoc />
     protected override void OnContentChanged(AvaloniaPropertyChangedEventArgs e)
     {
         RaisePropertyChanged(PlayerHostProperty, e.OldValue as PlayerHostBase,
@@ -265,118 +303,154 @@ public class MediaPlayer : MediaPlayerBase
         }
     }
 
-    // TitleProperty
+    /// <summary>
+    /// Defines the Title property.
+    /// </summary>
     public static readonly StyledProperty<string?> TitleProperty =
         AvaloniaProperty.Register<MediaPlayer, string?>(nameof(Title));
-
+    /// <summary>
+    /// Gets or sets the title to display. 
+    /// </summary>
     public string? Title
     {
         get => GetValue(TitleProperty);
         set => SetValue(TitleProperty, value);
     }
 
-    // MouseFullscreen
+    /// <summary>
+    /// Defines the MouseFullScreen property.
+    /// </summary>
     public static readonly StyledProperty<MouseTrigger> MouseFullscreenProperty =
         AvaloniaProperty.Register<MediaPlayer, MouseTrigger>(nameof(MouseFullscreen), MouseTrigger.MiddleClick);
-
+    /// <summary>
+    /// Gets or sets the mouse action that will trigger full-screen mode.
+    /// </summary>
     public MouseTrigger MouseFullscreen
     {
         get => GetValue(MouseFullscreenProperty);
         set => SetValue(MouseFullscreenProperty, value);
     }
 
-    // MousePause
+    /// <summary>
+    /// Defines the MousePause property.
+    /// </summary>
     public static readonly StyledProperty<MouseTrigger> MousePauseProperty =
         AvaloniaProperty.Register<MediaPlayer, MouseTrigger>(nameof(MousePause), MouseTrigger.LeftClick);
-
+    /// <summary>
+    /// Gets or sets the mouse action that will trigger pause.
+    /// </summary>
     public MouseTrigger MousePause
     {
         get => GetValue(MousePauseProperty);
         set => SetValue(MousePauseProperty, value);
     }
 
-    // ChangeVolumeOnMouseWheel
+    /// <summary>
+    /// Defines the ChangeVolumeOnMouseWheel property.
+    /// </summary>
     public static readonly StyledProperty<bool> ChangeVolumeOnMouseWheelProperty =
         AvaloniaProperty.Register<MediaPlayer, bool>(nameof(ChangeVolumeOnMouseWheel), true);
-
+    /// <summary>
+    /// Gets or sets whether to change volume with the mouse wheel. 
+    /// </summary>
     public bool ChangeVolumeOnMouseWheel
     {
         get => GetValue(ChangeVolumeOnMouseWheelProperty);
         set => SetValue(ChangeVolumeOnMouseWheelProperty, value);
     }
 
-    // IsPlayPauseVisible
+    /// <summary>
+    /// Defines the IsPlayPauseVisible property.
+    /// </summary>
     public static readonly StyledProperty<bool> IsPlayPauseVisibleProperty =
         AvaloniaProperty.Register<MediaPlayer, bool>(nameof(IsPlayPauseVisible), true);
-    // FrameworkPropertyMetadataOptions.AffectsParentArrange
-
+    /// <summary>
+    /// Gets or sets whether the Play/Pause button is visible.
+    /// </summary>
     public bool IsPlayPauseVisible
     {
         get => GetValue(IsPlayPauseVisibleProperty);
         set => SetValue(IsPlayPauseVisibleProperty, value);
     }
 
-    // IsStopVisible
+    /// <summary>
+    /// Defines the IsStopVisible property.
+    /// </summary>
     public static readonly StyledProperty<bool> IsStopVisibleProperty =
         AvaloniaProperty.Register<MediaPlayer, bool>(nameof(IsStopVisible), true);
-    // FrameworkPropertyMetadataOptions.AffectsParentArrange
-
+    /// <summary>
+    /// Gets or sets whether the Stop button is visible.
+    /// </summary>
     public bool IsStopVisible
     {
         get => GetValue(IsStopVisibleProperty);
         set => SetValue(IsStopVisibleProperty, value);
     }
 
-    // IsLoopVisible
+    /// <summary>
+    /// Defines the IsLoopVisible property. 
+    /// </summary>
     public static readonly StyledProperty<bool> IsLoopVisibleProperty =
         AvaloniaProperty.Register<MediaPlayer, bool>(nameof(IsLoopVisible), true);
-    // FrameworkPropertyMetadataOptions.AffectsParentArrange
-
+    /// <summary>
+    /// Gets or sets whether the Loop button is visible.
+    /// </summary>
     public bool IsLoopVisible
     {
         get => GetValue(IsLoopVisibleProperty);
         set => SetValue(IsLoopVisibleProperty, value);
     }
 
-    // IsVolumeVisible
+    /// <summary>
+    /// Defines the IsVolumeVisible property.
+    /// </summary>
     public static readonly StyledProperty<bool> IsVolumeVisibleProperty =
         AvaloniaProperty.Register<MediaPlayer, bool>(nameof(IsVolumeVisible), true);
-    // FrameworkPropertyMetadataOptions.AffectsParentArrange
-
+    /// <summary>
+    /// Gets or sets whether the volume is visible.
+    /// </summary>
     public bool IsVolumeVisible
     {
         get => GetValue(IsVolumeVisibleProperty);
         set => SetValue(IsVolumeVisibleProperty, value);
     }
 
-    // IsSpeedVisible
+    /// <summary>
+    /// Defines the IsSpeedVisible property.
+    /// </summary>
     public static readonly StyledProperty<bool> IsSpeedVisibleProperty =
         AvaloniaProperty.Register<MediaPlayer, bool>(nameof(IsSpeedVisible), true);
-    // FrameworkPropertyMetadataOptions.AffectsParentArrange
-
+    /// <summary>
+    /// Gets or sets whether the Speed button is visible.
+    /// </summary>
     public bool IsSpeedVisible
     {
         get => GetValue(IsSpeedVisibleProperty);
         set => SetValue(IsSpeedVisibleProperty, value);
     }
 
-    // IsSeekBarVisible
+    /// <summary>
+    /// Defines the IsSeekBarVisible property.
+    /// </summary>
     public static readonly StyledProperty<bool> IsSeekBarVisibleProperty =
         AvaloniaProperty.Register<MediaPlayer, bool>(nameof(IsSeekBarVisible), true);
-    // FrameworkPropertyMetadataOptions.AffectsParentArrange
-
+    /// <summary>
+    /// Gets or sets whether the seek bar is visible.
+    /// </summary>
     public bool IsSeekBarVisible
     {
         get => GetValue(IsSeekBarVisibleProperty);
         set => SetValue(IsSeekBarVisibleProperty, value);
     }
 
-    // public FullScreenUI? FullScreenUI
-    // {
-    //     get;
-    //     private set;
-    // }
+    ///// <summary>
+    ///// Returns the fullscreen UI control.
+    ///// </summary>
+    // public FullScreenUI? FullScreenUI { get; private set; }
 
+    /// <summary>
+    /// Toggles between full-screen and normal mode.
+    /// </summary>
     public ICommand ToggleFullScreenCommand =>
         _toggleFullScreenCommand ??= new RelayCommand(ToggleFullScreen, CanToggleFullScreen);
 
@@ -388,6 +462,9 @@ public class MediaPlayer : MediaPlayerBase
         FullScreen = !FullScreen;
     }
 
+    /// <summary>
+    /// Gets or sets whether full-screen mode is active.
+    /// </summary>
     public bool FullScreen
     {
         get => false; // FullScreenUI != null;
@@ -435,14 +512,14 @@ public class MediaPlayer : MediaPlayerBase
         }
     }
 
-    private static void TransferElement(IPanel src, IPanel dst, IControl element)
-    {
-        src.Children.Remove(element);
-        dst.Children.Add(element);
-    }
+    //private static void TransferElement(IPanel src, IPanel dst, IControl element)
+    //{
+    //    src.Children.Remove(element);
+    //    dst.Children.Add(element);
+    //}
 
-    private void FullScreenUI_Closed(object? sender, EventArgs _)
-    {
-        FullScreen = false;
-    }
+    //private void FullScreenUI_Closed(object? sender, EventArgs _)
+    //{
+    //    FullScreen = false;
+    //}
 }

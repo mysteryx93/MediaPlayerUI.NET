@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using ManagedBass;
-
+using System.Text;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -18,35 +18,51 @@ public class BassDevice : IBassDevice
     /// </summary>
     public static BassDevice Instance { get; } = new BassDevice();
 
+    /// <summary>
+    /// Gets whether Init has been called.
+    /// </summary>
     public bool IsInitialized { get; private set; }
+    private readonly StringBuilder _log = new(); 
     private readonly object _initLock = new();
 
+    /// <summary>
+    /// Releases BASS ressources.
+    /// </summary>
     ~BassDevice()
     {
-        ManagedBass.Bass.Free();
+        Dispose(false);
     }
 
     /// <inheritdoc />
-    public void Init()
+    public void Init(int deviceId = -1)
     {
         if (!IsInitialized)
         {
+            _log.Append("Initializing... ");
             lock (_initLock)
             {
                 if (!IsInitialized)
                 {
                     // TODO: allow customizing search path?
-                    if (!ManagedBass.Bass.Init())
+                    if (!ManagedBass.Bass.Init(deviceId))
                     {
+                        _log.AppendLine("Failed.");
                         throw new InvalidOperationException("Failed to initialize BASS audio output.");
                     }
+                    _log.AppendLine("Done.");
 
-                    LoadPlugins(Environment.CurrentDirectory);
+                    var exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+                    LoadPlugins(exePath);
                     IsInitialized = true;
                 }
             }
         }
     }
+
+    /// <summary>
+    /// Returns the initialization and plugins log.
+    /// </summary>
+    public string Log => _log.ToString();
 
     /// <inheritdoc />
     public IReadOnlyList<string> LoadedPlugins
@@ -83,6 +99,8 @@ public class BassDevice : IBassDevice
 
     private void LoadPlugins(string path)
     {
+        _log.AppendLine($"Loading plugins from: {path}");
+            
         // Get bass plugins files pattern per operating system.
         var pattern = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bass*.dll" :
             RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "libbass*.so" :
@@ -125,13 +143,16 @@ public class BassDevice : IBassDevice
 
     private bool TryLoadPlugin(string filePath, string fileName)
     {
+        _log.Append($"{fileName} ... ");
         int hPlugin;
         if ((hPlugin = ManagedBass.Bass.PluginLoad(filePath)) == 0)
         {
+            _log.AppendLine("Failed.");
             return false;
         }
         else
         {
+            _log.AppendLine("Success!");
             // plugin loaded...
             _loadedPlugins.Add(fileName);
             var pInfo = ManagedBass.Bass.PluginGetInfo(hPlugin);
@@ -145,5 +166,33 @@ public class BassDevice : IBassDevice
 
             return true;
         }
+    }
+
+    private bool _disposed;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    /// <param name="disposing">The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                // Managed resources.
+            }
+
+            // Unmanaged resources.
+            ManagedBass.Bass.Free();
+
+            _disposed = true;
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

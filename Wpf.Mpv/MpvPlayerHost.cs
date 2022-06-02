@@ -10,8 +10,11 @@ using Mpv.NET.Player;
 
 namespace HanumanInstitute.MediaPlayer.Wpf.Mpv;
 
+/// <summary>
+/// MPV media player to be displayed within <see cref="MediaPlayer"/>.
+/// </summary>
 [TemplatePart(Name = HostPartName, Type = typeof(WindowsFormsHost))]
-public class MpvPlayerHost : PlayerHostBase
+public class MpvPlayerHost : PlayerHostBase, IDisposable
 {
     static MpvPlayerHost()
     {
@@ -19,6 +22,9 @@ public class MpvPlayerHost : PlayerHostBase
             new FrameworkPropertyMetadata(typeof(MpvPlayerHost)));
     }
 
+    /// <summary>
+    /// Initializes a new instance of the MpvPlayerHost class.
+    /// </summary>
     public MpvPlayerHost()
     {
         if (!DesignerProperties.GetIsInDesignMode(this))
@@ -29,29 +35,53 @@ public class MpvPlayerHost : PlayerHostBase
         }
     }
 
+    /// <summary>
+    /// Releases MPV ressources.
+    /// </summary>
+    ~MpvPlayerHost()
+    {
+        Dispose(false);
+    }
+
+    /// <summary>
+    /// Gets the name of the WindowsFormsHost.
+    /// </summary>
     public const string HostPartName = "PART_Host";
+    /// <summary>
+    /// Gets the WindowsFormsHost control.
+    /// </summary>
     public WindowsFormsHost? Host => _host ??= GetTemplateChild(HostPartName) as WindowsFormsHost;
     private WindowsFormsHost? _host;
 
+    /// <summary>
+    /// Gets the MpvPlayer class instance.
+    /// </summary>
     public MpvPlayer? Player { get; private set; }
+
+    /// <summary>
+    /// Occurs after the media player is initialized.
+    /// </summary>
     public event EventHandler? MediaPlayerInitialized;
+    /// <summary>
+    /// Occurs when the player throws an error.
+    /// </summary>
     public event EventHandler? MediaError;
+    /// <summary>
+    /// Occurs when media playback is finished.
+    /// </summary>
     public event EventHandler? MediaFinished;
 
     private bool _initLoaded;
 
-    // DllPath
+    /// <summary>
+    /// Defines the DllPath property.
+    /// </summary>
     public static readonly DependencyProperty DllPathProperty =
         DependencyProperty.Register("DllPath", typeof(string), typeof(MpvPlayerHost));
-
+    /// <summary>
+    /// Gets or sets the path where MPV DLL file is located.
+    /// </summary>
     public string DllPath { get => (string)GetValue(DllPathProperty); set => SetValue(DllPathProperty, value); }
-
-    // Source
-    public static readonly DependencyProperty SourceProperty = DependencyProperty.Register("Source", typeof(string),
-        typeof(MpvPlayerHost),
-        new PropertyMetadata(null, SourceChanged));
-
-    public string Source { get => (string)GetValue(SourceProperty); set => SetValue(SourceProperty, value); }
 
     private static void SourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -68,24 +98,15 @@ public class MpvPlayerHost : PlayerHostBase
         }
     }
 
-    // Title
-    public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(string),
-        typeof(MpvPlayerHost),
-        new PropertyMetadata(null, TitleChanged));
-
-    public string? Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
-
-    private static void TitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var p = (MpvPlayerHost)d;
-        p.SetDisplayText();
-    }
-
-    // Status
+    /// <summary>
+    /// Defines the Status property.
+    /// </summary>
     public static readonly DependencyPropertyKey StatusProperty = DependencyProperty.RegisterReadOnly("Status",
         typeof(PlaybackStatus), typeof(MpvPlayerHost),
         new PropertyMetadata(PlaybackStatus.Stopped, StatusChanged));
-
+    /// <summary>
+    /// Gets the playback status of the media player.
+    /// </summary>
     public PlaybackStatus Status
     {
         get => (PlaybackStatus)GetValue(StatusProperty.DependencyProperty);
@@ -98,11 +119,15 @@ public class MpvPlayerHost : PlayerHostBase
         p.SetDisplayText();
     }
 
-    // Pitch
+    /// <summary>
+    /// Defines the Pitch property.
+    /// </summary>
     public static readonly DependencyProperty PitchProperty = DependencyProperty.Register("Pitch", typeof(double),
         typeof(MpvPlayerHost),
         new PropertyMetadata(1.0, PitchChanged, CoerceDouble));
-
+    /// <summary>
+    /// Gets or sets the playback pitch as a double, rising or lowering the pitch by given factor without altering speed. 
+    /// </summary>
     public double Pitch { get => (double)GetValue(PitchProperty); set => SetValue(PitchProperty, value); }
 
     private static void PitchChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -197,9 +222,11 @@ public class MpvPlayerHost : PlayerHostBase
         Player = null;
     }
 
+    /// <inheritdoc />
     public override FrameworkElement? HostContainer => Host;
 
-    private void SetDisplayText()
+    /// <inheritdoc />
+    protected override void SetDisplayText()
     {
         Text = Status switch
         {
@@ -210,6 +237,7 @@ public class MpvPlayerHost : PlayerHostBase
         };
     }
 
+    /// <inheritdoc />
     protected override void PositionChanged(TimeSpan value, bool isSeeking)
     {
         base.PositionChanged(value, isSeeking);
@@ -225,6 +253,7 @@ public class MpvPlayerHost : PlayerHostBase
         }
     }
 
+    /// <inheritdoc />
     protected override void AutoPlayChanged(bool value)
     {
         base.AutoPlayChanged(value);
@@ -234,6 +263,7 @@ public class MpvPlayerHost : PlayerHostBase
         }
     }
 
+    /// <inheritdoc />
     protected override void IsPlayingChanged(bool value)
     {
         base.IsPlayingChanged(value);
@@ -247,6 +277,7 @@ public class MpvPlayerHost : PlayerHostBase
         }
     }
 
+    /// <inheritdoc />
     protected override void VolumeChanged(int value)
     {
         base.VolumeChanged(value);
@@ -256,6 +287,7 @@ public class MpvPlayerHost : PlayerHostBase
         }
     }
 
+    /// <inheritdoc />
     protected override void SpeedChanged(double value)
     {
         base.SpeedChanged(value);
@@ -265,6 +297,7 @@ public class MpvPlayerHost : PlayerHostBase
         }
     }
 
+    /// <inheritdoc />
     protected override void LoopChanged(bool value)
     {
         base.LoopChanged(value);
@@ -287,9 +320,38 @@ public class MpvPlayerHost : PlayerHostBase
         }
     }
 
+    /// <inheritdoc />
     public override void Stop()
     {
         base.Stop();
         Source = string.Empty;
+    }
+
+    private bool _disposed;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    /// <param name="disposing">The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                // Managed resources.
+            }
+
+            // Unmanaged resources.
+            Player?.Dispose();
+
+            _disposed = true;
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

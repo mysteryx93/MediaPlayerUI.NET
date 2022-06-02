@@ -40,6 +40,9 @@ public class AirspacePopup : Popup
     private bool _alreadyLoaded;
     private Window? _parentWindow;
 
+    /// <summary>
+    /// Initializes a new instance of the AirspacePopup class.
+    /// </summary>
     public AirspacePopup()
     {
         Loaded += OnPopupLoaded;
@@ -49,24 +52,44 @@ public class AirspacePopup : Popup
         descriptor.AddValueChanged(this, PlacementTargetChanged);
     }
 
-    // IsTopmost
+    /// <summary>
+    /// Defines the IsTopmost property.
+    /// </summary>
     public static readonly DependencyProperty IsTopmostProperty = DependencyProperty.Register("IsTopmost", typeof(bool), typeof(AirspacePopup),
         new FrameworkPropertyMetadata(false, OnIsTopmostChanged));
+    /// <summary>
+    /// Gets or sets whether the popup should be displayed on top of everything else.
+    /// </summary>
     public bool IsTopmost { get { return (bool)GetValue(IsTopmostProperty); } set { SetValue(IsTopmostProperty, value); } }
 
-    // FollowPlacementTarget
+    /// <summary>
+    /// Defines the FollowPlacementTarget property.
+    /// </summary>
     public static readonly DependencyProperty FollowPlacementTargetProperty = DependencyProperty.RegisterAttached("FollowPlacementTarget", typeof(bool), typeof(AirspacePopup),
         new UIPropertyMetadata(false));
+    /// <summary>
+    /// ???
+    /// </summary>
     public bool FollowPlacementTarget { get { return (bool)GetValue(FollowPlacementTargetProperty); } set { SetValue(FollowPlacementTargetProperty, value); } }
 
-    // AllowOutsideScreenPlacement
+    /// <summary>
+    /// Defines the AllowOutsideScreenPlacement property.
+    /// </summary>
     public static readonly DependencyProperty AllowOutsideScreenPlacementProperty = DependencyProperty.RegisterAttached("AllowOutsideScreenPlacement", typeof(bool), typeof(AirspacePopup),
         new UIPropertyMetadata(false));
+    /// <summary>
+    /// Gets or sets whether to allow placing the popup outside of the visible screen.
+    /// </summary>
     public bool AllowOutsideScreenPlacement { get { return (bool)GetValue(AllowOutsideScreenPlacementProperty); } set { SetValue(AllowOutsideScreenPlacementProperty, value); } }
 
-    // ParentWindow
+    /// <summary>
+    /// Defines the ParentWindow property.
+    /// </summary>
     public static readonly DependencyProperty ParentWindowProperty = DependencyProperty.RegisterAttached("ParentWindow", typeof(Window), typeof(AirspacePopup),
         new UIPropertyMetadata(null, ParentWindowPropertyChanged));
+    /// <summary>
+    /// Gets or sets the parent of the popup window.
+    /// </summary>
     public Window? ParentWindow { get { return (Window?)GetValue(ParentWindowProperty); } set { SetValue(ParentWindowProperty, value); } }
 
     private void ParentWindowChanged()
@@ -188,6 +211,7 @@ public class AirspacePopup : Popup
         }
     }
 
+    /// <inheritdoc />
     protected override void OnOpened(EventArgs e)
     {
         SetTopmostState(IsTopmost);

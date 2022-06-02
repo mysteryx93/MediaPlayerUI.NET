@@ -10,6 +10,9 @@ namespace HanumanInstitute.MediaPlayer.Wpf;
 /// </summary>
 public class ExtendedWindowsFormsHost : WindowsFormsHost
 {
+    /// <summary>
+    /// Initializes a new instance of the ExtendedWindowsFormsHost class.
+    /// </summary>
     public ExtendedWindowsFormsHost()
     {
         ChildChanged += OnChildChanged;

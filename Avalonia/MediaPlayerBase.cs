@@ -6,6 +6,8 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers.Mvvm;
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable MemberCanBeProtected.Global
 
 namespace HanumanInstitute.MediaPlayer.Avalonia;
 
@@ -13,18 +15,39 @@ namespace HanumanInstitute.MediaPlayer.Avalonia;
 /// Handles the business logic of MediaPlayer.
 /// MediaPlayer derives from this and handles only the UI.
 /// </summary>
-public abstract class MediaPlayerBase : ContentControl, IDisposable
+public abstract class MediaPlayerBase : ContentControl
 {
     private readonly TimedAction<TimeSpan> _positionBarTimedUpdate;
 
+    /// <summary>
+    /// Occurs when the Play command is executed.
+    /// </summary>
     public event EventHandler? PlayCommandExecuted;
+    /// <summary>
+    /// Occurs when the Pause command is executed.
+    /// </summary>
     public event EventHandler? PauseCommandExecuted;
+    /// <summary>
+    /// Occurs when the Stop command is executed.
+    /// </summary>
     public event EventHandler? StopCommandExecuted;
+    /// <summary>
+    /// Occurs when the Seek command is executed.
+    /// </summary>
     public event EventHandler<ValueEventArgs<int>>? SeekCommandExecuted;
+    /// <summary>
+    /// Occurs when the ChangeVolume command is executed.
+    /// </summary>
     public event EventHandler<ValueEventArgs<int>>? ChangeVolumeExecuted;
 
+    /// <summary>
+    /// Gets or sets whether the user is dragging the seek bar.
+    /// </summary>
     protected bool IsSeekBarPressed { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the MediaPlayerBase class.
+    /// </summary>
     protected MediaPlayerBase()
     {
         _positionBarTimedUpdate = new TimedAction<TimeSpan>(TimeSpan.FromMilliseconds(SeekMinInterval), (v) =>
@@ -38,16 +61,25 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
             }
         }, DispatcherPriority.Input);
     }
-
+    
+    /// <summary>
+    /// Defines the PlayerHost property. 
+    /// </summary>
     public static readonly DirectProperty<MediaPlayerBase, PlayerHostBase?> PlayerHostProperty =
         AvaloniaProperty.RegisterDirect<MediaPlayerBase, PlayerHostBase?>(nameof(PlayerHost), o => o.PlayerHost);
     private PlayerHostBase? _playerHost;
+    /// <summary>
+    /// Gets the PlayerHostBase contained within the MediaPlayer.
+    /// </summary>
     public PlayerHostBase? PlayerHost
     {
         get => _playerHost;
         protected set => SetAndRaise(PlayerHostProperty, ref _playerHost, value);
     }
 
+    /// <summary>
+    /// Called by derived class when a PlayerHostBase is set as content. 
+    /// </summary>
     public void ContentHasChanged(AvaloniaPropertyChangedEventArgs e)
     {
         PlayerHost = e.NewValue as PlayerHostBase;
@@ -65,17 +97,27 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         }
         OnContentChanged(e);
     }
-    // Allow derived class to bind to new host.
+    /// <summary>
+    /// Allow derived class to bind to new host.
+    /// </summary>
     protected virtual void OnContentChanged(AvaloniaPropertyChangedEventArgs e) { }
 
-    // Expose IsPlaying from PlayerHost so that it can be bound to styles.
+    /// <summary>
+    /// Defines the IsPlaying property.
+    /// </summary>
     public static readonly DirectProperty<MediaPlayer, bool> IsPlayingProperty =
         AvaloniaProperty.RegisterDirect<MediaPlayer, bool>(nameof(IsPlaying), o => o.IsPlaying);
+    /// <summary>
+    /// Exposes IsPlaying from PlayerHost so that it can be bound to styles.
+    /// </summary>
     public bool IsPlaying =>  PlayerHost?.IsPlaying ?? false;
 
     private void Player_IsPlayingChanged(bool value) => 
         RaisePropertyChanged(IsPlayingProperty, !value, value);
         
+    /// <summary>
+    /// Toggle between play and pause status.
+    /// </summary>
     public ICommand PlayPauseCommand => _playPauseCommand ??= new RelayCommand(PlayPause, CanPlayPause);
     private RelayCommand? _playPauseCommand;
     private bool CanPlayPause() => PlayerHost?.IsMediaLoaded ?? false;
@@ -94,6 +136,9 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         }
     }
 
+    /// <summary>
+    /// Stops playback.
+    /// </summary>
     public ICommand StopCommand => _stopCommand ??= new RelayCommand(Stop, CanStop);
     private RelayCommand? _stopCommand;
     private bool CanStop() => PlayerHost?.IsMediaLoaded ?? false;
@@ -105,6 +150,9 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         StopCommandExecuted?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// Seeks to specified position.
+    /// </summary>
     public ICommand SeekCommand => _seekCommand ??= new RelayCommand<int>(Seek, CanSeek);
     private RelayCommand<int>? _seekCommand;
     private bool CanSeek(int seconds) => PlayerHost?.IsMediaLoaded ?? false;
@@ -130,6 +178,9 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         SeekCommandExecuted?.Invoke(this, new ValueEventArgs<int>(seconds));
     }
 
+    /// <summary>
+    /// Adds specified value to the volume. Volume is an integer between 0 and 100. Calling this with a value of 5 will increase volume by 5. 
+    /// </summary>
     public ICommand ChangeVolumeCommand => _changeVolumeCommand ??= new RelayCommand<int>(ChangeVolume, CanChangeVolume);
     private RelayCommand<int>? _changeVolumeCommand;
     private bool CanChangeVolume(int value) => true;
@@ -141,11 +192,16 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         ChangeVolumeExecuted?.Invoke(this, new ValueEventArgs<int>(value));
     }
 
-    // PositionBar
+    /// <summary>
+    /// Defines the PositionBar property.
+    /// </summary>
     public static readonly DirectProperty<MediaPlayerBase, TimeSpan> PositionBarProperty =
         AvaloniaProperty.RegisterDirect<MediaPlayerBase, TimeSpan>(nameof(PositionBar),
             o => o.PositionBar, (o, v) => o.PositionBar = v);
     private TimeSpan _positionBar = TimeSpan.Zero;
+    /// <summary>
+    /// Gets or sets the visual position of the seek bar.
+    /// </summary>
     public TimeSpan PositionBar
     {
         get => _positionBar;
@@ -165,31 +221,46 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         return TimeSpan.FromTicks(Math.Max(0, Math.Min(dur.Ticks, value.Ticks)));
     }
 
-    // PositionDisplay
+    /// <summary>
+    /// Defines the PositionDisplay property.
+    /// </summary>
     public static readonly StyledProperty<TimeDisplayStyle> PositionDisplayProperty =
         AvaloniaProperty.Register<MediaPlayerBase, TimeDisplayStyle>(nameof(PositionDisplay),
             TimeDisplayStyle.Standard);
+    /// <summary>
+    /// Gets or sets how time is displayed within the player.
+    /// </summary>
     public TimeDisplayStyle PositionDisplay
     {
         get => GetValue(PositionDisplayProperty);
         set => SetValue(PositionDisplayProperty, value);
     }
 
-    // PositionText
+    /// <summary>
+    /// Defines the PositionText property.
+    /// </summary>
     public static readonly DirectProperty<MediaPlayerBase, string> PositionTextProperty =
         AvaloniaProperty.RegisterDirect<MediaPlayerBase, string>(nameof(PositionText), o => o.PositionText);
     private string _positionText = string.Empty;
+    /// <summary>
+    /// Gets the position text. 
+    /// </summary>
     public string PositionText
     {
         get => _positionText;
         private set => SetAndRaise(PositionTextProperty, ref _positionText, value);
     }
 
-    // SeekMinInterval
+    /// <summary>
+    /// Defines the SeekMinInterval property.
+    /// </summary>
     public static readonly DirectProperty<MediaPlayerBase, int> SeekMinIntervalProperty =
         AvaloniaProperty.RegisterDirect<MediaPlayerBase, int>(nameof(SeekMinInterval),
             o => o.SeekMinInterval);
     private int _seekMinInterval = 500;
+    /// <summary>
+    /// Gets or sets the interval in milliseconds between consecutive seeks.
+    /// </summary>
     public int SeekMinInterval
     {
         get => _seekMinInterval;
@@ -253,24 +324,5 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
             TimeDisplayStyle.Seconds => t.TotalSeconds.ToString(CultureInfo.InvariantCulture),
             _ => string.Empty
         };
-    }
-
-    private bool _disposedValue;
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            if (disposing)
-            {
-            }
-            _disposedValue = true;
-        }
-    }
-
-    // This code added to correctly implement the disposable pattern.
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }

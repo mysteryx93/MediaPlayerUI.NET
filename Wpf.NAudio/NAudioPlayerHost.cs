@@ -11,6 +11,9 @@ using SoundTouch.Net.NAudioSupport;
 
 namespace HanumanInstitute.MediaPlayer.Wpf.NAudio;
 
+/// <summary>
+/// NAudio audio media player to be displayed within <see cref="MediaPlayer"/>.
+/// </summary>
 public class NAudioPlayerHost : PlayerHostBase, IDisposable
 {
     static NAudioPlayerHost()
@@ -18,6 +21,9 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         DefaultStyleKeyProperty.OverrideMetadata(typeof(NAudioPlayerHost), new FrameworkPropertyMetadata(typeof(NAudioPlayerHost)));
     }
 
+    /// <summary>
+    /// Initializes a new instance of the NAudioPlayerHost class.
+    /// </summary>
     public NAudioPlayerHost()
     {
         if (!DesignerProperties.GetIsInDesignMode(this))
@@ -35,7 +41,13 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
     private bool _initLoaded;
     private readonly object _lock = new object();
 
+    /// <summary>
+    /// Occurs when the player throws an error.
+    /// </summary>
     public event EventHandler? MediaError;
+    /// <summary>
+    /// Occurs when media playback is finished.
+    /// </summary>
     public event EventHandler? MediaFinished;
 
     private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -55,44 +67,31 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
 
     private void UserControl_Unloaded(object? sender, RoutedEventArgs? e) => Dispose();
 
-    // DllPath
-    public static readonly DependencyProperty DllPathProperty = DependencyProperty.Register("DllPath", typeof(string), typeof(NAudioPlayerHost));
-    public string DllPath { get => (string)GetValue(DllPathProperty); set => SetValue(DllPathProperty, value); }
-
-    // Source
-    public static readonly DependencyProperty SourceProperty = DependencyProperty.Register("Source", typeof(string), typeof(NAudioPlayerHost),
-        new PropertyMetadata(null, SourceChanged));
-    public string? Source { get => (string)GetValue(SourceProperty); set => SetValue(SourceProperty, value); }
-    private static void SourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    /// <inheritdoc />
+    protected override void SourceChanged(string? value)
     {
-        var p = (NAudioPlayerHost)d;
-        if (!string.IsNullOrEmpty((string)e.NewValue))
+        if (!string.IsNullOrEmpty(value))
         {
-            p.Status = PlaybackStatus.Loading;
-            p.LoadMedia();
+            Status = PlaybackStatus.Loading;
+            LoadMedia();
         }
         else
         {
-            p.Status = PlaybackStatus.Stopped;
-            p._mediaOut?.Stop();
-            p._mediaFile?.Dispose();
-            p._mediaFile = null;
+            Status = PlaybackStatus.Stopped;
+            _mediaOut?.Stop();
+            _mediaFile?.Dispose();
+            _mediaFile = null;
         }
     }
 
-    // Title
-    public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(NAudioPlayerHost),
-        new PropertyMetadata(null, TitleChanged));
-    public string? Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
-    private static void TitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var p = (NAudioPlayerHost)d;
-        p.SetDisplayText();
-    }
-
-    // Status
+    /// <summary>
+    /// Defines the Status property.
+    /// </summary>
     public static readonly DependencyPropertyKey StatusProperty = DependencyProperty.RegisterReadOnly("Status", typeof(PlaybackStatus), typeof(NAudioPlayerHost),
         new PropertyMetadata(PlaybackStatus.Stopped, StatusChanged));
+    /// <summary>
+    /// Gets the playback status of the media player.
+    /// </summary>
     public PlaybackStatus Status { get => (PlaybackStatus)GetValue(StatusProperty.DependencyProperty); protected set => SetValue(StatusProperty, value); }
     private static void StatusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -100,9 +99,14 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         p.SetDisplayText();
     }
 
-    // PositionRefreshMilliseconds
+    /// <summary>
+    /// Defines the PositionRefreshMilliseconds property.
+    /// </summary>
     public static readonly DependencyProperty PositionRefreshMillisecondsProperty = DependencyProperty.Register("PositionRefreshMilliseconds", typeof(int), typeof(NAudioPlayerHost),
         new PropertyMetadata(200, PositionRefreshMillisecondsChanged, CoercePositionRefreshMilliseconds));
+    /// <summary>
+    /// Gets or sets the interval in milliseconds at which the position bar is updated.
+    /// </summary>
     public int PositionRefreshMilliseconds { get => (int)GetValue(PositionRefreshMillisecondsProperty); set => SetValue(PositionRefreshMillisecondsProperty, value); }
     private static void PositionRefreshMillisecondsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -118,9 +122,14 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         return value <= 0 ? 1 : value;
     }
 
-    // Rate
+    /// <summary>
+    /// Defines the Rate property.
+    /// </summary>
     public static readonly DependencyProperty RateProperty = DependencyProperty.Register("Rate", typeof(double), typeof(NAudioPlayerHost),
         new PropertyMetadata(1.0, RateChanged, CoerceDouble));
+    /// <summary>
+    /// Gets or sets the playback rate as a double, where 1.0 is normal speed, 0.5 is half-speed, and 2 is double-speed.
+    /// </summary>
     public double Rate { get => (double)GetValue(RateProperty); set => SetValue(RateProperty, value); }
     private static void RateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -131,9 +140,14 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
-    // Pitch
+    /// <summary>
+    /// Defines the Pitch property.
+    /// </summary>
     public static readonly DependencyProperty PitchProperty = DependencyProperty.Register("Pitch", typeof(double), typeof(NAudioPlayerHost),
         new PropertyMetadata(1.0, PitchChanged, CoerceDouble));
+    /// <summary>
+    /// Gets or sets the playback pitch as a double, rising or lowering the pitch by given factor without altering speed. 
+    /// </summary>
     public double Pitch { get => (double)GetValue(PitchProperty); set => SetValue(PitchProperty, value); }
     private static void PitchChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -144,9 +158,14 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
-    // VolumeBoost
+    /// <summary>
+    /// Defines the VolumeBoost property.
+    /// </summary>
     public static readonly DependencyProperty VolumeBoostProperty = DependencyProperty.Register("VolumeBoost", typeof(double), typeof(NAudioPlayerHost),
         new PropertyMetadata(1.0, VolumeBoostChanged, CoerceDouble));
+    /// <summary>
+    /// Gets or sets a value that will be multiplied to the volume.
+    /// </summary>
     public double VolumeBoost { get => (double)GetValue(VolumeBoostProperty); set => SetValue(VolumeBoostProperty, value); }
     private static void VolumeBoostChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -154,9 +173,17 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         p.VolumeChanged(p.Volume);
     }
 
-    // UseEffects
+    /// <summary>
+    /// Defines the UseEffects property.
+    /// </summary>
     public static readonly DependencyProperty UseEffectsProperty = DependencyProperty.Register("UseEffects", typeof(bool), typeof(NAudioPlayerHost),
         new PropertyMetadata(false));
+    /// <summary>
+    /// Gets or sets whether to enable pitch-shifting effects.
+    /// By default, effects are enabled if Rate, Pitch or Speed are set before loading a media file.
+    /// If file is loaded at normal speed and you want to allow changing it later, this property forces initializing the effects module.
+    /// This property must be set before playback. 
+    /// </summary>
     public bool UseEffects { get => (bool)GetValue(UseEffectsProperty); set => SetValue(UseEffectsProperty, value); }
 
 
@@ -199,7 +226,8 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
-    private void SetDisplayText()
+    /// <inheritdoc />
+    protected override void SetDisplayText()
     {
         Text = Status switch
         {
@@ -210,6 +238,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         };
     }
 
+    /// <inheritdoc />
     protected override void PositionChanged(TimeSpan value, bool isSeeking)
     {
         base.PositionChanged(value, isSeeking);
@@ -225,6 +254,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
+    /// <inheritdoc />
     protected override void IsPlayingChanged(bool value)
     {
         base.IsPlayingChanged(value);
@@ -242,6 +272,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
+    /// <inheritdoc />
     protected override void VolumeChanged(int value)
     {
         base.VolumeChanged(value);
@@ -251,6 +282,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
+    /// <inheritdoc />
     protected override void SpeedChanged(double value)
     {
         base.SpeedChanged(value);
@@ -260,6 +292,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
+    /// <inheritdoc />
     protected override void LoopChanged(bool value)
     {
         base.LoopChanged(value);
@@ -269,6 +302,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
+    /// <inheritdoc />
     public override void Restart()
     {
         base.Restart();
@@ -334,6 +368,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
+    /// <inheritdoc />
     public override void Stop()
     {
         base.Stop();
@@ -342,6 +377,10 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
 
 
     private bool _disposedValue;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    /// <param name="disposing">The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)
@@ -356,6 +395,7 @@ public class NAudioPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         Dispose(true);

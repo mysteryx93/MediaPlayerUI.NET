@@ -16,7 +16,6 @@ namespace HanumanInstitute.MediaPlayer.Wpf;
 /// </summary>
 [TemplatePart(Name = MediaPlayer.UIPartName, Type = typeof(Border))]
 [TemplatePart(Name = MediaPlayer.SeekBarPartName, Type = typeof(Slider))]
-//[TemplatePart(Name = MediaPlayer.SeekBarTrackPartName, Type = typeof(Track))]
 public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
 {
     static MediaPlayer()
@@ -32,23 +31,46 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
 
     private static object? CoerceContent(DependencyObject d, object baseValue) => baseValue as PlayerHostBase;
 
+    /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    /// <summary>
+    /// Gets the name of the control containing the video.
+    /// </summary>
     public const string UIPartName = "PART_UI";
+    /// <summary>
+    /// Gets the control containing the video. This control will be transferred into a new container in full-screen mode.
+    /// </summary>
     public Border? UIPart => _ui ??= GetTemplateChild(UIPartName) as Border;
     private Border? _ui;
 
+    /// <summary>
+    /// Gets the name of the seek bar.
+    /// </summary>
     public const string SeekBarPartName = "PART_SeekBar";
+    /// <summary>
+    /// Gets the seek bar slider control.
+    /// </summary>
     public Slider? SeekBarPart => _seekBar ??= GetTemplateChild(SeekBarPartName) as Slider;
     private Slider? _seekBar;
 
+    /// <summary>
+    /// Gets the name of the track within the seek bar.
+    /// </summary>
     public const string SeekBarTrackPartName = "PART_Track";
+    /// <summary>
+    /// Gets the track within the seek bar.
+    /// </summary>
     public Track? SeekBarTrackPart => _seekBarTrack ??= SeekBarPart?.Template.FindName(SeekBarTrackPartName, SeekBarPart) as Track;
     private Track? _seekBarTrack;
 
+    /// <summary>
+    /// Gets the thumb within the seek bar. 
+    /// </summary>
     public Thumb? SeekBarThumbPart => _seekBarThumb ??= SeekBarTrackPart?.Thumb;
     private Thumb? _seekBarThumb;
 
+    /// <inheritdoc />
     public override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
@@ -78,6 +100,7 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
         };
     }
 
+    /// <inheritdoc />
     protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
     {
         base.OnPreviewMouseLeftButtonDown(e);
@@ -92,6 +115,7 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
         e.Handled = true;
     }
 
+    /// <inheritdoc />
     protected override void OnContentChanged(DependencyPropertyChangedEventArgs e)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PlayerHost)));
@@ -218,58 +242,109 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
         _uiParentCache ??= UIPart?.Parent as Panel ??
             throw new NullReferenceException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.ParentMustBePanel, UIPartName, UIPart?.Parent?.GetType()));
 
-    // TitleProperty
+    /// <summary>
+    /// Defines the Title property.
+    /// </summary>
     public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(bool), typeof(MediaPlayer));
+    /// <summary>
+    /// Gets or sets the title to display. 
+    /// </summary>
     public string Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
 
-    // MouseFullscreen
+    /// <summary>
+    /// Defines the MouseFullScreen property.
+    /// </summary>
     public static readonly DependencyProperty MouseFullscreenProperty = DependencyProperty.Register("MouseFullscreen", typeof(MouseTrigger), typeof(MediaPlayer),
         new PropertyMetadata(MouseTrigger.MiddleClick));
+    /// <summary>
+    /// Gets or sets the mouse action that will trigger full-screen mode.
+    /// </summary>
     public MouseTrigger MouseFullscreen { get => (MouseTrigger)GetValue(MouseFullscreenProperty); set => SetValue(MouseFullscreenProperty, value); }
 
-    // MousePause
+    /// <summary>
+    /// Defines the MousePause property.
+    /// </summary>
     public static readonly DependencyProperty MousePauseProperty = DependencyProperty.Register("MousePause", typeof(MouseTrigger), typeof(MediaPlayer),
         new PropertyMetadata(MouseTrigger.LeftClick));
+    /// <summary>
+    /// Gets or sets the mouse action that will trigger pause.
+    /// </summary>
     public MouseTrigger MousePause { get => (MouseTrigger)GetValue(MousePauseProperty); set => SetValue(MousePauseProperty, value); }
 
-    // ChangeVolumeOnMouseWheel
+    /// <summary>
+    /// Defines the ChangeVolumeOnMouseWheel property.
+    /// </summary>
     public static readonly DependencyProperty ChangeVolumeOnMouseWheelProperty = DependencyProperty.Register("ChangeVolumeOnMouseWheel", typeof(bool), typeof(MediaPlayer),
         new PropertyMetadata(true));
+    /// <summary>
+    /// Gets or sets whether to change volume with the mouse wheel. 
+    /// </summary>
     public bool ChangeVolumeOnMouseWheel { get => (bool)GetValue(ChangeVolumeOnMouseWheelProperty); set => SetValue(ChangeVolumeOnMouseWheelProperty, value); }
 
-    // IsPlayPauseVisible
+    /// <summary>
+    /// Defines the IsPlayPauseVisible property.
+    /// </summary>
     public static readonly DependencyProperty IsPlayPauseVisibleProperty = DependencyProperty.Register("IsPlayPauseVisible", typeof(bool), typeof(MediaPlayer),
         new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
+    /// <summary>
+    /// Gets or sets whether the Play/Pause button is visible.
+    /// </summary>
     public bool IsPlayPauseVisible { get => (bool)GetValue(IsPlayPauseVisibleProperty); set => SetValue(IsPlayPauseVisibleProperty, value); }
 
-    // IsStopVisible
+    /// <summary>
+    /// Defines the IsStopVisible property.
+    /// </summary>
     public static readonly DependencyProperty IsStopVisibleProperty = DependencyProperty.Register("IsStopVisible", typeof(bool), typeof(MediaPlayer),
         new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
+    /// <summary>
+    /// Gets or sets whether the Stop button is visible.
+    /// </summary>
     public bool IsStopVisible { get => (bool)GetValue(IsStopVisibleProperty); set => SetValue(IsStopVisibleProperty, value); }
 
-    // IsLoopVisible
+    /// <summary>
+    /// Defines the IsLoopVisible property. 
+    /// </summary>
     public static readonly DependencyProperty IsLoopVisibleProperty = DependencyProperty.Register("IsLoopVisible", typeof(bool), typeof(MediaPlayer),
         new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
+    /// <summary>
+    /// Gets or sets whether the Loop button is visible.
+    /// </summary>
     public bool IsLoopVisible { get => (bool)GetValue(IsLoopVisibleProperty); set => SetValue(IsLoopVisibleProperty, value); }
 
-    // IsVolumeVisible
+    /// <summary>
+    /// Defines the IsVolumeVisible property.
+    /// </summary>
     public static readonly DependencyProperty IsVolumeVisibleProperty = DependencyProperty.Register("IsVolumeVisible", typeof(bool), typeof(MediaPlayer),
         new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
+    /// <summary>
+    /// Gets or sets whether the volume is visible.
+    /// </summary>
     public bool IsVolumeVisible { get => (bool)GetValue(IsVolumeVisibleProperty); set => SetValue(IsVolumeVisibleProperty, value); }
 
-    // IsSpeedVisible
+    /// <summary>
+    /// Defines the IsSpeedVisible property.
+    /// </summary>
     public static readonly DependencyProperty IsSpeedVisibleProperty = DependencyProperty.Register("IsSpeedVisible", typeof(bool), typeof(MediaPlayer),
         new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
+    /// <summary>
+    /// Gets or sets whether the Speed button is visible.
+    /// </summary>
     public bool IsSpeedVisible { get => (bool)GetValue(IsSpeedVisibleProperty); set => SetValue(IsSpeedVisibleProperty, value); }
 
-    // IsSeekBarVisible
+    /// <summary>
+    /// Defines the IsSeekBarVisible property.
+    /// </summary>
     public static readonly DependencyProperty IsSeekBarVisibleProperty = DependencyProperty.Register("IsSeekBarVisible", typeof(bool), typeof(MediaPlayer),
         new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsParentArrange));
+    /// <summary>
+    /// Gets or sets whether the seek bar is visible.
+    /// </summary>
     public bool IsSeekBarVisible { get => (bool)GetValue(IsSeekBarVisibleProperty); set => SetValue(IsSeekBarVisibleProperty, value); }
 
-
-
-    public void OnSeekBarPreviewMouseLeftButtonDown(object? sender, MouseButtonEventArgs e)
+    /// <summary>
+    /// Occurs when the user clicks on the seekbar to seek.
+    /// </summary>
+    protected void OnSeekBarPreviewMouseLeftButtonDown(object? sender, MouseButtonEventArgs e)
     {
         if (PlayerHost == null) { return; }
         e.CheckNotNull(nameof(e));
@@ -288,7 +363,10 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
         }
     }
 
-    public void OnSeekBarDragStarted(object? sender, DragStartedEventArgs e)
+    /// <summary>
+    /// Occurs when the user starts dragging the seekbar thumb.
+    /// </summary>
+    protected void OnSeekBarDragStarted(object? sender, DragStartedEventArgs e)
     {
         if (PlayerHost == null) { return; }
 
@@ -296,6 +374,9 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
     }
 
     private DateTime _lastDragCompleted = DateTime.MinValue;
+    /// <summary>
+    /// Occurs when the user is done dragging the seekbar thumb.
+    /// </summary>
     public void OnSeekBarDragCompleted(object? sender, DragCompletedEventArgs e)
     {
         if (PlayerHost == null) { return; }
@@ -312,9 +393,14 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
         IsSeekBarPressed = false;
     }
 
-
+    /// <summary>
+    /// Returns the fullscreen UI control.
+    /// </summary>
     public FullScreenUI? FullScreenUI { get; private set; }
 
+    /// <summary>
+    /// Toggles between full-screen and normal mode.
+    /// </summary>
     public ICommand ToggleFullScreenCommand => CommandHelper.InitCommand(ref _toggleFullScreenCommand, ToggleFullScreen, CanToggleFullScreen);
     private RelayCommand? _toggleFullScreenCommand;
     private bool CanToggleFullScreen() => PlayerHost != null;
@@ -323,6 +409,9 @@ public class MediaPlayer : MediaPlayerBase, INotifyPropertyChanged
         FullScreen = !FullScreen;
     }
 
+    /// <summary>
+    /// Gets or sets whether full-screen mode is active.
+    /// </summary>
     public bool FullScreen
     {
         get => FullScreenUI != null;

@@ -18,14 +18,29 @@ public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
 
     private readonly WeakReference _propertySource;
 
+    /// <summary>
+    /// Initializes a new instance of the PropertyChangeNotifier.
+    /// </summary>
+    /// <param name="propertySource">The control containing the property.</param>
+    /// <param name="path">The name of the property to track.</param>
     public PropertyChangeNotifier(DependencyObject propertySource, string path)
         : this(propertySource, new PropertyPath(path))
     { }
 
+    /// <summary>
+    /// Initializes a new instance of the PropertyChangeNotifier.
+    /// </summary>
+    /// <param name="propertySource">The control containing the property.</param>
+    /// <param name="property">The property to track.</param>
     public PropertyChangeNotifier(DependencyObject propertySource, DependencyProperty property)
         : this(propertySource, new PropertyPath(property))
     { }
 
+    /// <summary>
+    /// Initializes a new instance of the PropertyChangeNotifier.
+    /// </summary>
+    /// <param name="propertySource">The control containing the property.</param>
+    /// <param name="property">The property to track.</param>
     public PropertyChangeNotifier(DependencyObject propertySource, PropertyPath property)
     {
         propertySource.CheckNotNull(nameof(propertySource));
@@ -41,6 +56,9 @@ public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
         BindingOperations.SetBinding(this, ValueProperty, binding);
     }
 
+    /// <summary>
+    /// Gets the property being tracked.
+    /// </summary>
     public DependencyObject? PropertySource
     {
         get
@@ -93,11 +111,12 @@ public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
         }
     }
 
+    /// <inheritdoc />
     public event EventHandler? ValueChanged;
 
     private bool _disposedValue;
 
-    void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (!_disposedValue)
         {
@@ -109,6 +128,7 @@ public sealed class PropertyChangeNotifier : DependencyObject, IDisposable
         }
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         Dispose(true);

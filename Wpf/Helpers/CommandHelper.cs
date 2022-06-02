@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace HanumanInstitute.MediaPlayer.Wpf.Mvvm;
 
-public static class CommandHelper
+internal static class CommandHelper
 {
     public static ICommand InitCommand(ref RelayCommand? cmd, Action execute) => InitCommand(ref cmd, execute, () => true);
 

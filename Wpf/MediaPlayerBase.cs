@@ -14,18 +14,42 @@ namespace HanumanInstitute.MediaPlayer.Wpf;
 /// </summary>
 public abstract class MediaPlayerBase : ContentControl, IDisposable
 {
+    /// <summary>
+    /// Occurs when the Play command is executed.
+    /// </summary>
     public event EventHandler? PlayCommandExecuted;
+    /// <summary>
+    /// Occurs when the Pause command is executed.
+    /// </summary>
     public event EventHandler? PauseCommandExecuted;
+    /// <summary>
+    /// Occurs when the Stop command is executed.
+    /// </summary>
     public event EventHandler? StopCommandExecuted;
+    /// <summary>
+    /// Occurs when the Seek command is executed.
+    /// </summary>
     public event EventHandler<ValueEventArgs<int>>? SeekCommandExecuted;
+    /// <summary>
+    /// Occurs when the ChangeVolume command is executed.
+    /// </summary>
     public event EventHandler<ValueEventArgs<int>>? ChangeVolumeExecuted;
 
+    /// <summary>
+    /// Gets or sets whether the user is dragging the seek bar.
+    /// </summary>
     protected bool IsSeekBarPressed { get; set; }
     private PropertyChangeNotifier? _positionChangedNotifier;
 
     private PlayerHostBase? _playerHost; // Cache to avoid constant casting.
+    /// <summary>
+    /// Gets the PlayerHostBase contained within the MediaPlayer.
+    /// </summary>
     public PlayerHostBase? PlayerHost => _playerHost ??= Content as PlayerHostBase;
 
+    /// <summary>
+    /// Called by derived class when a PlayerHostBase is set as content. 
+    /// </summary>
     protected static void OnContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         var p = (MediaPlayerBase)d.CheckNotNull(nameof(d));
@@ -46,10 +70,14 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         p.OnContentChanged(e);
     }
 
-    // Allow derived class to bind to new host.
+    /// <summary>
+    /// Allow derived class to bind to new host.
+    /// </summary>
     protected virtual void OnContentChanged(DependencyPropertyChangedEventArgs e) { }
 
-
+    /// <summary>
+    /// Toggle between play and pause status.
+    /// </summary>
     public ICommand PlayPauseCommand => CommandHelper.InitCommand(ref _playPauseCommand, PlayPause, CanPlayPause);
     private RelayCommand? _playPauseCommand;
     private bool CanPlayPause() => PlayerHost?.IsMediaLoaded ?? false;
@@ -68,6 +96,9 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         }
     }
 
+    /// <summary>
+    /// Stops playback.
+    /// </summary>
     public ICommand StopCommand => CommandHelper.InitCommand(ref _stopCommand, Stop, CanStop);
     private RelayCommand? _stopCommand;
     private bool CanStop() => PlayerHost?.IsMediaLoaded ?? false;
@@ -79,6 +110,9 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         StopCommandExecuted?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// Seeks to specified position.
+    /// </summary>
     public ICommand SeekCommand => CommandHelper.InitCommand(ref _seekCommand, Seek, CanSeek);
     private RelayCommand<int>? _seekCommand;
     private bool CanSeek(int seconds) => PlayerHost?.IsMediaLoaded ?? false;
@@ -104,6 +138,9 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         SeekCommandExecuted?.Invoke(this, new ValueEventArgs<int>(seconds));
     }
 
+    /// <summary>
+    /// Adds specified value to the volume. Volume is an integer between 0 and 100. Calling this with a value of 5 will increase volume by 5. 
+    /// </summary>
     public ICommand ChangeVolumeCommand => CommandHelper.InitCommand(ref _changeVolumeCommand, ChangeVolume, CanChangeVolume);
     private RelayCommand<int>? _changeVolumeCommand;
     private bool CanChangeVolume(int value) => true;
@@ -115,9 +152,14 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         ChangeVolumeExecuted?.Invoke(this, new ValueEventArgs<int>(value));
     }
 
-    // PositionBar
+    /// <summary>
+    /// Defines the PositionBar property.
+    /// </summary>
     public static readonly DependencyProperty PositionBarProperty = DependencyProperty.Register("PositionBar", typeof(TimeSpan), typeof(MediaPlayerBase),
         new PropertyMetadata(TimeSpan.Zero, null, CoercePositionBar));
+    /// <summary>
+    /// Gets or sets the visual position of the seek bar.
+    /// </summary>
     public TimeSpan PositionBar { get => (TimeSpan)GetValue(PositionBarProperty); set => SetValue(PositionBarProperty, value); }
     private static object CoercePositionBar(DependencyObject d, object value)
     {
@@ -141,15 +183,25 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         return pos;
     }
 
-    // PositionDisplay
+    /// <summary>
+    /// Defines the PositionDisplay property.
+    /// </summary>
     public static readonly DependencyProperty PositionDisplayProperty = DependencyProperty.Register("PositionDisplay", typeof(TimeDisplayStyle), typeof(MediaPlayerBase),
         new PropertyMetadata(TimeDisplayStyle.Standard));
+    /// <summary>
+    /// Gets or sets how time is displayed within the player.
+    /// </summary>
     public TimeDisplayStyle PositionDisplay { get => (TimeDisplayStyle)GetValue(PositionDisplayProperty); set => SetValue(PositionDisplayProperty, value); }
 
-    // PositionText
+    /// <summary>
+    /// Defines the PositionText property.
+    /// </summary>
     public static readonly DependencyPropertyKey PositionTextPropertyKey = DependencyProperty.RegisterReadOnly("PositionText", typeof(string), typeof(MediaPlayerBase),
         new PropertyMetadata(null));
     private static readonly DependencyProperty s_positionTextProperty = PositionTextPropertyKey.DependencyProperty;
+    /// <summary>
+    /// Gets the position text. 
+    /// </summary>
     public string PositionText { get => (string)GetValue(s_positionTextProperty); private set => SetValue(PositionTextPropertyKey, value); }
 
 
@@ -213,6 +265,10 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
     }
 
     private bool _disposedValue;
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    /// <param name="disposing">The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)
@@ -225,7 +281,7 @@ public abstract class MediaPlayerBase : ContentControl, IDisposable
         }
     }
 
-    // This code added to correctly implement the disposable pattern.
+    /// <inheritdoc />
     public void Dispose()
     {
         Dispose(true);

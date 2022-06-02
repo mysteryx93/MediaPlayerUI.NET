@@ -27,10 +27,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.11" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.11" />
+    <PackageReference Include="Avalonia" Version="0.10.14" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.14" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.11" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.14" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="MainWindow.axaml.cs">
@@ -44,5 +44,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Avalonia.Bass\MediaPlayer.Avalonia.Bass.csproj" />
     <ProjectReference Include="..\Avalonia\MediaPlayer.Avalonia.csproj" />
+    <ProjectReference Include="..\BassDlls\BassDlls.csproj" />
   </ItemGroup>
 </Project>
