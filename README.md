@@ -15,10 +15,10 @@ Currently supports MPV and NAudio for WPF, and BASS for Avalonia
 [Todo](#todo)  
 [Overview](#overview)  
 [Using MPV Player in WPF](#using-mpv-player-in-wpf)  
-[Using NAudio Player in WPF](#using-naudio-player-in-wpf)
-[Using BASS Player in Avalonia](#using-bass-player-in-avalonia)
-[Using Custom Players](#using-custom-players)
-[Licensing](#licensing)
+[Using NAudio Player in WPF](#using-naudio-player-in-wpf)  
+[Using BASS Player in Avalonia](#using-bass-player-in-avalonia)  
+[Using Custom Players](#using-custom-players)  
+[Licensing](#licensing)  
 
 ## TODO
 
