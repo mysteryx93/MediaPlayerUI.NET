@@ -10,6 +10,7 @@ v1.0.1
 - Split WPF and Avalonia into 2 solutions
 - Include DLLs in sample projects
 - Added BassDlls projects to facilitate adding BASS for various platforms
+- BASS errors now throw BassException instead of InvalidOperationException
 
 TODO:
 - Updated MediaPlayer.Wpf.Mpv to support `mpv-2.dll`

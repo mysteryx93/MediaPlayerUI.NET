@@ -1,4 +1,5 @@
 ﻿using System;
+using ManagedBass;
 
 namespace HanumanInstitute.MediaPlayer.Avalonia.Bass;
 
@@ -17,7 +18,7 @@ internal static class Extensions
     {
         if (handle == 0)
         {
-            ThrowBassError();
+            throw new BassException(ManagedBass.Bass.LastError);
         }
 
         return handle;
@@ -32,15 +33,7 @@ internal static class Extensions
     {
         if (!value)
         {
-            ThrowBassError();
+            throw new BassException(ManagedBass.Bass.LastError);
         }
-    }
-
-    private static void ThrowBassError()
-    {
-        var err = ManagedBass.Bass.LastError.ToString();
-        var msg = $"BASS threw an error of type {err}. " + 
-                  "You can view details about that error at https://managedbass.github.io/api/ManagedBass.Errors.html";
-        throw new InvalidOperationException(msg);
     }
 }
