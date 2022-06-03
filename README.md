@@ -40,7 +40,7 @@ The basic syntax is to create a `MediaPlayer` with an implementation deriving fr
 
 ### MediaPlayer Properties
 
-[View all properties in the Wiki](wiki/MediaPlayer-Members)
+[View all properties in the Wiki](https://github.com/mysteryx93/MediaPlayerUI.NET/wiki/PlayerHostBase-Members)
 
 #### ChangeVolumeOnMouseWheel
 
@@ -89,7 +89,7 @@ Gets or sets the interval in milliseconds between consecutive seeks. Default = 5
 
 ### PlayerHostBase Properties
 
-[View all properties in the Wiki](wiki/PlayerHostBase-Members)
+[View all properties in the Wiki](https://github.com/mysteryx93/MediaPlayerUI.NET/wiki/MediaPlayer-Members)
 
 #### AutoPlay
 
