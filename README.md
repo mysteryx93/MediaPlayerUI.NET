@@ -283,6 +283,10 @@ Gets or sets the Anti-Alias filter length. Default = 32.
 
 Gets or sets the sample rate conversion quality... 0 = linear interpolation, 1 = 8 point sinc interpolation, 2 = 16 point sinc interpolation, 3 = 32 point sinc interpolation, 4 = 64 point sinc interpolation. Default = 2, set to 4 for best quality.
 
+#### EffectsFloat
+
+Gets or sets whether to process effects in 32-bit. True for 32-bit, False for 16-bit. Default = False, set to True for best quality.
+
 #### Pitch
 
 Gets or sets the playback pitch as a double, rising or lowering the pitch by given factor without altering speed. Default = 1.

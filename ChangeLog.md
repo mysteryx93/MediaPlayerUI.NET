@@ -6,7 +6,9 @@ v1.0.1
 - Moved Source and Title properties from implementations to PlayerHostBase
 - Updated online documentation
 - Implemented IDisposable for MediaPlayer.Wpf.Mpv
-- MediaPlayer.Avalonia.Bass, added EffectsAntiAlias, EffectsAntiAliasLength, EffectsQuick, EffectsSampleRateConversion to improve quality or performance 
+- MediaPlayer.Avalonia.Bass, added EffectsAntiAlias and EffectsAntiAliasLength to customize output
+- MediaPlayer.Avalonia.Bass, added EffectsQuick to reduce CPU usage
+- MediaPlayer.Avalonia.Bass, added EffectsSampleRateConversion and EffectsFloat to improve quality
 - Split WPF and Avalonia into 2 solutions
 - Include DLLs in sample projects
 - Added BassDlls projects to facilitate adding BASS for various platforms

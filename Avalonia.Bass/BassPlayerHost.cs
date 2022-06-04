@@ -289,6 +289,26 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             AdjustEffects();
         }
     }
+    
+    /// <summary>
+    /// Defines the EffectsFloat property. 
+    /// </summary>
+    public static readonly DirectProperty<BassPlayerHost, bool> EffectsFloatProperty =
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, bool>(nameof(EffectsFloat), o => o.EffectsFloat,
+            (o, v) => o.EffectsFloat = v);
+    private bool _effectsFloat = false;
+    /// <summary>
+    /// Gets or sets whether to process effects in 32-bit. True for 32-bit, False for 16-bit. 
+    /// </summary>
+    public bool EffectsFloat
+    {
+        get => _effectsFloat;
+        set
+        {
+            _effectsFloat = value;
+            AdjustEffects();
+        }
+    }
 
     private bool BassActive => _chan != 0;
 
@@ -440,7 +460,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             {
                 try
                 {
-                    _chan = ManagedBass.Bass.CreateStream(fileName, Flags: useEffects ? BassFlags.Decode : 0).Valid();
+                    _chan = ManagedBass.Bass.CreateStream(fileName, Flags: useEffects ? (EffectsFloat ? BassFlags.Float : 0) | BassFlags.Decode : 0).Valid();
                     _chanInfo = ManagedBass.Bass.ChannelGetInfo(_chan);
                     ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped)
                         .Valid();
