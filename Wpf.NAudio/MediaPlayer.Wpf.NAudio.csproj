@@ -14,10 +14,12 @@
     <PackageProjectUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</RepositoryUrl>
-    <PackageVersion>1.0.0</PackageVersion>
     <PackageId>MediaPlayer.Wpf.NAudio</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageVersion>1.0.1</PackageVersion>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
