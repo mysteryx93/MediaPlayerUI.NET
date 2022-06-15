@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers;
@@ -15,7 +16,8 @@ internal static class Preconditions
     /// </summary>
     /// <param name="value">The value to validate.</param>
     /// <param name="name">The name of the parameter.</param>
-    public static T CheckNotNull<T>(this T value, string name)
+    [return: NotNull]
+    public static T CheckNotNull<T>([NotNull]this T value, string name)
     {
         if (value == null)
         {
@@ -29,6 +31,7 @@ internal static class Preconditions
     /// </summary>
     /// <param name="value">The value to validate.</param>
     /// <param name="name">The name of the parameter.</param>
+    [return: NotNull]
     public static string CheckNotNullOrEmpty(this string value, string name)
     {
         CheckNotNull(value, name);
@@ -44,6 +47,7 @@ internal static class Preconditions
     /// </summary>
     /// <param name="value">The value to validate.</param>
     /// <param name="name">The name of the parameter.</param>
+    [return: NotNull]
     public static IEnumerable<T> CheckNotNullOrEmpty<T>(this IEnumerable<T>? value, string name)
     {
         value.CheckNotNull(name);

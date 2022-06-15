@@ -26,7 +26,7 @@ public class BassDevice : IBassDevice
     private readonly object _initLock = new();
 
     /// <summary>
-    /// Releases BASS ressources.
+    /// Releases BASS resources.
     /// </summary>
     ~BassDevice()
     {

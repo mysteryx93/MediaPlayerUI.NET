@@ -531,11 +531,8 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         {
             // In BASS, 2x speed is 100 (+100%), whereas our Speed property is 2. Need to convert.
             // speed 1=0, 2=100, 3=200, 4=300, .5=-100, .25=-300
-            speed /= pitch;
-            var tempo = speed >= 1 ? -100.0 / speed + 100 : 100.0 * speed - 100;
-            var freq = _chanInfo.Frequency * rate * pitch;
-            ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.Tempo, tempo);
-            ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoFrequency, freq);
+            ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.Tempo, (1.0 / pitch * speed - 1.0) * 100.0);
+            ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoFrequency, _chanInfo.Frequency * pitch * rate);
         }
     }
 

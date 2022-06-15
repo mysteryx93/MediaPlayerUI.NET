@@ -2,9 +2,11 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:HanumanInstitute.MediaPlayer.Avalonia"
-    xmlns:drawing="clr-namespace:System.Drawing;assembly=System.Drawing.Primitives">
+    xmlns:drawing="clr-namespace:System.Drawing;assembly=System.Drawing.Primitives"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <Styles.Resources>
         <local:TimeSpanToDoubleConverter x:Key="TimeSpanToDoubleConverter" />
+        <local:BoundsToPathDataConverter x:Key="BoundsToPathDataConverter" />
         <ImageBrush x:Key="PlayIcon" Source="Icons/play.png" />
         <ImageBrush x:Key="PauseIcon" Source="Icons/pause.png" />
         <ImageBrush x:Key="StopIcon" Source="Icons/stop.png" />
@@ -143,48 +145,68 @@
     </Style>
 
     <Style Selector="local|MediaPlayer Slider.volume">
-        <!-- <Setter Property="Background" Value="{DynamicResource MediaPlayerVolumeBackgroundBrush}" /> -->
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid>
                     <Grid>
-                        <!--<Grid.OpacityMask>
-                            <VisualBrush>
-                                <VisualBrush.Visual>
-                                    <StackPanel Background="White">
-                                        <Path Data="{StaticResource VolumeTriangle}" Stretch="Fill" Fill="Black" Height="14" VerticalAlignment="Top" />
-                                    </StackPanel>
-                                </VisualBrush.Visual>
-                            </VisualBrush>
-                        </Grid.OpacityMask>-->
                         <Track Name="PART_Track" Value="{TemplateBinding Value}" Orientation="Horizontal">
                             <Track.Thumb>
-                                <Thumb Width="5" Height="15" Background="{TemplateBinding Background}">
-                                    <Thumb.Template>
-                                        <ControlTemplate>
-                                            <!-- <Border Background="{DynamicResource MediaPlayerVolumeDecreaseBrush}" /> -->
-                                            <Border Background="Black" />
-                                        </ControlTemplate>
-                                    </Thumb.Template>
-                                </Thumb>
+                                <Thumb Width="0" />
                             </Track.Thumb>
                             <Track.DecreaseButton>
                                 <RepeatButton Name="PART_DecreaseButton"
-                                              Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Padding="0"
-                                              Background="{DynamicResource MediaPlayerVolumeDecreaseBrush}" />
+                                              Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Padding="0">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate>
+                                            <Grid>
+                                                <Path Fill="{DynamicResource MediaPlayerVolumeDecreaseBrush}">
+                                                    <Path.Data>
+                                                        <MultiBinding Converter="{StaticResource BoundsToPathDataConverter}" ConverterParameter="0">
+                                                            <Binding Path="Bounds" RelativeSource="{RelativeSource TemplatedParent}" />
+                                                            <Binding Path="Value" RelativeSource="{RelativeSource FindAncestor, AncestorType=Slider}" />
+                                                        </MultiBinding>
+                                                    </Path.Data>
+                                                </Path>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
                             </Track.DecreaseButton>
                             <Track.IncreaseButton>
                                 <RepeatButton Name="PART_IncreaseButton"
                                               Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Padding="0"
-                                              Background="LightGray" />
+                                              Background="LightGray" HorizontalAlignment="Right">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate>
+                                            <Grid>
+                                                <Path Fill="{DynamicResource MediaPlayerVolumeBackgroundBrush}">
+                                                    <Path.Data>
+                                                        <MultiBinding Converter="{StaticResource BoundsToPathDataConverter}" ConverterParameter="1">
+                                                            <Binding Path="Bounds" RelativeSource="{RelativeSource TemplatedParent}" />
+                                                            <Binding Path="Value" RelativeSource="{RelativeSource FindAncestor, AncestorType=Slider}" />
+                                                        </MultiBinding>
+                                                    </Path.Data>
+                                                </Path>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
                             </Track.IncreaseButton>
                         </Track>
                     </Grid>
-                    <Path Data="{StaticResource VolumeReverseTriangle}" Stretch="Fill" Fill="#c4c4c4" Height="14" VerticalAlignment="Top" />
-                    <Path Data="{StaticResource VolumeTriangle}" Stretch="Fill"
-                          Stroke="{DynamicResource MediaPlayerVolumeBorderBrush}"
-                          StrokeThickness="1" />
+                    <Path Stroke="{DynamicResource MediaPlayerVolumeBorderBrush}" StrokeThickness="1">
+                        <Path.Data>
+                            <MultiBinding Converter="{StaticResource BoundsToPathDataConverter}" ConverterParameter="0">
+                                <Binding Path="Bounds" RelativeSource="{RelativeSource TemplatedParent}" />
+                                <Binding>
+                                    <Binding.Source>
+                                        <system:Double>100</system:Double>
+                                    </Binding.Source>
+                                </Binding>
+                            </MultiBinding>
+                        </Path.Data>
+                    </Path>
                 </Grid>
             </ControlTemplate>
         </Setter>
