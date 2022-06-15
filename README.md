@@ -194,7 +194,7 @@ xmlns:media="https://github.com/mysteryx93/MediaPlayerUI.NET"
 
 ### NAudioPlayerHost Properties
 
-[Standard PlayerHostBase properties](wiki/PlayerHostBase-Members)
+[Standard PlayerHostBase properties](https://github.com/mysteryx93/MediaPlayerUI.NET/wiki/PlayerHostBase-Members)
 
 #### Rate
 
