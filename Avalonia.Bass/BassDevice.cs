@@ -11,12 +11,12 @@ using System.Text;
 namespace HanumanInstitute.MediaPlayer.Avalonia.Bass;
 
 /// <inheritdoc />
-public class BassDevice : IBassDevice
+public sealed class BassDevice : IBassDevice
 {
     /// <summary>
     /// Returns a singleton instance of BassDevice.
     /// </summary>
-    public static BassDevice Instance { get; } = new BassDevice();
+    public static BassDevice Instance { get; } = new();
 
     /// <summary>
     /// Gets whether Init has been called.
@@ -44,7 +44,7 @@ public class BassDevice : IBassDevice
                 if (!IsInitialized)
                 {
                     // TODO: allow customizing search path?
-                    if (!ManagedBass.Bass.Init(deviceId))
+                    if (!ManagedBass.Bass.Init(deviceId, 48000))
                     {
                         _log.AppendLine("Failed.");
                         throw new InvalidOperationException("Failed to initialize BASS audio output.");
@@ -173,7 +173,7 @@ public class BassDevice : IBassDevice
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
     /// <param name="disposing">The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.</param>
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (!_disposed)
         {

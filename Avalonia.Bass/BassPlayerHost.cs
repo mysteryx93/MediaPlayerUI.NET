@@ -7,6 +7,7 @@ using Avalonia.LogicalTree;
 using Avalonia.Threading;
 using ManagedBass;
 using ManagedBass.Fx;
+using ManagedBass.Mix;
 
 // ReSharper disable ConstantNullCoalescingCondition
 
@@ -18,13 +19,25 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Bass;
 public class BassPlayerHost : PlayerHostBase, IDisposable
 {
     /// <summary>
-    /// BASS audio stream handle.
+    /// BASS audio source handle.
     /// </summary>
-    private int _chan;
+    private int _chanIn;
+    /// <summary>
+    /// BASS audio output stream handle.
+    /// </summary>
+    private int _chanOut;
+    /// <summary>
+    /// BASS audio mix stream handle.
+    /// </summary>
+    private int _chanMix;
     /// <summary>
     /// Channel information from when the channel was initialized. 
     /// </summary>
     private ChannelInfo _chanInfo;
+    /// <summary>
+    /// Device information from when the channel was initialized.
+    /// </summary>
+    private BassInfo _deviceInfo;
     /// <summary>
     /// True when Source is currently being set to Empty.
     /// </summary>
@@ -90,6 +103,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             _isStopping = true;
             ReleaseChannel();
             _isStopping = false;
+            PitchError = null;
         }
     }
 
@@ -207,7 +221,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     /// This property must be set before playback. 
     /// </summary>
     public bool UseEffects { get; set; }
-    
+
     /// <summary>
     /// Defines the EffectsQuick property.
     /// </summary>
@@ -227,7 +241,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             AdjustEffects();
         }
     }
-    
+
     /// <summary>
     /// Defines the EffectsAntiAlias property.
     /// </summary>
@@ -247,13 +261,13 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             AdjustEffects();
         }
     }
-    
+
     /// <summary>
     /// Defines the EffectsAntiAliasLength property. 
     /// </summary>
     public static readonly DirectProperty<BassPlayerHost, int> EffectsAntiAliasLengthProperty =
         AvaloniaProperty.RegisterDirect<BassPlayerHost, int>(nameof(EffectsAntiAliasLength), o => o.EffectsAntiAliasLength,
-            (o, v) => o.EffectsAntiAliasLength = v);
+            (o, v) => o.EffectsAntiAliasLength = v, 32);
     private int _effectsAntiAliasLength = 32;
     /// <summary>
     /// Gets or sets the Anti-Alias filter length. 
@@ -268,14 +282,14 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             AdjustEffects();
         }
     }
-    
+
     /// <summary>
     /// Defines the EffectsSampleRateConversion property. 
     /// </summary>
     public static readonly DirectProperty<BassPlayerHost, int> EffectsSampleRateConversionProperty =
         AvaloniaProperty.RegisterDirect<BassPlayerHost, int>(nameof(EffectsSampleRateConversion), o => o.EffectsSampleRateConversion,
-            (o, v) => o.EffectsSampleRateConversion = v);
-    private int _effectsSampleRateConversion = 2;
+            (o, v) => o.EffectsSampleRateConversion = v, 4);
+    private int _effectsSampleRateConversion = 4;
     /// <summary>
     /// Gets or sets the sample rate conversion quality... 0 = linear interpolation, 1 = 8 point sinc interpolation, 2 = 16 point sinc interpolation, 3 = 32 point sinc interpolation, 4 = 64 point sinc interpolation. 
     /// </summary>
@@ -289,34 +303,80 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             AdjustEffects();
         }
     }
-    
+
     /// <summary>
     /// Defines the EffectsFloat property. 
     /// </summary>
     public static readonly DirectProperty<BassPlayerHost, bool> EffectsFloatProperty =
         AvaloniaProperty.RegisterDirect<BassPlayerHost, bool>(nameof(EffectsFloat), o => o.EffectsFloat,
-            (o, v) => o.EffectsFloat = v);
-    private bool _effectsFloat = false;
+            (o, v) => o.EffectsFloat = v, true);
     /// <summary>
     /// Gets or sets whether to process effects in 32-bit. True for 32-bit, False for 16-bit. 
     /// </summary>
-    public bool EffectsFloat
+    public bool EffectsFloat { get; set; } = true;
+
+    /// <summary>
+    /// Defines the EffectsRoundPitch property. 
+    /// </summary>
+    public static readonly DirectProperty<BassPlayerHost, bool> EffectsRoundPitchProperty =
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, bool>(nameof(EffectsFloat), o => o.EffectsRoundPitch,
+            (o, v) => o.EffectsRoundPitch = v, true);
+    private bool _effectsRoundPitch = true;
+    /// <summary>
+    /// Gets or sets whether to round the pitch to the nearest fraction when pitch-shifting for quality. 
+    /// </summary>
+    public bool EffectsRoundPitch
     {
-        get => _effectsFloat;
+        get => _effectsRoundPitch;
         set
         {
-            _effectsFloat = value;
-            AdjustEffects();
+            _effectsRoundPitch = value;
+            AdjustTempo();
+        }
+    }
+    
+    /// <summary>
+    /// Defines the EffectsSkipTempo property. 
+    /// </summary>
+    public static readonly DirectProperty<BassPlayerHost, bool> EffectsSkipTempoProperty =
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, bool>(nameof(EffectsFloat), o => o.EffectsSkipTempo,
+            (o, v) => o.EffectsSkipTempo = v, true);
+    private bool _effectsSkipTempo = true;
+    /// <summary>
+    /// Gets or sets whether to skip tempo adjustment for maximum audio quality. 
+    /// </summary>
+    public bool EffectsSkipTempo
+    {
+        get => _effectsSkipTempo;
+        set
+        {
+            _effectsSkipTempo = value;
+            AdjustTempo();
         }
     }
 
-    private bool BassActive => _chan != 0;
+    /// <summary>
+    /// Defines the PitchError property. 
+    /// </summary>
+    public static readonly DirectProperty<BassPlayerHost, double?> PitchErrorProperty =
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, double?>(nameof(EffectsFloat), o => o.PitchError, (o, v) => o.PitchError = v);
+    /// <summary>
+    /// Gets the pitch round error when TempoCompensation = Optimized.
+    /// </summary>
+    public double? PitchError
+    {
+        get => _pitchError;
+        set => this.SetAndRaise(PitchErrorProperty, ref _pitchError, value);
+    }
+    private double? _pitchError;
+    
+    private bool BassActive => _chanIn != 0;
 
     private TimeSpan BassDuration =>
-        TimeSpan.FromSeconds(ManagedBass.Bass.ChannelBytes2Seconds(_chan, ManagedBass.Bass.ChannelGetLength(_chan)));
+        TimeSpan.FromSeconds(ManagedBass.Bass.ChannelBytes2Seconds(_chanIn, ManagedBass.Bass.ChannelGetLength(_chanIn)));
 
     private TimeSpan BassPosition =>
-        TimeSpan.FromSeconds(ManagedBass.Bass.ChannelBytes2Seconds(_chan, ManagedBass.Bass.ChannelGetPosition(_chan)));
+        TimeSpan.FromSeconds(ManagedBass.Bass.ChannelBytes2Seconds(_chanIn, ManagedBass.Bass.ChannelGetPosition(_chanIn)));
 
     private void Player_PlaybackStopped(int handle, int channel, int data, IntPtr user)
     {
@@ -367,7 +427,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             _ => string.Empty
         } ?? string.Empty;
     }
-    
+
     /// <inheritdoc />
     protected override void PositionChanged(TimeSpan value, bool isSeeking)
     {
@@ -378,8 +438,8 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             {
                 if (BassActive && isSeeking)
                 {
-                    ManagedBass.Bass.ChannelSetPosition(_chan,
-                        ManagedBass.Bass.ChannelSeconds2Bytes(_chan, value.TotalSeconds));
+                    ManagedBass.Bass.ChannelSetPosition(_chanIn,
+                        ManagedBass.Bass.ChannelSeconds2Bytes(_chanIn, value.TotalSeconds));
                 }
             }
         }
@@ -393,12 +453,12 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
 
         if (value)
         {
-            ManagedBass.Bass.ChannelPlay(_chan).Valid();
+            ManagedBass.Bass.ChannelPlay(_chanOut).Valid();
             _posTimer?.Start();
         }
         else
         {
-            ManagedBass.Bass.ChannelPause(_chan); //.Valid();
+            ManagedBass.Bass.ChannelPause(_chanOut); //.Valid();
             _posTimer?.Stop();
         }
     }
@@ -436,7 +496,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         base.Restart();
         if (BassActive)
         {
-            ManagedBass.Bass.ChannelPlay(_chan, true).Valid();
+            ManagedBass.Bass.ChannelPlay(_chanOut, true).Valid();
         }
     }
 
@@ -460,22 +520,30 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             {
                 try
                 {
-                    _chan = ManagedBass.Bass.CreateStream(fileName, Flags: useEffects ? (EffectsFloat ? BassFlags.Float : 0) | BassFlags.Decode : 0).Valid();
-                    _chanInfo = ManagedBass.Bass.ChannelGetInfo(_chan);
-                    ManagedBass.Bass.ChannelSetSync(_chan, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped)
+                    ManagedBass.Bass.GetInfo(out _deviceInfo).Valid();
+                    var flagFloat = EffectsFloat ? BassFlags.Float : 0;
+                    _chanIn = _chanOut = ManagedBass.Bass
+                        .CreateStream(fileName, Flags: useEffects ? flagFloat | BassFlags.Decode : 0).Valid();
+                    _chanInfo = ManagedBass.Bass.ChannelGetInfo(_chanIn);
+                    ManagedBass.Bass.ChannelSetSync(_chanIn, SyncFlags.End | SyncFlags.Mixtime, 0, Player_PlaybackStopped)
                         .Valid();
 
                     if (useEffects)
                     {
-                        _chan = BassFx.TempoCreate(_chan, BassFlags.FxFreeSource).Valid();
+                        // Add mix plugin.
+                        _chanMix = BassMix.CreateMixerStream(_deviceInfo.SampleRate, _chanInfo.Channels, BassFlags.MixerEnd | BassFlags.Decode).Valid();
+                        BassMix.MixerAddChannel(_chanMix, _chanIn, 0 | BassFlags.MixerChanNoRampin | BassFlags.AutoFree);
+
+                        // Add tempo plugin.
+                        _chanOut = BassFx.TempoCreate(_chanMix, 0 | BassFlags.FxFreeSource).Valid();
                         AdjustEffects();
                         AdjustVolume(volume);
                         AdjustTempo(speed, rate, pitch);
                     }
-                    
+
                     if (autoPlay)
                     {
-                        ManagedBass.Bass.ChannelPlay(_chan).Valid();
+                        ManagedBass.Bass.ChannelPlay(_chanOut).Valid();
                         Dispatcher.UIThread.InvokeAsync(() => _posTimer?.Start());
                     }
 
@@ -493,7 +561,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             }).ConfigureAwait(false);
         }
     }
-    
+
     /// <summary>
     /// Sets the UseQuickAlgorithm parameter. 
     /// </summary>
@@ -501,10 +569,11 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     {
         if (BassActive)
         {
-            ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoUseQuickAlgorithm, EffectsQuick ? 1 : 0);
-            ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoUseAAFilter, EffectsAntiAlias ? 1 : 0);
-            ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoAAFilterLength, EffectsAntiAliasLength);
-            ManagedBass.Bass.Configure(Configuration.SRCQuality, EffectsSampleRateConversion);
+            ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.TempoUseQuickAlgorithm, EffectsQuick ? 1 : 0);
+            ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.TempoUseAAFilter, EffectsAntiAlias ? 1 : 0);
+            ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.TempoAAFilterLength, EffectsAntiAliasLength);
+            ManagedBass.Bass.ChannelSetAttribute(_chanMix, ChannelAttribute.SampleRateConversion, EffectsSampleRateConversion);
+            ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.SampleRateConversion, EffectsSampleRateConversion);
         }
     }
 
@@ -514,7 +583,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     /// <param name="volume">The volume to set, between 0 and 100.</param>
     private void AdjustVolume(double volume)
     {
-        ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.Volume, VolumeBoost * volume / 100);
+        ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.Volume, VolumeBoost * volume / 100);
     }
 
     /// <summary>
@@ -531,8 +600,38 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         {
             // In BASS, 2x speed is 100 (+100%), whereas our Speed property is 2. Need to convert.
             // speed 1=0, 2=100, 3=200, 4=300, .5=-100, .25=-300
-            ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.Tempo, (1.0 / pitch * speed - 1.0) * 100.0);
-            ManagedBass.Bass.ChannelSetAttribute(_chan, ChannelAttribute.TempoFrequency, _chanInfo.Frequency * pitch * rate);
+            // ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.Tempo, (1.0 / pitch * speed - 1.0) * 100.0);
+            // ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.TempoFrequency, _chanInfo.Frequency * pitch * rate);
+
+            // Optimized pitch shifting: increased quality at the cost of small pitch rounding error.
+            // I = Input sample rate    (44100)
+            // O = Output sample rate   (48000)
+            // P = Pitch shift          (432/440)
+            // Pitch shifting steps:
+            // 1. Rate shift to O * P (rounded)
+            // 2. Resample to O (48000hz)
+            // 3. Tempo adjustment: -P
+            var freqOut = _deviceInfo.SampleRate;
+            double pitchError = 0;
+
+            var r = pitch * rate;
+            if (EffectsRoundPitch)
+            {
+                r = Fraction.RoundToFraction(r, .005, out pitchError);
+            }
+            var t = r / speed;
+
+            // 1. Rate Shift (lossless)
+            ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.Frequency, freqOut * r);
+            // 2. Resampling to output in _chanMix constructor
+            // 3. Tempo adjustment
+            ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.Tempo,
+                !EffectsSkipTempo ? (1.0 / t - 1.0) * 100.0 : 0);
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                PitchError = EffectsRoundPitch ? pitchError : null;
+            });
         }
     }
 
@@ -549,9 +648,11 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     {
         if (BassActive)
         {
-            ManagedBass.Bass.ChannelStop(_chan).Valid();
-            ManagedBass.Bass.StreamFree(_chan).Valid();
-            _chan = 0;
+            ManagedBass.Bass.ChannelStop(_chanOut).Valid();
+            ManagedBass.Bass.StreamFree(_chanOut).Valid();
+            _chanOut = 0;
+            _chanMix = 0;
+            _chanIn = 0;
         }
     }
 
@@ -581,4 +682,3 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         GC.SuppressFinalize(this);
     }
 }
-
