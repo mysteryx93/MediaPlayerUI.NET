@@ -323,7 +323,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             (o, v) => o.EffectsRoundPitch = v, true);
     private bool _effectsRoundPitch = true;
     /// <summary>
-    /// Gets or sets whether to round the pitch to the nearest fraction when pitch-shifting for quality. 
+    /// Gets or sets whether to round the pitch to the nearest fraction when pitch-shifting for improved quality. 
     /// </summary>
     public bool EffectsRoundPitch
     {
@@ -361,7 +361,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     public static readonly DirectProperty<BassPlayerHost, double?> PitchErrorProperty =
         AvaloniaProperty.RegisterDirect<BassPlayerHost, double?>(nameof(EffectsFloat), o => o.PitchError, (o, v) => o.PitchError = v);
     /// <summary>
-    /// Gets the pitch round error when TempoCompensation = Optimized.
+    /// Gets the pitch rounding error when EffectsRoundPitch is true.
     /// </summary>
     public double? PitchError
     {

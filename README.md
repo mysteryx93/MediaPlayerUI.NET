@@ -281,11 +281,23 @@ Gets or sets the Anti-Alias filter length. Default = 32.
 
 #### EffectsSampleRateConversion
 
-Gets or sets the sample rate conversion quality... 0 = linear interpolation, 1 = 8 point sinc interpolation, 2 = 16 point sinc interpolation, 3 = 32 point sinc interpolation, 4 = 64 point sinc interpolation. Default = 2, set to 4 for best quality.
+Gets or sets the sample rate conversion quality... 0 = linear interpolation, 1 = 8 point sinc interpolation, 2 = 16 point sinc interpolation, 3 = 32 point sinc interpolation, 4 = 64 point sinc interpolation. Default = 4, set lower for better performance.
 
 #### EffectsFloat
 
 Gets or sets whether to process effects in 32-bit. True for 32-bit, False for 16-bit. Default = False, set to True for best quality.
+
+#### EffectsRoundPitch
+
+Gets or sets whether to round the pitch to the nearest fraction when pitch-shifting for improved quality.
+
+#### PitchError (read-only)
+
+Gets the pitch rounding error when EffectsRoundPitch is true.
+
+#### EffectsSkipTempo
+
+Gets or sets whether to skip tempo adjustment for maximum audio quality.
 
 #### Pitch
 
