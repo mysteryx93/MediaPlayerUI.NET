@@ -370,6 +370,19 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     }
     private double? _pitchError;
     
+      
+    /// <summary>
+    /// Defines the DeviceSampleRate property. 
+    /// </summary>
+    public static readonly DirectProperty<BassPlayerHost, int?> DeviceSampleRateProperty =
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, int?>(nameof(EffectsFloat), o => o.DeviceSampleRate,
+            (o, v) => o.DeviceSampleRate = v);
+    /// <summary>
+    /// Gets or sets the device output sample rate. 0 = auto-detected.
+    /// On Linux, it cannot be auto-detected and must be set manually if different than 48000. 
+    /// </summary>
+    public int? DeviceSampleRate { get; set; }
+    
     private bool BassActive => _chanIn != 0;
 
     private TimeSpan BassDuration =>
@@ -515,6 +528,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             var rate = Rate;
             var pitch = Pitch;
             var autoPlay = AutoPlay;
+            var deviceSampleRate = DeviceSampleRate;
             var useEffects = UseEffects || speed != 1.0 || rate != 1.0 || pitch != 1.0;
             _ = Task.Run(() =>
             {
@@ -531,7 +545,8 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
                     if (useEffects)
                     {
                         // Add mix plugin.
-                        _chanMix = BassMix.CreateMixerStream(_deviceInfo.SampleRate, _chanInfo.Channels, BassFlags.MixerEnd | BassFlags.Decode).Valid();
+                        _chanMix = BassMix.CreateMixerStream(deviceSampleRate ?? _deviceInfo.SampleRate, _chanInfo.Channels, 
+                            BassFlags.MixerEnd | BassFlags.Decode).Valid();
                         BassMix.MixerAddChannel(_chanMix, _chanIn, 0 | BassFlags.MixerChanNoRampin | BassFlags.AutoFree);
 
                         // Add tempo plugin.
@@ -603,15 +618,11 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             // ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.Tempo, (1.0 / pitch * speed - 1.0) * 100.0);
             // ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.TempoFrequency, _chanInfo.Frequency * pitch * rate);
 
-            // Optimized pitch shifting: increased quality at the cost of small pitch rounding error.
-            // I = Input sample rate    (44100)
-            // O = Output sample rate   (48000)
-            // P = Pitch shift          (432/440)
-            // Pitch shifting steps:
-            // 1. Rate shift to O * P (rounded)
-            // 2. Resample to O (48000hz)
-            // 3. Tempo adjustment: -P
-            var freqOut = _deviceInfo.SampleRate;
+            // Optimized pitch shifting for increased quality
+            // 1. Rate shift to Output * Pitch (rounded)
+            // 2. Resample to Output (48000hz)
+            // 3. Tempo adjustment: -Pitch
+            var freqOut = DeviceSampleRate ?? _deviceInfo.SampleRate;
             double pitchError = 0;
 
             var r = pitch * rate;
