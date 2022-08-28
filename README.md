@@ -322,7 +322,7 @@ This property must be set before playback. Default = False.
 
 Gets or sets a value that will be multiplied to the volume. Default = 1.
 
-#### DeviceSampleRate
+#### OutputSampleRate
 
 Gets or sets the device output sample rate. 0 = auto-detected.
 On Linux, it cannot be auto-detected and must be set manually if different than 48000. 

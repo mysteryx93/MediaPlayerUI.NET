@@ -319,7 +319,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     /// Defines the EffectsRoundPitch property. 
     /// </summary>
     public static readonly DirectProperty<BassPlayerHost, bool> EffectsRoundPitchProperty =
-        AvaloniaProperty.RegisterDirect<BassPlayerHost, bool>(nameof(EffectsFloat), o => o.EffectsRoundPitch,
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, bool>(nameof(EffectsRoundPitch), o => o.EffectsRoundPitch,
             (o, v) => o.EffectsRoundPitch = v, true);
     private bool _effectsRoundPitch = true;
     /// <summary>
@@ -339,7 +339,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     /// Defines the EffectsSkipTempo property. 
     /// </summary>
     public static readonly DirectProperty<BassPlayerHost, bool> EffectsSkipTempoProperty =
-        AvaloniaProperty.RegisterDirect<BassPlayerHost, bool>(nameof(EffectsFloat), o => o.EffectsSkipTempo,
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, bool>(nameof(EffectsSkipTempo), o => o.EffectsSkipTempo,
             (o, v) => o.EffectsSkipTempo = v, true);
     private bool _effectsSkipTempo = true;
     /// <summary>
@@ -359,7 +359,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     /// Defines the PitchError property. 
     /// </summary>
     public static readonly DirectProperty<BassPlayerHost, double?> PitchErrorProperty =
-        AvaloniaProperty.RegisterDirect<BassPlayerHost, double?>(nameof(EffectsFloat), o => o.PitchError, (o, v) => o.PitchError = v);
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, double?>(nameof(PitchError), o => o.PitchError, (o, v) => o.PitchError = v);
     /// <summary>
     /// Gets the pitch rounding error when EffectsRoundPitch is true.
     /// </summary>
@@ -372,16 +372,16 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     
       
     /// <summary>
-    /// Defines the DeviceSampleRate property. 
+    /// Defines the OutputSampleRate property. 
     /// </summary>
-    public static readonly DirectProperty<BassPlayerHost, int?> DeviceSampleRateProperty =
-        AvaloniaProperty.RegisterDirect<BassPlayerHost, int?>(nameof(EffectsFloat), o => o.DeviceSampleRate,
-            (o, v) => o.DeviceSampleRate = v);
+    public static readonly DirectProperty<BassPlayerHost, int?> OutputSampleRateProperty =
+        AvaloniaProperty.RegisterDirect<BassPlayerHost, int?>(nameof(OutputSampleRate), o => o.OutputSampleRate,
+            (o, v) => o.OutputSampleRate = v);
     /// <summary>
     /// Gets or sets the device output sample rate. 0 = auto-detected.
     /// On Linux, it cannot be auto-detected and must be set manually if different than 48000. 
     /// </summary>
-    public int? DeviceSampleRate { get; set; }
+    public int? OutputSampleRate { get; set; }
     
     private bool BassActive => _chanIn != 0;
 
@@ -528,7 +528,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             var rate = Rate;
             var pitch = Pitch;
             var autoPlay = AutoPlay;
-            var deviceSampleRate = DeviceSampleRate;
+            var deviceSampleRate = OutputSampleRate;
             var useEffects = UseEffects || speed != 1.0 || rate != 1.0 || pitch != 1.0;
             _ = Task.Run(() =>
             {
@@ -622,7 +622,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             // 1. Rate shift to Output * Pitch (rounded)
             // 2. Resample to Output (48000hz)
             // 3. Tempo adjustment: -Pitch
-            var freqOut = DeviceSampleRate ?? _deviceInfo.SampleRate;
+            var freqOut = OutputSampleRate ?? _deviceInfo.SampleRate;
             double pitchError = 0;
 
             var r = pitch * rate;
