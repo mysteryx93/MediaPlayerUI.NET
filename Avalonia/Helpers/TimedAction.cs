@@ -9,16 +9,17 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 public class TimedAction<T>
 {
     /// <summary>
-    /// Initialies a new instance of the TimedAction class.
+    /// Initializes a new instance of the TimedAction class.
     /// </summary>
     /// <param name="minInterval">The minimum interval between action invocations.</param>
     /// <param name="action">The action to invoke.</param>
     /// <param name="priority">The thread priority.</param>
-    public TimedAction(TimeSpan minInterval, Action<T> action, DispatcherPriority priority = DispatcherPriority.Normal)
+    public TimedAction(TimeSpan minInterval, Action<T> action, DispatcherPriority? priority = null)
     {
+        priority ??= DispatcherPriority.Normal;
         MinInterval = minInterval;
         Action = action;
-        _timer = new DispatcherTimer(minInterval, priority, Timer_Elapsed);
+        _timer = new DispatcherTimer(minInterval, priority.Value, Timer_Elapsed);
     }
     private void Timer_Elapsed(object? sender, EventArgs e)
     {

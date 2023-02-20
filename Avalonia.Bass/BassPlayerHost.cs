@@ -340,8 +340,8 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     /// </summary>
     public static readonly DirectProperty<BassPlayerHost, bool> EffectsSkipTempoProperty =
         AvaloniaProperty.RegisterDirect<BassPlayerHost, bool>(nameof(EffectsSkipTempo), o => o.EffectsSkipTempo,
-            (o, v) => o.EffectsSkipTempo = v, true);
-    private bool _effectsSkipTempo = true;
+            (o, v) => o.EffectsSkipTempo = v, false);
+    private bool _effectsSkipTempo = false;
     /// <summary>
     /// Gets or sets whether to skip tempo adjustment for maximum audio quality. 
     /// </summary>
@@ -622,7 +622,6 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             // 1. Rate shift to Output * Pitch (rounded)
             // 2. Resample to Output (48000hz)
             // 3. Tempo adjustment: -Pitch
-            var freqOut = OutputSampleRate ?? _deviceInfo.SampleRate;
             double pitchError = 0;
 
             var r = pitch * rate;
@@ -633,7 +632,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
             var t = r / speed;
 
             // 1. Rate Shift (lossless)
-            ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.Frequency, freqOut * r);
+            ManagedBass.Bass.ChannelSetAttribute(_chanIn, ChannelAttribute.Frequency, _chanInfo.Frequency * r);
             // 2. Resampling to output in _chanMix constructor
             // 3. Tempo adjustment
             ManagedBass.Bass.ChannelSetAttribute(_chanOut, ChannelAttribute.Tempo,

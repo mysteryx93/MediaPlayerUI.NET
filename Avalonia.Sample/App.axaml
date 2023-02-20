@@ -4,8 +4,14 @@
              xmlns:mp="clr-namespace:HanumanInstitute.MediaPlayer.Avalonia;assembly=MediaPlayer.Avalonia"
              x:Class="HanumanInstitute.MediaPlayer.Avalonia.Sample.App">
     <Application.Styles>
-        <FluentTheme Mode="Light"/>
-        <StyleInclude Source="avares://MediaPlayer.Avalonia/Styles/Default/Theme.axaml" />
+        <FluentTheme />
         <StyleInclude Source="avares://MediaPlayer.Avalonia/Styles/Colors/Gray.axaml" />
     </Application.Styles>
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://MediaPlayer.Avalonia/Styles/Default/Theme.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

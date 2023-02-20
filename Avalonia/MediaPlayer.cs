@@ -145,10 +145,10 @@ public class MediaPlayer : MediaPlayerBase
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
-        if (e.MouseButton == MouseButton.Left)
-        {
-            Focus();
-        }
+        // if (e.Pointer.IsPrimary)
+        // {
+        //     Focus();
+        // }
     }
 
     /// <summary>
@@ -213,21 +213,21 @@ public class MediaPlayer : MediaPlayerBase
     /// </summary>
     private void HandleMouseAction(object? _, PointerPressedEventArgs e, int clickCount)
     {
-        var isFullScreen = false; // sender is FullScreenUI;
-        if (IsActionFullScreen(e.MouseButton, clickCount))
-        {
-            FullScreen = !isFullScreen; // using !FullScreen can return wrong value when exiting fullscreen
-            e.Handled = true;
-        }
-        else if (IsActionPause(e.MouseButton, clickCount))
-        {
-            if (PlayPauseCommand.CanExecute(null))
-            {
-                PlayPauseCommand.Execute(null);
-            }
-
-            e.Handled = true;
-        }
+        // var isFullScreen = false; // sender is FullScreenUI;
+        // if (IsActionFullScreen(e.Pointer.IsPrimary ? MouseButton.Left : MouseButton.Right, clickCount))
+        // {
+        //     FullScreen = !isFullScreen; // using !FullScreen can return wrong value when exiting fullscreen
+        //     e.Handled = true;
+        // }
+        // else if (IsActionPause(e.Pointer.IsPrimary ? MouseButton.Left : MouseButton.Right, clickCount))
+        // {
+        //     if (PlayPauseCommand.CanExecute(null))
+        //     {
+        //         PlayPauseCommand.Execute(null);
+        //     }
+        //
+        //     e.Handled = true;
+        // }
     }
 
     private bool IsActionFullScreen(MouseButton button, int clickCount) =>
