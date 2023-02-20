@@ -27,10 +27,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Icons\loop.png" />
-    <None Remove="Icons\pause.png" />
-    <None Remove="Icons\play.png" />
-    <None Remove="Icons\stop.png" />
+    <None Remove="Icons\*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -66,10 +63,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AvaloniaResource Include="Styles\Default\Icons\loop.png" />
-    <AvaloniaResource Include="Styles\Default\Icons\pause.png" />
-    <AvaloniaResource Include="Styles\Default\Icons\play.png" />
-    <AvaloniaResource Include="Styles\Default\Icons\stop.png" />
+    <AvaloniaResource Include="Styles\Default\Icons.otf" />
   </ItemGroup>
-
 </Project>

@@ -4,6 +4,11 @@
     xmlns:local="clr-namespace:HanumanInstitute.MediaPlayer.Avalonia"
     xmlns:drawing="clr-namespace:System.Drawing;assembly=System.Drawing.Primitives"
     xmlns:system="clr-namespace:System;assembly=System.Runtime">
+    
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="Colors.axaml" />
+    </ResourceDictionary.MergedDictionaries>
+
     <local:TimeSpanToDoubleConverter x:Key="TimeSpanToDoubleConverter" />
     <local:BoundsToPathDataConverter x:Key="BoundsToPathDataConverter" />
     <ImageBrush x:Key="PlayIcon" Source="Icons/play.png" />
@@ -267,6 +272,8 @@
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Focusable" Value="False" />
+        <Setter Property="FontFamily" Value="/Styles/Default/Icons.otf#" />
+        <Setter Property="FontSize" Value="22" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Border Background="{TemplateBinding Background}"
@@ -304,6 +311,13 @@
         <Style Selector="^:disabled /template/ ContentPresenter">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Opacity" Value="{DynamicResource MediaPlayerDisabledOpacity}" />
+        </Style>
+        
+        <Style Selector="^ /template/ ContentPresenter">
+            <Setter Property="FontFamily" Value="{TemplateBinding FontFamily}" />
+        </Style>
+        <Style Selector="^ /template/ ContentPresenter">
+            <Setter Property="FontSize" Value="{TemplateBinding FontSize}" />
         </Style>
     </ControlTheme>
 
@@ -350,19 +364,21 @@
                                         <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                 <Button x:Name="PlayButton" Theme="{StaticResource MediaPlayerToolbar}" Width="36" Height="36"
-                                                        VerticalAlignment="Top"
+                                                        VerticalAlignment="Top" 
                                                         Command="{Binding PlayPauseCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
                                                         IsVisible="{Binding IsPlayPauseVisible, RelativeSource={RelativeSource TemplatedParent}}">
                                                     <Grid>
-                                                        <Image Source="{Binding Source={StaticResource PlayIcon}, Path=Source}" IsVisible="{Binding !IsPlaying, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
-                                                        <Image Source="{Binding Source={StaticResource PauseIcon}, Path=Source}" IsVisible="{Binding IsPlaying, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
+                                                        <TextBlock Text="P" IsVisible="{Binding !IsPlaying, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
+                                                        <TextBlock Text="Q" IsVisible="{Binding IsPlaying, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
+                                                        <!--<Image Source="{Binding Source={StaticResource PlayIcon}, Path=Source}" IsVisible="{Binding !IsPlaying, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
+                                                        <Image Source="{Binding Source={StaticResource PauseIcon}, Path=Source}" IsVisible="{Binding IsPlaying, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />-->
                                                     </Grid>
                                                 </Button>
                                                 <Button x:Name="StopButton" Theme="{StaticResource MediaPlayerToolbar}" Width="36" Height="36"
-                                                        VerticalAlignment="Top"
+                                                        VerticalAlignment="Top" Content="S"
                                                         Command="{Binding StopCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
                                                         IsVisible="{Binding IsStopVisible, RelativeSource={RelativeSource TemplatedParent}}">
-                                                    <Image Source="{Binding Source={StaticResource StopIcon}, Path=Source}" />
+                                                    <!-- <Image Source="{Binding Source={StaticResource StopIcon}, Path=Source}" /> -->
                                                 </Button>
                                             </StackPanel>
                                         </Grid>
@@ -397,11 +413,9 @@
                                                         Focusable="False" Height="15" Width="55"
                                                         IsVisible="{Binding IsVolumeVisible, RelativeSource={RelativeSource TemplatedParent}}" />
                                                 <ToggleButton x:Name="LoopButton" Theme="{StaticResource MediaPlayerToolbar}" Width="24" Height="24"
-                                                              VerticalAlignment="Top"
+                                                              VerticalAlignment="Top" Content="L" FontSize="12"
                                                               IsChecked="{Binding PlayerHost.Loop, RelativeSource={RelativeSource TemplatedParent}}"
-                                                              IsVisible="{Binding IsLoopVisible, RelativeSource={RelativeSource TemplatedParent}}">
-                                                    <Image Source="{Binding Source={StaticResource LoopIcon}, Path=Source}" />
-                                                </ToggleButton>
+                                                              IsVisible="{Binding IsLoopVisible, RelativeSource={RelativeSource TemplatedParent}}" />
                                             </StackPanel>
                                         </Grid>
                                     </Grid>
@@ -412,13 +426,5 @@
                 </Border>
             </ControlTemplate>
         </Setter>
-        
-        <!--<Style Selector="^[IsPlaying=True] Button#PlayButton /template/ ContentPresenter">
-            <Setter Property="Content">
-                <Template>
-                    <Image Source="/Styles/Default/Icons/pause.png" />
-                </Template>
-            </Setter>
-        </Style>-->
     </ControlTheme>
 </ResourceDictionary>

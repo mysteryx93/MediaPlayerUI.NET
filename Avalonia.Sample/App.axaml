@@ -5,11 +5,11 @@
              x:Class="HanumanInstitute.MediaPlayer.Avalonia.Sample.App">
     <Application.Styles>
         <FluentTheme />
-        <StyleInclude Source="avares://MediaPlayer.Avalonia/Styles/Colors/Gray.axaml" />
     </Application.Styles>
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!-- <ResourceInclude Source="avares://MediaPlayer.Avalonia/Styles/Colors/Default.axaml" /> -->
                 <ResourceInclude Source="avares://MediaPlayer.Avalonia/Styles/Default/Theme.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
