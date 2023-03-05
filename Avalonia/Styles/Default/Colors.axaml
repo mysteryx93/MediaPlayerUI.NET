@@ -18,7 +18,7 @@
             <Color x:Key="MediaPlayerToolbarAccentColor">#5390ce</Color>
             
             <sys:Double x:Key="MediaPlayerDisabledOpacity">0.6</sys:Double>
-            <LinearGradientBrush x:Key="MediaPlayerBackgroundBrush" EndPoint="50%,100%" StartPoint="50%,0%">
+            <LinearGradientBrush x:Key="MediaPlayerBackgroundBrush" EndPoint="50%,100%" StartPoint="50%,0%" Opacity=".8">
                 <GradientStop Color="{StaticResource MediaPlayerBackgroundStartColor}" Offset="0" />
                 <GradientStop Color="{StaticResource MediaPlayerBackgroundEndColor}" Offset="1" />
             </LinearGradientBrush>
@@ -43,7 +43,7 @@
             <Color x:Key="MediaPlayerSeekBarDecreaseColor">#8597BD</Color>
             <Color x:Key="MediaPlayerSeekBarIncreaseColor">Transparent</Color>
             <Color x:Key="MediaPlayerThumbBorderColor">#ABABAB</Color>
-            <Color x:Key="MediaPlayerThumbFillColor">White</Color>
+            <Color x:Key="MediaPlayerThumbFillColor">#D9D9D9</Color>
             <Color x:Key="MediaPlayerVolumeBackgroundColor">Transparent</Color>
             <Color x:Key="MediaPlayerVolumeBorderColor">#E3E3E3</Color>
             <Color x:Key="MediaPlayerVolumeDecreaseColor">#2E822E</Color>
@@ -51,7 +51,7 @@
             <Color x:Key="MediaPlayerToolbarAccentColor">#56ABEB</Color>
             
             <sys:Double x:Key="MediaPlayerDisabledOpacity">0.6</sys:Double>
-            <LinearGradientBrush x:Key="MediaPlayerBackgroundBrush" EndPoint="50%,100%" StartPoint="50%,0%">
+            <LinearGradientBrush x:Key="MediaPlayerBackgroundBrush" EndPoint="50%,100%" StartPoint="50%,0%" Opacity=".80">
                 <GradientStop Color="{StaticResource MediaPlayerBackgroundStartColor}" Offset="0" />
                 <GradientStop Color="{StaticResource MediaPlayerBackgroundEndColor}" Offset="1" />
             </LinearGradientBrush>

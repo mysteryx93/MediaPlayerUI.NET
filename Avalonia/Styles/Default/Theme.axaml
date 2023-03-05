@@ -321,7 +321,7 @@
     <ControlTheme x:Key="{x:Type local:MediaPlayer}" TargetType="local:MediaPlayer">
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                <Border BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}" UseLayoutRounding="True">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -333,7 +333,6 @@
 
                         <Grid Grid.Row="1">
                             <Border x:Name="PART_UI"
-                                    Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
                                     VerticalAlignment="Bottom">
