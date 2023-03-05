@@ -509,6 +509,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         base.Restart();
         if (BassActive)
         {
+            ManagedBass.Bass.ChannelSetPosition(_chanIn, 0).Valid();
             ManagedBass.Bass.ChannelPlay(_chanOut, true).Valid();
         }
     }
