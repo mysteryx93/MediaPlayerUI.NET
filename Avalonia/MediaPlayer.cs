@@ -33,7 +33,7 @@ public class MediaPlayer : MediaPlayerBase
         ContentProperty.Changed.Subscribe(ContentChanged);
     }
 
-    private static void ContentChanged(AvaloniaPropertyChangedEventArgs e)
+    private new static void ContentChanged(AvaloniaPropertyChangedEventArgs e)
     {
         if (e.Sender is MediaPlayerBase p)
         {
@@ -163,7 +163,7 @@ public class MediaPlayer : MediaPlayerBase
     protected override void OnContentChanged(AvaloniaPropertyChangedEventArgs e)
     {
         RaisePropertyChanged(PlayerHostProperty, e.OldValue as PlayerHostBase,
-            e.NewValue as PlayerHostBase, BindingPriority.TemplatedParent);
+            e.NewValue as PlayerHostBase);
         PlayerHost = e.NewValue as PlayerHostBase;
         if (e.OldValue != null)
         {

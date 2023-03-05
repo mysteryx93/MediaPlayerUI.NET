@@ -11,15 +11,14 @@
     <Authors>Etienne Charland</Authors>
     <Title>MediaPlayer.Avalonia</Title>
     <Description>A .NET/Avalonia generic media player UI to use with any media player</Description>
-    <Copyright>Copyright © 2021-2022 Etienne Charland</Copyright>
+    <Copyright>Copyright © 2021-2023 Etienne Charland</Copyright>
     <PackageProjectUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <FileVersion>1.0.1</FileVersion>
-    <PackageVersion>1.0.1</PackageVersion>
+    <VersionPrefix>2.0</VersionPrefix>
+    <VersionSuffix>preview1</VersionSuffix>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -50,7 +49,7 @@
     <PackageReference Include="Avalonia" Version="11.0.0-preview5" />
     <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 

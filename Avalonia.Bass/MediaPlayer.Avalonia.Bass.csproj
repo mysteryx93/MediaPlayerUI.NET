@@ -11,15 +11,14 @@
     <LangVersion>10</LangVersion>
     <Title>MediaPlayer.Avalonia.Bass</Title>
     <Description>BASS media player for Avalonia</Description>
-    <Copyright>Copyright © 2021-2022 Etienne Charland</Copyright>
+    <Copyright>Copyright © 2021-2023 Etienne Charland</Copyright>
     <PackageProjectUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <FileVersion>1.0.1</FileVersion>
-    <PackageVersion>1.0.1</PackageVersion>
+    <VersionPrefix>2.0</VersionPrefix>
+    <VersionSuffix>preview1</VersionSuffix>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -46,11 +45,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview5" />
     <PackageReference Include="ManagedBass" Version="3.1.1" />
     <PackageReference Include="ManagedBass.Fx" Version="3.1.1" />
     <PackageReference Include="ManagedBass.Mix" Version="3.1.1" />
-    <PackageReference Include="ReactiveUI.Fody" Version="18.4.20" />
   </ItemGroup>
 
 </Project>

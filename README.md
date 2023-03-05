@@ -23,7 +23,6 @@ Currently supports MPV and NAudio for WPF, and BASS for Avalonia
 ## TODO
 
 - Integrate MPV video player in Avalonia (OpenGL integration, full-screen UI support)
-- Avalonia style isn't completed (volume bar / speed bar)
 - Contributions are welcomed to add new styles and color themes for both WPF and Avalonia!
 
 ![Screenshot](https://github.com/mysteryx93/MediaPlayerUI.NET/blob/master/Screenshot.png)
