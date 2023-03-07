@@ -122,7 +122,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         get => _status;
         protected set
         {
-            _status = value;
+            SetAndRaise(StatusProperty, ref _status, value);
             SetDisplayText();
         }
     }
@@ -142,7 +142,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         get => _positionRefreshMilliseconds;
         set
         {
-            _positionRefreshMilliseconds = Math.Max(1, value);
+            SetAndRaise(PositionRefreshMillisecondsProperty, ref _positionRefreshMilliseconds, Math.Max(1, value));
             if (_posTimer != null)
             {
                 _posTimer.Interval = TimeSpan.FromMilliseconds(_positionRefreshMilliseconds);
@@ -164,7 +164,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         get => _rate;
         set
         {
-            _rate = CoerceDouble(value);
+            SetAndRaise(RateProperty, ref _rate, value);
             AdjustTempo();
         }
     }
@@ -183,7 +183,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         get => _pitch;
         set
         {
-            _pitch = CoerceDouble(value);
+            SetAndRaise(PitchProperty, ref _pitch, CoerceDouble(value));
             AdjustTempo();
         }
     }
@@ -203,7 +203,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         get => _volumeBoost;
         set
         {
-            _volumeBoost = CoerceDouble(value);
+            SetAndRaise(VolumeBoostProperty, ref _volumeBoost, CoerceDouble(value));
             VolumeChanged(Volume);
         }
     }
@@ -220,7 +220,12 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     /// If file is loaded at normal speed and you want to allow changing it later, this property forces initializing the effects module.
     /// This property must be set before playback. 
     /// </summary>
-    public bool UseEffects { get; set; }
+    public bool UseEffects
+    {
+        get => _useEffects;
+        set => SetAndRaise(UseEffectsProperty, ref _useEffects, value);
+    }
+    private bool _useEffects;
 
     /// <summary>
     /// Defines the EffectsQuick property.
@@ -237,7 +242,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         get => _effectsQuick;
         set
         {
-            _effectsQuick = value;
+            SetAndRaise(UseEffectsProperty, ref _effectsQuick, value);
             AdjustEffects();
         }
     }
@@ -257,7 +262,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         get => _effectsAntiAlias;
         set
         {
-            _effectsAntiAlias = value;
+            SetAndRaise(EffectsAntiAliasProperty, ref _effectsAntiAlias, value);
             AdjustEffects();
         }
     }
@@ -278,7 +283,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         set
         {
             value = Math.Max(8, Math.Min(128, value));
-            _effectsAntiAliasLength = value;
+            SetAndRaise(EffectsAntiAliasLengthProperty, ref _effectsAntiAliasLength, value);
             AdjustEffects();
         }
     }
@@ -299,7 +304,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         set
         {
             value = Math.Max(0, Math.Min(4, value));
-            _effectsSampleRateConversion = value;
+            SetAndRaise(EffectsSampleRateConversionProperty, ref _effectsSampleRateConversion, value);
             AdjustEffects();
         }
     }
@@ -313,7 +318,12 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     /// <summary>
     /// Gets or sets whether to process effects in 32-bit. True for 32-bit, False for 16-bit. 
     /// </summary>
-    public bool EffectsFloat { get; set; } = true;
+    public bool EffectsFloat
+    {
+        get => _effectsFloat; 
+        set => SetAndRaise(EffectsFloatProperty, ref _effectsFloat, value);
+    }
+    private bool _effectsFloat = true;
 
     /// <summary>
     /// Defines the EffectsRoundPitch property. 
@@ -330,7 +340,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         get => _effectsRoundPitch;
         set
         {
-            _effectsRoundPitch = value;
+            SetAndRaise(EffectsRoundPitchProperty, ref _effectsRoundPitch, value);
             AdjustTempo();
         }
     }
@@ -350,7 +360,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         get => _effectsSkipTempo;
         set
         {
-            _effectsSkipTempo = value;
+            SetAndRaise(EffectsSkipTempoProperty, ref _effectsSkipTempo, value);
             AdjustTempo();
         }
     }
@@ -366,7 +376,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     public double? PitchError
     {
         get => _pitchError;
-        set => this.SetAndRaise(PitchErrorProperty, ref _pitchError, value);
+        set => SetAndRaise(PitchErrorProperty, ref _pitchError, value);
     }
     private double? _pitchError;
     
@@ -381,7 +391,12 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     /// Gets or sets the device output sample rate. 0 = auto-detected.
     /// On Linux, it cannot be auto-detected and must be set manually if different than 48000. 
     /// </summary>
-    public int? OutputSampleRate { get; set; }
+    public int? OutputSampleRate
+    {
+        get => _outputSampleRate;
+        set => SetAndRaise(OutputSampleRateProperty, ref _outputSampleRate, value);
+    }
+    private int? _outputSampleRate;
     
     private bool BassActive => _chanIn != 0;
 
