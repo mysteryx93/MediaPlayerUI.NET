@@ -3,9 +3,11 @@ using System.Globalization;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 using HanumanInstitute.MediaPlayer.Avalonia.Helpers.Mvvm;
+
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable MemberCanBeProtected.Global
 
@@ -20,25 +22,74 @@ public abstract class MediaPlayerBase : ContentControl
     private readonly TimedAction<TimeSpan> _positionBarTimedUpdate;
 
     /// <summary>
+    /// Registration for the <see cref="PlayCommandExecuted"/> routed event.
+    /// </summary>
+    public static readonly RoutedEvent<RoutedEventArgs> PlayCommandExecutedEvent =
+        RoutedEvent.Register<MediaPlayerBase, RoutedEventArgs>(nameof(PlayCommandExecuted), RoutingStrategies.Direct);
+    /// <summary>
     /// Occurs when the Play command is executed.
     /// </summary>
-    public event EventHandler? PlayCommandExecuted;
+    public event EventHandler<RoutedEventArgs>? PlayCommandExecuted
+    {
+        add => AddHandler(PlayCommandExecutedEvent, value);
+        remove => RemoveHandler(PlayCommandExecutedEvent, value);
+    }
+
+    /// <summary>
+    /// Registration for the <see cref="PauseCommandExecuted"/> routed event.
+    /// </summary>
+    public static readonly RoutedEvent<RoutedEventArgs> PauseCommandExecutedEvent =
+        RoutedEvent.Register<MediaPlayerBase, RoutedEventArgs>(nameof(PauseCommandExecuted), RoutingStrategies.Direct);
     /// <summary>
     /// Occurs when the Pause command is executed.
     /// </summary>
-    public event EventHandler? PauseCommandExecuted;
+    public event EventHandler<RoutedEventArgs>? PauseCommandExecuted
+    {
+        add => AddHandler(PauseCommandExecutedEvent, value);
+        remove => RemoveHandler(PauseCommandExecutedEvent, value);
+    }
+
+    /// <summary>
+    /// Registration for the <see cref="StopCommandExecuted"/> routed event.
+    /// </summary>
+    public static readonly RoutedEvent<RoutedEventArgs> StopCommandExecutedEvent =
+        RoutedEvent.Register<MediaPlayerBase, RoutedEventArgs>(nameof(StopCommandExecuted), RoutingStrategies.Direct);
     /// <summary>
     /// Occurs when the Stop command is executed.
     /// </summary>
-    public event EventHandler? StopCommandExecuted;
+    public event EventHandler<RoutedEventArgs>? StopCommandExecuted
+    {
+        add => AddHandler(StopCommandExecutedEvent, value);
+        remove => RemoveHandler(StopCommandExecutedEvent, value);
+    }
+
+    /// <summary>
+    /// Registration for the <see cref="SeekCommandExecuted"/> routed event.
+    /// </summary>
+    public static readonly RoutedEvent<ValueEventArgs<int>> SeekCommandExecutedEvent =
+        RoutedEvent.Register<MediaPlayerBase, ValueEventArgs<int>>(nameof(SeekCommandExecuted), RoutingStrategies.Direct);
     /// <summary>
     /// Occurs when the Seek command is executed.
     /// </summary>
-    public event EventHandler<ValueEventArgs<int>>? SeekCommandExecuted;
+    public event EventHandler<ValueEventArgs<int>>? SeekCommandExecuted
+    {
+        add => AddHandler(SeekCommandExecutedEvent, value);
+        remove => RemoveHandler(SeekCommandExecutedEvent, value);
+    }
+
+    /// <summary>
+    /// Registration for the <see cref="ChangeVolumeExecuted"/> routed event.
+    /// </summary>
+    public static readonly RoutedEvent<ValueEventArgs<int>> ChangeVolumeExecutedEvent =
+        RoutedEvent.Register<MediaPlayerBase, ValueEventArgs<int>>(nameof(ChangeVolumeExecuted), RoutingStrategies.Direct);
     /// <summary>
     /// Occurs when the ChangeVolume command is executed.
     /// </summary>
-    public event EventHandler<ValueEventArgs<int>>? ChangeVolumeExecuted;
+    public event EventHandler<ValueEventArgs<int>>? ChangeVolumeExecuted
+    {
+        add => AddHandler(ChangeVolumeExecutedEvent, value);
+        remove => RemoveHandler(ChangeVolumeExecutedEvent, value);
+    }
 
     /// <summary>
     /// Gets or sets whether the user is dragging the seek bar.
@@ -61,7 +112,7 @@ public abstract class MediaPlayerBase : ContentControl
             }
         }, DispatcherPriority.Input);
     }
-    
+
     /// <summary>
     /// Defines the PlayerHost property. 
     /// </summary>
@@ -110,11 +161,11 @@ public abstract class MediaPlayerBase : ContentControl
     /// <summary>
     /// Exposes IsPlaying from PlayerHost so that it can be bound to styles.
     /// </summary>
-    public bool IsPlaying =>  PlayerHost?.IsPlaying ?? false;
+    public bool IsPlaying => PlayerHost?.IsPlaying ?? false;
 
-    private void Player_IsPlayingChanged(bool value) => 
+    private void Player_IsPlayingChanged(bool value) =>
         RaisePropertyChanged(IsPlayingProperty, !value, value);
-        
+
     /// <summary>
     /// Toggle between play and pause status.
     /// </summary>
@@ -128,11 +179,11 @@ public abstract class MediaPlayerBase : ContentControl
         PlayerHost.IsPlaying = !PlayerHost.IsPlaying;
         if (PlayerHost.IsPlaying)
         {
-            PlayCommandExecuted?.Invoke(this, EventArgs.Empty);
+            RaiseEvent(new RoutedEventArgs(PlayCommandExecutedEvent));
         }
         else
         {
-            PauseCommandExecuted?.Invoke(this, EventArgs.Empty);
+            RaiseEvent(new RoutedEventArgs(PauseCommandExecutedEvent));
         }
     }
 
@@ -147,7 +198,7 @@ public abstract class MediaPlayerBase : ContentControl
         if (PlayerHost == null) { return; }
 
         PlayerHost.Stop();
-        StopCommandExecuted?.Invoke(this, EventArgs.Empty);
+        RaiseEvent(new RoutedEventArgs(StopCommandExecutedEvent));
     }
 
     /// <summary>
@@ -175,7 +226,7 @@ public abstract class MediaPlayerBase : ContentControl
             PositionBar = newPos;
             PlayerHost.Position = newPos;
         }
-        SeekCommandExecuted?.Invoke(this, new ValueEventArgs<int>(seconds));
+        RaiseEvent(new ValueEventArgs<int>(SeekCommandExecutedEvent, seconds));
     }
 
     /// <summary>
@@ -189,7 +240,7 @@ public abstract class MediaPlayerBase : ContentControl
         if (PlayerHost == null) { return; }
 
         PlayerHost.Volume += value;
-        ChangeVolumeExecuted?.Invoke(this, new ValueEventArgs<int>(value));
+        RaiseEvent(new ValueEventArgs<int>(ChangeVolumeExecutedEvent, value));
     }
 
     /// <summary>

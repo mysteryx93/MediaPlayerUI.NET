@@ -2,6 +2,7 @@
 using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable MemberCanBeProtected.Global
@@ -26,14 +27,32 @@ public abstract class PlayerHostBase : Control
     private DispatcherTimer? _stopTimer;
 
     /// <summary>
+    /// Registration for the <see cref="MediaLoaded"/> routed event.
+    /// </summary>
+    public static readonly RoutedEvent<RoutedEventArgs> MediaLoadedEvent =
+        RoutedEvent.Register<PlayerHostBase, RoutedEventArgs>(nameof(MediaLoaded), RoutingStrategies.Direct);
+    /// <summary>
     /// Occurs after a media file is loaded.
     /// </summary>
-    public event EventHandler? MediaLoaded;
+    public event EventHandler<RoutedEventArgs>? MediaLoaded
+    {
+        add => AddHandler(MediaLoadedEvent, value);
+        remove => RemoveHandler(MediaLoadedEvent, value);
+    }
 
+    /// <summary>
+    /// Registration for the <see cref="MediaUnloaded"/> routed event.
+    /// </summary>
+    public static readonly RoutedEvent<RoutedEventArgs> MediaUnloadedEvent =
+        RoutedEvent.Register<PlayerHostBase, RoutedEventArgs>(nameof(MediaUnloaded), RoutingStrategies.Direct);
     /// <summary>
     /// Occurs after a media file is unloaded.
     /// </summary>
-    public event EventHandler? MediaUnloaded;
+    public event EventHandler<RoutedEventArgs>? MediaUnloaded
+    {
+        add => AddHandler(MediaUnloadedEvent, value);
+        remove => RemoveHandler(MediaUnloadedEvent, value);
+    }
 
     /// <inheritdoc />
     public override void ApplyTemplate()
@@ -477,7 +496,7 @@ public abstract class PlayerHostBase : Control
         SetPositionNoSeek(TimeSpan.Zero);
         IsMediaLoaded = true;
         IsPlaying = AutoPlay;
-        MediaLoaded?.Invoke(this, EventArgs.Empty);
+        RaiseEvent(new RoutedEventArgs(MediaLoadedEvent));
     }
 
     /// <summary>
@@ -493,7 +512,7 @@ public abstract class PlayerHostBase : Control
         {
             IsMediaLoaded = false;
             Duration = TimeSpan.FromSeconds(1);
-            MediaUnloaded?.Invoke(this, EventArgs.Empty);
+            RaiseEvent(new RoutedEventArgs(MediaUnloadedEvent));
         }
     }
 

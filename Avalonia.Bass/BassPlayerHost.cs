@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Threading;
 using ManagedBass;
@@ -51,15 +52,34 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     /// </summary>
     private bool _initLoaded;
     private readonly object _lock = new object();
-
+    
+    /// <summary>
+    /// Registration for the <see cref="MediaError"/> routed event.
+    /// </summary>
+    public static readonly RoutedEvent<RoutedEventArgs> MediaErrorEvent =
+        RoutedEvent.Register<BassPlayerHost, RoutedEventArgs>(nameof(MediaError), RoutingStrategies.Direct);
     /// <summary>
     /// Occurs when the player throws an error.
     /// </summary>
-    public event EventHandler? MediaError;
+    public event EventHandler<RoutedEventArgs>? MediaError
+    {
+        add => AddHandler(MediaErrorEvent, value);
+        remove => RemoveHandler(MediaErrorEvent, value);
+    }
+
+    /// <summary>
+    /// Registration for the <see cref="MediaFinished"/> routed event.
+    /// </summary>
+    public static readonly RoutedEvent<RoutedEventArgs> MediaFinishedEvent =
+        RoutedEvent.Register<BassPlayerHost, RoutedEventArgs>(nameof(MediaFinished), RoutingStrategies.Direct);
     /// <summary>
     /// Occurs when media playback is finished.
     /// </summary>
-    public event EventHandler? MediaFinished;
+    public event EventHandler<RoutedEventArgs>? MediaFinished
+    {
+        add => AddHandler(MediaFinishedEvent, value);
+        remove => RemoveHandler(MediaFinishedEvent, value);
+    }
 
     /// <inheritdoc />
     protected override void OnInitialized()
@@ -415,7 +435,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
         {
             // ReleaseChannel();
             base.OnMediaUnloaded();
-            MediaFinished?.Invoke(this, EventArgs.Empty);
+            RaiseEvent(new RoutedEventArgs(MediaFinishedEvent));
         });
     }
 
@@ -586,7 +606,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
                     Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         Status = PlaybackStatus.Error;
-                        MediaError?.Invoke(this, EventArgs.Empty);
+                        RaiseEvent(new RoutedEventArgs(MediaErrorEvent));
                     });
                 }
             }).ConfigureAwait(false);
@@ -636,7 +656,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
 
             // Optimized pitch shifting for increased quality
             // 1. Rate shift to Output * Pitch (rounded)
-            // 2. Resample to Output (48000hz)
+            // 2. Resample to Output (48000Hz)
             // 3. Tempo adjustment: -Pitch
             double pitchError = 0;
 

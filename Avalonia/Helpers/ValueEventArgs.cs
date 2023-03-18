@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Avalonia.Interactivity;
 
 namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 
@@ -6,7 +6,7 @@ namespace HanumanInstitute.MediaPlayer.Avalonia.Helpers;
 /// Holds a typed value as an event argument.
 /// </summary>
 /// <typeparam name="T">The type of value to store.</typeparam>
-public class ValueEventArgs<T> : EventArgs
+public class ValueEventArgs<T> : RoutedEventArgs
 {
     /// <summary>
     /// The event value.
@@ -20,7 +20,7 @@ public class ValueEventArgs<T> : EventArgs
     /// Initializes a new instance of ValueEventArgs with specified value.
     /// </summary>
     /// <param name="value">The event value.</param>
-    public ValueEventArgs(T value)
+    public ValueEventArgs(RoutedEvent routedEvent, T value) : base(routedEvent)
     {
         Value = value;
     }
