@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 // ReSharper disable StringLiteralTypo
@@ -43,6 +43,7 @@ public sealed class BassDevice : IBassDevice
             {
                 if (!IsInitialized)
                 {
+                    IsInitialized = true;
                     // TODO: allow customizing search path?
                     if (!ManagedBass.Bass.Init(deviceId, 48000))
                     {
@@ -51,9 +52,8 @@ public sealed class BassDevice : IBassDevice
                     }
                     _log.AppendLine("Done.");
 
-                    var exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+                    var exePath = AppDomain.CurrentDomain.BaseDirectory!;
                     LoadPlugins(exePath);
-                    IsInitialized = true;
                 }
             }
         }
@@ -194,5 +194,14 @@ public sealed class BassDevice : IBassDevice
     {
         Dispose(true);
         GC.SuppressFinalize(this);
+    }
+
+    /// <inheritdoc />
+    public void VerifyPlugins()
+    {
+        if (!LoadedPlugins.Any())
+        {
+            throw new InvalidOperationException("Failed to load BASS plugins.\n" + Log);
+        }
     }
 }

@@ -46,7 +46,7 @@ public class BoundsToPathDataConverter : IMultiValueConverter
         {
             Figures = new PathFigures()
             {
-                new PathFigure()
+                new()
                 {
                     StartPoint = ((LineSegment)path![0]).Point,
                     Segments = path
@@ -55,5 +55,5 @@ public class BoundsToPathDataConverter : IMultiValueConverter
         };
     }
 
-    private LineSegment Point(double x, double y) => new LineSegment() { Point = new Point(x, y) };
+    private LineSegment Point(double x, double y) => new() { Point = new Point(x, y) };
 }

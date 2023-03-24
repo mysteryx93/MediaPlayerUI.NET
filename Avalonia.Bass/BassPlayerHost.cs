@@ -51,7 +51,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     /// Whether LoadMedia has ever been called.
     /// </summary>
     private bool _initLoaded;
-    private readonly object _lock = new object();
+    private readonly object _lock = new();
     
     /// <summary>
     /// Registration for the <see cref="MediaError"/> routed event.

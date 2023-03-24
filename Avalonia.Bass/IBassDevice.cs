@@ -30,4 +30,9 @@ public interface IBassDevice : IDisposable
     /// Returns a list of formats and file extensions supported by BASS and loaded plugins.
     /// </summary>
     IReadOnlyList<FileExtension> SupportedExtensions { get; }
+    /// <summary>
+    /// Verify that some plugins have been loaded. Throws an exception with the log if no plugin is loaded.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">No plugin has been loaded.</exception>
+    public void VerifyPlugins();
 }
