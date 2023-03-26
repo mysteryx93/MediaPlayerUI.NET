@@ -16,7 +16,6 @@
             <Color x:Key="MediaPlayerVolumeDecreaseColor">LimeGreen</Color>
             <Color x:Key="MediaPlayerSpeedTickColor">Gray</Color>
             <Color x:Key="MediaPlayerToolbarAccentColor">#5390ce</Color>
-            <Color x:Key="MediaPlayerToolbarForegroundColor">Black</Color>
             
             <sys:Double x:Key="MediaPlayerDisabledOpacity">0.6</sys:Double>
             <LinearGradientBrush x:Key="MediaPlayerBackgroundBrush" EndPoint="50%,100%" StartPoint="50%,0%" Opacity=".8">
@@ -36,7 +35,6 @@
             <SolidColorBrush x:Key="MediaPlayerToolbarCheckedHoverBrush" Color="{StaticResource MediaPlayerToolbarAccentColor}" Opacity=".5" />
             <SolidColorBrush x:Key="MediaPlayerToolbarHoverBrush" Color="{StaticResource MediaPlayerToolbarAccentColor}" Opacity=".35" />
             <SolidColorBrush x:Key="MediaPlayerToolbarPressedBrush" Color="{StaticResource MediaPlayerToolbarAccentColor}" Opacity=".6" />
-            <SolidColorBrush x:Key="MediaPlayerToolbarForegroundBrush" Color="{StaticResource MediaPlayerToolbarForegroundColor}" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Dark">
             <Color x:Key="MediaPlayerBackgroundStartColor">#878787</Color>
@@ -51,7 +49,6 @@
             <Color x:Key="MediaPlayerVolumeDecreaseColor">#2E822E</Color>
             <Color x:Key="MediaPlayerSpeedTickColor">Gray</Color>
             <Color x:Key="MediaPlayerToolbarAccentColor">#56ABEB</Color>
-            <Color x:Key="MediaPlayerToolbarForegroundColor">#FBFBFB</Color>
 
             <sys:Double x:Key="MediaPlayerDisabledOpacity">0.6</sys:Double>
             <LinearGradientBrush x:Key="MediaPlayerBackgroundBrush" EndPoint="50%,100%" StartPoint="50%,0%" Opacity=".80">
@@ -71,7 +68,6 @@
             <SolidColorBrush x:Key="MediaPlayerToolbarCheckedHoverBrush" Color="{StaticResource MediaPlayerToolbarAccentColor}" Opacity=".5" />
             <SolidColorBrush x:Key="MediaPlayerToolbarHoverBrush" Color="{StaticResource MediaPlayerToolbarAccentColor}" Opacity=".35" />
             <SolidColorBrush x:Key="MediaPlayerToolbarPressedBrush" Color="{StaticResource MediaPlayerToolbarAccentColor}" Opacity=".6" />
-            <SolidColorBrush x:Key="MediaPlayerToolbarForegroundBrush" Color="{StaticResource MediaPlayerToolbarForegroundColor}" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>
