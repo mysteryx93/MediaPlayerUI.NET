@@ -88,7 +88,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
 
         if (!Design.IsDesignMode)
         {
-            BassDevice.Instance.Init();
+            BassDevice.Instance.InitDevice();
 
             this.FindLogicalAncestorOfType<TopLevel>()!.Closed += (_, _) => Dispose();
 

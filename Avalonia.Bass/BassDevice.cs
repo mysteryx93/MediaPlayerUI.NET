@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+
 // ReSharper disable StringLiteralTypo
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -21,8 +22,9 @@ public sealed class BassDevice : IBassDevice
     /// <summary>
     /// Gets whether Init has been called.
     /// </summary>
-    public bool IsInitialized { get; private set; }
-    private readonly StringBuilder _log = new(); 
+    public bool IsDeviceInitialized { get; private set; }
+    public bool IsPluginsInitialized { get; private set; }
+    private readonly StringBuilder _log = new();
     private readonly object _initLock = new();
 
     /// <summary>
@@ -34,16 +36,16 @@ public sealed class BassDevice : IBassDevice
     }
 
     /// <inheritdoc />
-    public void Init(int deviceId = -1)
+    public void InitDevice(int deviceId = -1)
     {
-        if (!IsInitialized)
+        if (!IsDeviceInitialized)
         {
-            _log.Append("Initializing... ");
             lock (_initLock)
             {
-                if (!IsInitialized)
+                _log.Append("Initializing... ");
+                if (!IsDeviceInitialized)
                 {
-                    IsInitialized = true;
+                    IsDeviceInitialized = true;
                     // TODO: allow customizing search path?
                     if (!ManagedBass.Bass.Init(deviceId, 48000))
                     {
@@ -51,7 +53,22 @@ public sealed class BassDevice : IBassDevice
                         throw new InvalidOperationException("Failed to initialize BASS audio output.");
                     }
                     _log.AppendLine("Done.");
+                }
+            }
+            InitPlugins();
+        }
+    }
 
+    /// <inheritdoc />
+    public void InitPlugins()
+    {
+        if (!IsPluginsInitialized)
+        {
+            lock (_initLock)
+            {
+                if (!IsPluginsInitialized)
+                {
+                    IsPluginsInitialized = true;
                     var exePath = AppDomain.CurrentDomain.BaseDirectory!;
                     LoadPlugins(exePath);
                 }
@@ -62,15 +79,24 @@ public sealed class BassDevice : IBassDevice
     /// <summary>
     /// Returns the initialization and plugins log.
     /// </summary>
-    public string Log => _log.ToString();
+    public string Log
+    {
+        get
+        {
+            lock (_initLock)
+            {
+                return _log.ToString();
+            }
+        }
+    }
 
     /// <inheritdoc />
     public IReadOnlyList<string> LoadedPlugins
     {
         get
         {
-            Init();
-            return _loadedPlugins;   
+            InitPlugins();
+            return _loadedPlugins;
         }
     }
     private readonly List<string> _loadedPlugins = new();
@@ -80,8 +106,8 @@ public sealed class BassDevice : IBassDevice
     {
         get
         {
-            Init();
-            return _failedPlugins;            
+            InitPlugins();
+            return _failedPlugins;
         }
     }
     private readonly List<string> _failedPlugins = new();
@@ -91,8 +117,8 @@ public sealed class BassDevice : IBassDevice
     {
         get
         {
-            Init();
-            return _supportedExtensions;            
+            InitPlugins();
+            return _supportedExtensions;
         }
     }
     private readonly List<FileExtension> _supportedExtensions = new();
@@ -100,7 +126,7 @@ public sealed class BassDevice : IBassDevice
     private void LoadPlugins(string path)
     {
         _log.AppendLine($"Loading plugins from: {path}");
-            
+
         // Get bass plugins files pattern per operating system.
         var pattern = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bass*.dll" :
             RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "libbass*.so" :
@@ -110,7 +136,11 @@ public sealed class BassDevice : IBassDevice
         _supportedExtensions.Add(new FileExtension("BASS built-in", new[] { ".mp3", ".mp2", ".mp1", ".ogg", ".wav", ".aif" }));
 
         // look for plugins (in the executable's directory)
-        var exclude = new List<string> { pattern.Replace("*", ""), pattern.Replace("*", "_fx") };
+        var exclude = new List<string>
+        {
+            pattern.Replace("*", ""),
+            pattern.Replace("*", "_fx")
+        };
         var retryList = new List<Tuple<string, string>>();
         try
         {

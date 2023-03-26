@@ -11,13 +11,17 @@ public interface IBassDevice : IDisposable
     /// <summary>
     /// Gets whether Init has been called.
     /// </summary>
-    bool IsInitialized { get; }
+    bool IsDeviceInitialized { get; }
     /// <summary>
     /// Initializes the BASS device. It is automatically called before use.
     /// </summary>
     /// <param name="deviceId">The device to use... -1 = default device, 0 = no sound, 1 = first real output device.</param>
     /// <exception cref="InvalidOperationException">Failed to initialize BASS audio output.</exception>
-    void Init(int deviceId = -1);
+    void InitDevice(int deviceId = -1);
+    /// <summary>
+    /// Loads all BASS plugins.
+    /// </summary>
+    void InitPlugins();
     /// <summary>
     /// Returns a list of plugins that have been successfully loaded.
     /// </summary>
