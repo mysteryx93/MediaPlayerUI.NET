@@ -18,7 +18,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <VersionPrefix>2.0</VersionPrefix>
-    <VersionSuffix>preview2</VersionSuffix>
+    <VersionSuffix>preview3</VersionSuffix>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
