@@ -88,8 +88,6 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
 
         if (!Design.IsDesignMode)
         {
-            BassDevice.Instance.InitDevice();
-
             this.FindLogicalAncestorOfType<TopLevel>()!.Closed += (_, _) => Dispose();
 
             _posTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(PositionRefreshMilliseconds),
@@ -552,6 +550,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
     private void LoadMedia()
     {
+        BassDevice.Instance.InitDevice();
         ReleaseChannel();
 
         if (Source != null)
