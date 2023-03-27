@@ -13,11 +13,16 @@ public interface IBassDevice : IDisposable
     /// </summary>
     bool IsDeviceInitialized { get; }
     /// <summary>
+    /// Initializes the BASS device with no output device.
+    /// </summary>
+    void InitNoSound();
+    /// <summary>
     /// Initializes the BASS device. It is automatically called before use.
     /// </summary>
     /// <param name="deviceId">The device to use... -1 = default device, 0 = no sound, 1 = first real output device.</param>
+    /// <param name="outputSampleRate">The output sample rate (only on Linux).</param>
     /// <exception cref="InvalidOperationException">Failed to initialize BASS audio output.</exception>
-    void InitDevice(int deviceId = -1);
+    void Init(int deviceId = -1, int? outputSampleRate = null);
     /// <summary>
     /// Loads all BASS plugins.
     /// </summary>

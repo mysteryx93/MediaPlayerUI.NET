@@ -550,7 +550,7 @@ public class BassPlayerHost : PlayerHostBase, IDisposable
     [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
     private void LoadMedia()
     {
-        BassDevice.Instance.InitDevice();
+        BassDevice.Instance.Init(-1, OutputSampleRate);
         ReleaseChannel();
 
         if (Source != null)

@@ -36,7 +36,10 @@ public sealed class BassDevice : IBassDevice
     }
 
     /// <inheritdoc />
-    public void InitDevice(int deviceId = -1)
+    public void InitNoSound() => Init(0, 48000);
+    
+    /// <inheritdoc />
+    public void Init(int deviceId = -1, int? outputSampleRate = null)
     {
         if (!IsDeviceInitialized)
         {
@@ -47,7 +50,7 @@ public sealed class BassDevice : IBassDevice
                 {
                     IsDeviceInitialized = true;
                     // TODO: allow customizing search path?
-                    if (!ManagedBass.Bass.Init(deviceId, 48000))
+                    if (!ManagedBass.Bass.Init(deviceId, outputSampleRate ?? 48000))
                     {
                         _log.AppendLine("Failed.");
                         throw new InvalidOperationException("Failed to initialize BASS audio output.");
