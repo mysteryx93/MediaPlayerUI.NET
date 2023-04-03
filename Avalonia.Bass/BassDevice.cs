@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using ManagedBass;
 
 // ReSharper disable StringLiteralTypo
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -26,6 +27,8 @@ public sealed class BassDevice : IBassDevice
     public bool IsPluginsInitialized { get; private set; }
     private readonly StringBuilder _log = new();
     private readonly object _initLock = new();
+    private int _deviceSampleRate;
+    private const DeviceInitFlags FlagReInit = (DeviceInitFlags)128;
 
     /// <summary>
     /// Releases BASS resources.
@@ -41,21 +44,41 @@ public sealed class BassDevice : IBassDevice
     /// <inheritdoc />
     public void Init(int deviceId = -1, int? outputSampleRate = null)
     {
-        if (!IsDeviceInitialized)
+        outputSampleRate ??= 48000;
+        if (!IsDeviceInitialized || outputSampleRate != _deviceSampleRate)
         {
             lock (_initLock)
             {
                 _log.Append("Initializing... ");
-                if (!IsDeviceInitialized)
+                if (!IsDeviceInitialized || outputSampleRate != _deviceSampleRate)
                 {
-                    IsDeviceInitialized = true;
                     // TODO: allow customizing search path?
-                    if (!ManagedBass.Bass.Init(deviceId, outputSampleRate ?? 48000))
+                    try
                     {
-                        _log.AppendLine("Failed.");
-                        throw new InvalidOperationException("Failed to initialize BASS audio output.");
+                        if (!IsDeviceInitialized)
+                        {
+                            if (!ManagedBass.Bass.Init(deviceId, outputSampleRate.Value))
+                            {
+                                _log.AppendLine("Failed.");
+                                throw new InvalidOperationException("Failed to initialize BASS audio output.");
+                            }
+                        }
+                        else // Change device sample rate (only affects Linux)
+                        {
+                            if (!ManagedBass.Bass.Init(ManagedBass.Bass.CurrentDevice, outputSampleRate.Value, FlagReInit)) 
+                            {
+                                _log.AppendLine("Failed.");
+                                throw new InvalidOperationException("Failed to re-initialize BASS audio output.");
+                            }
+                        }
+                        _deviceSampleRate = outputSampleRate.Value;
+                        _log.AppendLine("Done.");
                     }
-                    _log.AppendLine("Done.");
+                    finally
+                    {
+                        // We don't want Init called many times in case of failure, so mark it as done either way.
+                        IsDeviceInitialized = true;
+                    }
                 }
             }
             InitPlugins();
@@ -236,5 +259,13 @@ public sealed class BassDevice : IBassDevice
         {
             throw new InvalidOperationException("Failed to load BASS plugins.\n" + Log);
         }
+    }
+
+    /// <inheritdoc />
+    public void Free()
+    {
+        ManagedBass.Bass.Free();
+        IsDeviceInitialized = false;
+        IsPluginsInitialized = false;
     }
 }
