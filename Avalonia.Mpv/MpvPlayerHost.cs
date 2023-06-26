@@ -64,7 +64,7 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
         if (!string.IsNullOrEmpty(value))
         {
             Status = PlaybackStatus.Loading;
-            LoadMedia();
+            var _ = LoadMediaAsync();
         }
         else
         {
@@ -105,13 +105,14 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
 
         Player.TimePos.Changed += Player_PositionChanged;
 
-        Player.Volume.Set(base.Volume);
-        Player.Speed.Set(base.GetSpeed());
-        Player.LoopFile.Set(base.Loop ? "yes" : "no");
+        var options = new MpvAsyncOptions { WaitForResponse = false };
+        await Player.Volume.SetAsync(base.Volume, options);
+        await Player.Speed.SetAsync(base.GetSpeed(), options);
+        await Player.LoopFile.SetAsync(base.Loop ? "yes" : "no", options);
 
         if (!string.IsNullOrEmpty(Source) && !_initLoaded)
         {
-            LoadMedia();
+            await LoadMediaAsync();
         }
     }
 
@@ -197,7 +198,7 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
         Player?.LoopFile.Set(value ? "yes" : "no");
     }
 
-    private void LoadMedia()
+    private async Task LoadMediaAsync()
     {
         if (!IsLoaded || Design.IsDesignMode) { return; }
         
@@ -207,7 +208,7 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
             _initLoaded = true;
             Thread.Sleep(10);
             Player.Pause.Set(!base.AutoPlay);
-            Player.LoadFile(Source!).Invoke();
+            await Player.LoadFile(Source!).InvokeAsync();
         }
     }
 
