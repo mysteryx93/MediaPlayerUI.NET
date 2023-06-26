@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="clr-namespace:HanumanInstitute.MediaPlayer.Avalonia;assembly=MediaPlayer.Avalonia"
         xmlns:bass="clr-namespace:HanumanInstitute.MediaPlayer.Avalonia.Bass;assembly=MediaPlayer.Avalonia.Bass"
+        xmlns:mpv="clr-namespace:HanumanInstitute.MediaPlayer.Avalonia.Mpv;assembly=MediaPlayer.Avalonia.Mpv"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="HanumanInstitute.MediaPlayer.Avalonia.Sample.MainWindow"
         Title="MyApp" UseLayoutRounding="True">
@@ -21,7 +22,7 @@
     <Grid>
         <ui:MediaPlayer x:Name="Player">
             <!-- <bass:BassPlayerHost x:Name="PlayerHost" Source="E:\NaturalGrounding\AOA\Like a Cat.mp4" AutoPlay="true" /> -->
-            <bass:BassPlayerHost Source="/run/media/hanuman/Storage-ntfs/Music/INNA/Inna/15 Tell Me.mp3" Pitch="0.9818181818181818181818" Volume="20" Loop="True" />
+            <mpv:MpvPlayerHost Source="/run/media/hanuman/Storage-ntfs/NaturalGrounding/AOA/Like a Cat.mp4" Volume="50" Loop="True" AutoPlay="False" />
             <!-- Source="E:\Music\INNA\Body And The Sun\CD1\07 Fool Me.mp3" Pitch="0.9818181818181818181818" -->
         </ui:MediaPlayer>
         <!-- <ui:MediaPlayer Height="50" /> -->

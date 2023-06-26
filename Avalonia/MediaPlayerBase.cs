@@ -101,6 +101,7 @@ public abstract class MediaPlayerBase : ContentControl
     /// </summary>
     protected MediaPlayerBase()
     {
+        // TODO: SeekMinInterval not yet working
         _positionBarTimedUpdate = new TimedAction<TimeSpan>(TimeSpan.FromMilliseconds(SeekMinInterval), (v) =>
         {
             if (PlayerHost != null)

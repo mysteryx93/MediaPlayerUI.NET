@@ -31,5 +31,5 @@ public class FileExtension
     /// <summary>
     /// Returns a string representation of the file formats and extensions.
     /// </summary>
-    public override string ToString() => Name + " | " + string.Join(';', Extensions);
+    public override string ToString() => Name + " | " + string.Join(";", Extensions);
 }

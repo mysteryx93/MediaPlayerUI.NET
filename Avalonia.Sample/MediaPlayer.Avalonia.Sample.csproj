@@ -15,11 +15,11 @@
     <None Remove=".gitignore" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.0-preview6" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview6" />
+    <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-rc1.1" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview6" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview6" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="MainWindow.axaml.cs">
@@ -32,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Avalonia.Bass\MediaPlayer.Avalonia.Bass.csproj" />
+    <ProjectReference Include="..\Avalonia.Mpv\MediaPlayer.Avalonia.Mpv.csproj" />
     <ProjectReference Include="..\Avalonia\MediaPlayer.Avalonia.csproj" />
     <ProjectReference Include="..\BassDlls\BassDlls.csproj" />
   </ItemGroup>

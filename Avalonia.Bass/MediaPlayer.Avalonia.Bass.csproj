@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>HanumanInstitute.MediaPlayer.Avalonia.Bass</RootNamespace>
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>
     <AssemblyName>MediaPlayer.Avalonia.Bass</AssemblyName>
     <PackageId>MediaPlayer.Avalonia.Bass</PackageId>
     <Authors>Etienne Charland</Authors>
-    <LangVersion>10</LangVersion>
+    <LangVersion>default</LangVersion>
     <Title>MediaPlayer.Avalonia.Bass</Title>
     <Description>BASS media player for Avalonia</Description>
     <Copyright>Copyright © 2021-2023 Etienne Charland</Copyright>
