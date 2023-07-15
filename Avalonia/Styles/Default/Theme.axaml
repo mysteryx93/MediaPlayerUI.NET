@@ -288,7 +288,8 @@
                                       RecognizesAccessKey="True"
                                       TextBlock.Foreground="{TemplateBinding Foreground}"
                                       HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                      TextAlignment="Justify" />
                 </Border>
             </ControlTemplate>
         </Setter>

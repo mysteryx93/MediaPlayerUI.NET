@@ -1,5 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 using HanumanInstitute.LibMpv;
 using HanumanInstitute.LibMpv.Avalonia;
@@ -21,7 +23,7 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
     public MpvPlayerHost()
     {
         PlayerView = new MpvView();
-        this.VisualChildren.Add(PlayerView);
+        VisualChildren.Add(PlayerView);
     }
 
     /// <summary>
@@ -31,28 +33,21 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
     {
         Dispose(false);
     }
+    
+    // MpvContext property
+    public static readonly DirectProperty<MpvView, MpvContext?> MpvContextProperty = AvaloniaProperty.RegisterDirect<MpvView, MpvContext?>(
+        nameof(MpvContext), o => o.MpvContext, defaultBindingMode: BindingMode.OneWayToSource);
+    public MpvContext? MpvContext => PlayerView.MpvContext;
 
     /// <summary>
     /// Gets the MpvView class instance.
     /// </summary>
     public MpvView PlayerView { get; private set; }
 
-    /// <summary>
-    /// Gets the MpvContext class instance.
-    /// </summary>
-    public MpvContext? Player { get; private set; }
-
-    public bool IsMediaLoaded { get; private set; }
-
     // /// <summary>
     // /// Occurs after the media player is initialized.
     // /// </summary>
     // public event EventHandler? MediaPlayerInitialized;
-
-    /// <summary>
-    /// Occurs when a file playback ends. Reason contains the reason.  
-    /// </summary>
-    public event EventHandler<MpvEndFileEventArgs>? MediaEndFile;
 
     private bool _initLoaded;
 
@@ -69,7 +64,7 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
         else
         {
             Status = PlaybackStatus.Stopped;
-            Player?.Stop().Invoke();
+            MpvContext?.Stop().Invoke();
         }
     }
 
@@ -93,22 +88,21 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
         }
     }
 
-    protected override async void OnLoaded()
+    protected override async void OnLoaded(RoutedEventArgs e)
     {
-        base.OnLoaded();
+        base.OnLoaded(e);
 
         await Task.Delay(100); // Fails to load if we don't give a slight delay.
         
-        Player = PlayerView.MpvContext!;
-        Player.FileLoaded += Player_FileLoaded;
-        Player.EndFile += Player_EndFile;
+        MpvContext!.FileLoaded += Player_FileLoaded;
+        MpvContext!.EndFile += Player_EndFile;
 
-        Player.TimePos.Changed += Player_PositionChanged;
+        MpvContext.TimePos.Changed += Player_PositionChanged;
 
         var options = new MpvAsyncOptions { WaitForResponse = false };
-        await Player.Volume.SetAsync(base.Volume, options);
-        await Player.Speed.SetAsync(base.GetSpeed(), options);
-        await Player.LoopFile.SetAsync(base.Loop ? "yes" : "no", options);
+        await MpvContext.Volume.SetAsync(Volume, options);
+        await MpvContext.Speed.SetAsync(GetSpeed(), options);
+        await MpvContext.LoopFile.SetAsync(Loop ? "yes" : "no", options);
 
         if (!string.IsNullOrEmpty(Source) && !_initLoaded)
         {
@@ -120,10 +114,9 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
     {
         Dispatcher.UIThread.Post(() =>
         {
-            IsMediaLoaded = true;
             Status = PlaybackStatus.Playing;
-            base.Duration = TimeSpan.FromSeconds(Player!.Duration.Get()!.Value);
-            base.OnMediaLoaded();
+            Duration = TimeSpan.FromSeconds(MpvContext!.Duration.Get()!.Value);
+            OnMediaLoaded();
         });
     }
 
@@ -131,18 +124,17 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
     {
         Dispatcher.UIThread.Post(() =>
         {
-            IsMediaLoaded = false;
             if (e.Reason == MpvEndFileReason.Error)
             {
                 Status = PlaybackStatus.Error;
             }
-            base.OnMediaUnloaded();
+            OnMediaUnloaded();
         });
     }
 
     private void Player_PositionChanged(object sender, MpvValueChangedEventArgs<double, double> e)
     {
-        Dispatcher.UIThread.Post(new Action(() => base.SetPositionNoSeek(TimeSpan.FromSeconds(e.NewValue!.Value))));
+        Dispatcher.UIThread.Post(() => base.SetPositionNoSeek(TimeSpan.FromSeconds(e.NewValue!.Value)));
     }
 
     /// <inheritdoc />
@@ -151,7 +143,7 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
         Text = Status switch
         {
             PlaybackStatus.Loading => Properties.Resources.Loading,
-            PlaybackStatus.Playing => Title ?? System.IO.Path.GetFileName(Source),
+            PlaybackStatus.Playing => Title ?? Path.GetFileName(Source),
             PlaybackStatus.Error => Properties.Resources.MediaError,
             _ => ""
         };
@@ -161,11 +153,11 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
     protected override void PositionChanged(TimeSpan value, bool isSeeking)
     {
         base.PositionChanged(value, isSeeking);
-        lock (Player!)
+        lock (MpvContext!)
         {
             if (IsMediaLoaded && isSeeking)
             {
-                Player.TimePos.Set(value.TotalSeconds);
+                MpvContext.TimePos.Set(value.TotalSeconds);
             }
         }
     }
@@ -174,41 +166,41 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
     protected override void IsPlayingChanged(bool value)
     {
         base.IsPlayingChanged(value);
-        Player?.Pause.Set(!value);
+        MpvContext?.Pause.Set(!value);
     }
 
     /// <inheritdoc />
     protected override void VolumeChanged(int value)
     {
         base.VolumeChanged(value);
-        Player?.Volume.Set(value);
+        MpvContext?.Volume.Set(value);
     }
 
     /// <inheritdoc />
     protected override void SpeedChanged(double value)
     {
         base.SpeedChanged(value);
-        Player?.Speed.Set(value);
+        MpvContext?.Speed.Set(value);
     }
 
     /// <inheritdoc />
     protected override void LoopChanged(bool value)
     {
         base.LoopChanged(value);
-        Player?.LoopFile.Set(value ? "yes" : "no");
+        MpvContext?.LoopFile.Set(value ? "yes" : "no");
     }
 
     private async Task LoadMediaAsync()
     {
         if (!IsLoaded || Design.IsDesignMode) { return; }
         
-        Player!.Stop().Invoke();
+        MpvContext!.Stop().Invoke();
         if (!string.IsNullOrEmpty(Source))
         {
             _initLoaded = true;
             Thread.Sleep(10);
-            Player.Pause.Set(!base.AutoPlay);
-            await Player.LoadFile(Source!).InvokeAsync();
+            MpvContext.Pause.Set(!AutoPlay);
+            await MpvContext.LoadFile(Source!).InvokeAsync();
         }
     }
 
@@ -234,7 +226,7 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
             }
 
             // Unmanaged resources.
-            Player?.Dispose();
+            MpvContext?.Dispose();
 
             _disposed = true;
         }

@@ -1,32 +1,46 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <RootNamespace>HanumanInstitute.MediaPlayer.Avalonia.Mpv</RootNamespace>
-        <LangVersion>default</LangVersion>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>HanumanInstitute.MediaPlayer.Avalonia.Mpv</RootNamespace>
+    <LangVersion>default</LangVersion>
+    <PackageId>MediaPlayer.Avalonia.Mpv</PackageId>
+    <Authors>Etienne Charland</Authors>
+    <LangVersion>default</LangVersion>
+    <Title>MediaPlayer.Avalonia.Mpv</Title>
+    <Description>MPV media player for Avalonia</Description>
+    <Copyright>Copyright © 2021-2023 Etienne Charland</Copyright>
+    <PackageProjectUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/mysteryx93/MediaPlayerUI.NET</RepositoryUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <VersionPrefix>2.0</VersionPrefix>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\LibMpv-OpenGL\Src\LibMpv.Avalonia\LibMpv.Avalonia.csproj" />
-      <ProjectReference Include="..\..\LibMpv-OpenGL\Src\LibMpv\LibMpv.csproj" />
-      <ProjectReference Include="..\Avalonia\MediaPlayer.Avalonia.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Avalonia\MediaPlayer.Avalonia.csproj" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <EmbeddedResource Update="Properties\Resources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>test.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-    </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>test.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 
-    <ItemGroup>
-      <Compile Update="Properties\Resources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Resources.resx</DependentUpon>
-      </Compile>
-    </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HanumanInstitute.LibMpv.Avalonia" Version="0.9.1" />
+  </ItemGroup>
 
 </Project>

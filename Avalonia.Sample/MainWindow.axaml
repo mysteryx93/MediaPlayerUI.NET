@@ -22,7 +22,7 @@
     <Grid>
         <ui:MediaPlayer x:Name="Player">
             <!-- <bass:BassPlayerHost x:Name="PlayerHost" Source="E:\NaturalGrounding\AOA\Like a Cat.mp4" AutoPlay="true" /> -->
-            <mpv:MpvPlayerHost Source="/run/media/hanuman/Storage-ntfs/NaturalGrounding/AOA/Like a Cat.mp4" Volume="50" Loop="True" />
+            <mpv:MpvPlayerHost Source="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" Volume="80" Loop="True" />
             <!-- Source="E:\Music\INNA\Body And The Sun\CD1\07 Fool Me.mp3" Pitch="0.9818181818181818181818" -->
         </ui:MediaPlayer>
         <!-- <ui:MediaPlayer Height="50" /> -->
